@@ -4,6 +4,7 @@
 
 ```bash
 cd /root/workspace
+export PULUMI_CONFIG_PASSPHRASE=""
 echo "Destroy 前 State 中的资源数量："
 pulumi stack export | jq '.deployment.resources | length'
 pulumi destroy --yes

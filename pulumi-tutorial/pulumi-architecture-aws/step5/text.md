@@ -11,6 +11,7 @@ pulumi preview
 确认预览后执行更新：
 
 ```bash
+export PULUMI_CONFIG_PASSPHRASE=""
 pulumi up --yes
 pulumi stack export | jq -r '.deployment.resources[] | select(.type=="aws:s3/bucket:Bucket") | .outputs.tags'
 ```{{exec}}
