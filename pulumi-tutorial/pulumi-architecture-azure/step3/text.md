@@ -8,15 +8,22 @@ source venv/bin/activate
 pulumi preview
 ```{{exec}}
 
-> 提示：本实验使用空口令的本地后端。上面这个 `pulumi preview` 可能提示 `Enter your passphrase to unlock config/secrets`，直接按回车（空口令）即可，连续两次提示都回车。
+> 提示：本教程统一使用空口令的本地后端，并已写入 `~/.bashrc`，**新开的终端不会再提示口令**。
 >
-> 提示出现的原因是终端在环境准备脚本写入 `PULUMI_CONFIG_PASSPHRASE` 之前就打开了。为避免多行命令被口令提示“吞掉第二行”，后续代码块都在开头加了 `export PULUMI_CONFIG_PASSPHRASE=""`；你也可以在本终端先手动执行 `export PULUMI_CONFIG_PASSPHRASE=""`{{exec}} 一劳永逸。
-
-执行部署：
+> 但当前这个终端在环境准备完成前就打开了，所以上面的 `pulumi preview` 可能提示 `Enter your passphrase to unlock config/secrets`——直接按回车（空口令）即可，连续两次提示都回车。为让**当前终端**也记住空口令，只需手动执行一次：
 
 ```bash
 export PULUMI_CONFIG_PASSPHRASE=""
+```{{exec}}
+
+执行部署。这里把 `pulumi up` 与 `pulumi stack output` 拆成两个代码块分别点击，避免部署过程中的交互界面吞掉下一行命令：
+
+```bash
+source venv/bin/activate
 pulumi up --yes
+```{{exec}}
+
+```bash
 pulumi stack output
 ```{{exec}}
 

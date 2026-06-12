@@ -8,11 +8,13 @@ sed -i 's/stage: "first-up"/stage: "updated-in-place"/' index.ts
 pulumi preview
 ```{{exec}}
 
-确认预览后执行更新：
+确认预览后执行更新（`pulumi up` 与查询拆成两个代码块分别点击）：
 
 ```bash
-export PULUMI_CONFIG_PASSPHRASE=""
 pulumi up --yes
+```{{exec}}
+
+```bash
 pulumi stack export | jq -r '.deployment.resources[] | select(.type=="aws:s3/bucket:Bucket") | .outputs.tags'
 ```{{exec}}
 

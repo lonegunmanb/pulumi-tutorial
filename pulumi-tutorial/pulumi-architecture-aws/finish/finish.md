@@ -1,13 +1,18 @@
 # 完成 AWS / MiniStack 版实验
 
-清理资源和容器：
+清理资源和容器（分成三个代码块分别点击，避免 `pulumi destroy` 的交互界面吞掉后续命令）：
 
 ```bash
 cd /root/workspace
-export PULUMI_CONFIG_PASSPHRASE=""
 echo "Destroy 前 State 中的资源数量："
 pulumi stack export | jq '.deployment.resources | length'
+```{{exec}}
+
+```bash
 pulumi destroy --yes
+```{{exec}}
+
+```bash
 echo "Destroy 后 State 中的资源数量："
 pulumi stack export | jq '.deployment.resources | length'
 docker compose down

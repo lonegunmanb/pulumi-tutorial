@@ -11,6 +11,13 @@ if ! grep -q '.pulumi/bin' /root/.bashrc 2>/dev/null; then
   echo 'export PATH="$HOME/.pulumi/bin:$PATH"' >> /root/.bashrc
 fi
 
+# 本教程统一使用空口令的本地后端，写入 .bashrc 后新开终端无需再显式配置。
+export PULUMI_CONFIG_PASSPHRASE="${PULUMI_CONFIG_PASSPHRASE:-}"
+
+if ! grep -q 'PULUMI_CONFIG_PASSPHRASE' /root/.bashrc 2>/dev/null; then
+  echo 'export PULUMI_CONFIG_PASSPHRASE=""' >> /root/.bashrc
+fi
+
 apt-get update >/dev/null
 apt-get install -y curl ca-certificates git jq >/dev/null
 
