@@ -1,0 +1,26 @@
+{
+  "title": "Pulumi 架构解析：Azure / miniblue 版",
+  "description": "使用 miniblue 模拟 Azure，并通过 Pulumi Dynamic Provider 理解资源注册、创建、删除与状态记录",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "启动 miniblue Azure 模拟器", "text": "step1/text.md" },
+      { "title": "阅读 Dynamic Provider", "text": "step2/text.md" },
+      { "title": "预览并部署资源", "text": "step3/text.md" },
+      { "title": "用 azlocal 验证", "text": "step4/text.md" },
+      { "title": "理解删除路径", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

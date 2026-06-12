@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "path": "pulumi-architecture-aws"
+    },
+    {
+      "path": "pulumi-architecture-azure"
+    },
+    {
+      "path": "pulumi-get-started"
+    },
+    {
+      "path": "pulumi-projects-stacks-state"
+    },
+    {
+      "path": "pulumi-resources-options"
+    },
+    {
+      "path": "pulumi-inputs-outputs-secrets"
+    },
+    {
+      "path": "pulumi-components"
+    },
+    {
+      "path": "pulumi-automation-api"
+    },
+    {
+      "path": "pulumi-packages-crossguard"
+    },
+    {
+      "path": "pulumi-testing-cicd"
+    }
+  ]
+}

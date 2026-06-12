@@ -1,0 +1,15 @@
+{
+  "title": "Inputs、Outputs 与 Secrets",
+  "description": "使用随机资源理解 Output 数据流、apply 转换和 Secret 传播",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "读取输出", "text": "step1/text.md" },
+      { "title": "创建 Secret 输出", "text": "step2/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
