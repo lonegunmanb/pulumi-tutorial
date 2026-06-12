@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -o pipefail
 
 SCENARIO_ID="${SCENARIO_ID:-pulumi-lab}"
 SCENARIO_TITLE="${SCENARIO_TITLE:-Pulumi Lab}"

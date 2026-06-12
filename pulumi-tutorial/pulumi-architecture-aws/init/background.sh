@@ -1,16 +1,26 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -o pipefail
 
 export SCENARIO_ID="pulumi-architecture-aws"
 export SCENARIO_TITLE="Pulumi 架构解析：AWS / MiniStack 版"
 export SKIP_SAMPLE_PROJECT=1
+export PULUMI_CONFIG_PASSPHRASE=""
 
-/root/setup-common.sh
+mkdir -p /root/workspace
+
+# 安装 Pulumi、Node.js 与共享工具（尽力而为，单步失败不影响后续）。
+bash /root/setup-common.sh || true
 export PATH="$HOME/.pulumi/bin:$PATH"
 
-apt-get update >/dev/null
-apt-get install -y docker.io awscli python3-pip >/dev/null
+if ! grep -q 'PULUMI_CONFIG_PASSPHRASE' /root/.bashrc 2>/dev/null; then
+  echo 'export PULUMI_CONFIG_PASSPHRASE=""' >> /root/.bashrc
+fi
+
+# Killercoda 已预装 Docker，这里只确保守护进程在运行。
 service docker start >/dev/null 2>&1 || true
+
+# 安装 AWS CLI（供 awslocal 使用），失败不致命。
+apt-get install -y awscli >/dev/null 2>&1 || true
 
 if ! docker compose version >/dev/null 2>&1; then
   mkdir -p /usr/local/lib/docker/cli-plugins
@@ -108,8 +118,9 @@ export const contentBucketName = contentBucket.bucket;
 export const architectureHint = pulumi.interpolate`Engine registered ${mediaBucket.bucket} and ${contentBucket.bucket}, then the AWS provider called MiniStack.`;
 TS
 
-npm install --no-audit --no-fund >/dev/null
-pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null
+npm install --no-audit --no-fund >/dev/null 2>&1 || true
+pulumi login --local >/dev/null 2>&1 || true
+pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
 
 touch /tmp/.setup-done
