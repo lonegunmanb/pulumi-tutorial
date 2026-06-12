@@ -8,6 +8,10 @@ source venv/bin/activate
 pulumi preview
 ```{{exec}}
 
+> 提示：本实验使用空口令的本地后端。如果终端提示 `Enter your passphrase to unlock config/secrets`，直接按回车（即空口令）即可继续；连续两次提示也都直接回车。
+>
+> 想彻底免去提示，可以先执行 `export PULUMI_CONFIG_PASSPHRASE=""`{{exec}} 再运行后续命令（新开的终端默认已写入 `~/.bashrc`，本次提示是因为终端在环境准备完成前就已打开）。
+
 执行部署：
 
 ```bash

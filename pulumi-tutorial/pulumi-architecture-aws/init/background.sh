@@ -19,8 +19,17 @@ fi
 # Killercoda 已预装 Docker，这里只确保守护进程在运行。
 service docker start >/dev/null 2>&1 || true
 
-# 安装 AWS CLI（供 awslocal 使用），失败不致命。
-apt-get install -y awscli >/dev/null 2>&1 || true
+# 安装 AWS CLI v2（供 awslocal 使用），失败不致命。
+if ! command -v aws >/dev/null 2>&1; then
+  apt-get install -y unzip >/dev/null 2>&1 || true
+  if curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip 2>/dev/null; then
+    unzip -o -q /tmp/awscliv2.zip -d /tmp >/dev/null 2>&1 \
+      && /tmp/aws/install --update >/dev/null 2>&1
+    rm -rf /tmp/awscliv2.zip /tmp/aws
+  fi
+  # 官方安装包失败时，退而使用 apt 包。
+  command -v aws >/dev/null 2>&1 || apt-get install -y awscli >/dev/null 2>&1 || true
+fi
 
 if ! docker compose version >/dev/null 2>&1; then
   mkdir -p /usr/local/lib/docker/cli-plugins

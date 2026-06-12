@@ -16,8 +16,20 @@ group: 第 1 篇：Get Started & 架构基石
 
 ## 官方映射
 
-- 计划映射：`content/docs/iac/concepts/architecture/`
-- 当前等价路径：`content/docs/iac/concepts/_index.md`、`content/docs/iac/concepts/programming-model.md`、`content/docs/iac/get-started/`
+本章主体内容对标官方的 **How Pulumi IaC Works** 页面，并在涉及具体机制时关联到对应的 Concepts 文档：
+
+- 主参照：[How Pulumi IaC Works](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/)（源码路径 `content/docs/iac/guides/basics/how-pulumi-works.md`）
+  - [Running a Pulumi program](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/#running-a-pulumi-program)：对应本章 1.2。
+  - [Resource operations](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/#resource-operations)：对应本章 1.5 的操作符表。
+  - [Creation and deletion order](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/#creation-and-deletion-order)：对应本章 1.4 的并行与依赖。
+  - [Architecture](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/#architecture)（Language hosts / Deployment engine / Resource providers / Pulumi Cloud architecture）：对应本章 1.3 与 1.8。
+- 延伸概念文档：
+  - [Inputs and Outputs](https://www.pulumi.com/docs/iac/concepts/inputs-outputs/)：对应本章 1.4 的 `Output<T>` 依赖线索。
+  - [State and Backends](https://www.pulumi.com/docs/iac/concepts/state-and-backends/)：对应本章 1.7 的 State 与后端。
+  - [Resource names / Auto-naming](https://www.pulumi.com/docs/iac/concepts/resources/names/#autonaming)：对应本章 1.6 的逻辑名称、物理名称与自动命名。
+  - [`deleteBeforeReplace` 选项](https://www.pulumi.com/docs/iac/concepts/resources/options/deletebeforereplace/)：对应本章 1.5 的替换顺序控制。
+  - [`dependsOn` 选项](https://www.pulumi.com/docs/iac/concepts/resources/options/dependson/)：对应本章 1.4 的显式依赖。
+  - [Providers](https://www.pulumi.com/docs/iac/concepts/providers/) 与 [Plugins](https://www.pulumi.com/docs/iac/concepts/plugins/)：对应本章 1.3 与 1.5 的 Provider/插件机制。
 
 ## 1.1 从“手工搭房子”到“拿图纸找施工队”
 
