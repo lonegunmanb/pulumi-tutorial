@@ -159,8 +159,6 @@ new aws.s3.Bucket("fixed-name-bucket", {
 
 ![Preview 操作信号灯](./images/pulumi-preview-traffic-lights.png)
 
-> 绘图提示词：淡水彩阴影漫画插画风格，把 `pulumi preview` 画成一排交通信号灯和施工路牌：绿色加号表示新建、黄色波浪表示原地更新、红色减号表示删除、橙色双箭头表示替换；旁边有一个初学者工程师拿着清单逐项检查，强调 preview 是变更前的安全路口。
-
 ## 1.6 逻辑名称、物理名称与自动命名
 
 Pulumi 代码里的 `"media-bucket"` 是逻辑名称。它用于组成 URN，帮助 Pulumi 在 State 中识别资源身份。
