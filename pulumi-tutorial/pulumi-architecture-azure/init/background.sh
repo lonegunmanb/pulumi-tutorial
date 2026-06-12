@@ -61,7 +61,8 @@ import pulumi
 from pulumi.dynamic import Resource, ResourceProvider, CreateResult
 
 MINIBLUE_URL = "http://localhost:4566"
-SUBSCRIPTION = "sub1"
+# 使用 azlocal 的默认订阅，便于后续用 `azlocal group show` 直接查询（无需 --subscription）。
+SUBSCRIPTION = "00000000-0000-0000-0000-000000000000"
 
 
 class ResourceGroupProvider(ResourceProvider):
