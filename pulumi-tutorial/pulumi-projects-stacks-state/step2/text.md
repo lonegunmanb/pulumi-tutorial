@@ -1,14 +1,26 @@
-# 检查配置与状态
+# 创建 dev Stack 与 Secret
+
+创建 `dev` Stack，并为它设置明文 Config 与加密 Secret：
 
 ```bash
-pulumi stack select prod
+cd /root/workspace/aws-infra
+pulumi stack init dev || pulumi stack select dev
+pulumi config set bucketBase pulumi-stack-lab
+pulumi config set owner dev-team
+pulumi config set --secret serviceToken dev-token-123
+pulumi config
+cat Pulumi.dev.yaml
+```{{exec}}
+
+部署 `dev` Stack，并读取输出：
+
+```bash
 pulumi preview
 pulumi up --yes
-pulumi stack export | jq '.deployment.resources[] | {urn, type}'
+pulumi stack output
+pulumi stack output serviceTokenPreview --show-secrets
 ```{{exec}}
 
-观察状态快照中的 URN、资源类型与输出字段。实验结束后执行：
+观察 `pulumi config` 和 `pulumi stack output`：Secret 默认显示为 `[secret]`，只有显式使用 `--show-secrets` 才会显示明文。
 
-```bash
-pulumi destroy --yes
-```{{exec}}
+再看 `Pulumi.dev.yaml`：你设置的 `bucketBase` 会以 `projects-stacks-aws-infra:bucketBase` 的形式存储。前缀来自 `Pulumi.yaml` 里的 Project 名，用来避免不同 Project 或 Provider 的配置键冲突。

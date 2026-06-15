@@ -10,6 +10,7 @@ const preferredOrder = [
   'pulumi-architecture-azure',
   'pulumi-get-started',
   'pulumi-projects-stacks-state',
+  'pulumi-projects-stacks-state-azure',
   'pulumi-resources-options',
   'pulumi-inputs-outputs-secrets',
   'pulumi-components',

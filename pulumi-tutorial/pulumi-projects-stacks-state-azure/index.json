@@ -1,10 +1,10 @@
 {
-  "title": "Projects、Stacks 与 State（AWS / MiniStack）",
-  "description": "使用 MiniStack 模拟 AWS S3，练习 dev/prod Stack、Config、Secret、Output、本地 State 导出与 StackReference",
+  "title": "Projects、Stacks 与 State（Azure / miniblue）",
+  "description": "使用 miniblue 模拟 Azure 风格资源，练习 dev/prod Stack、Config、Secret、Output、本地 State 导出与 StackReference",
   "details": {
     "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
     "steps": [
-      { "title": "认识 Project 与启动 MiniStack", "text": "step1/text.md" },
+      { "title": "认识 Project 与启动 miniblue", "text": "step1/text.md" },
       { "title": "创建 dev Stack 与 Secret", "text": "step2/text.md" },
       { "title": "复制配置创建 prod Stack", "text": "step3/text.md" },
       { "title": "导出 State 并观察 Outputs", "text": "step4/text.md" },

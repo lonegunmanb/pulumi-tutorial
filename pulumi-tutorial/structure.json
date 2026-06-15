@@ -13,6 +13,9 @@
       "path": "pulumi-projects-stacks-state"
     },
     {
+      "path": "pulumi-projects-stacks-state-azure"
+    },
+    {
       "path": "pulumi-resources-options"
     },
     {
