@@ -1,6 +1,6 @@
 {
-  "title": "Pulumi 起步：第一个程序",
-  "description": "使用 TypeScript 和本地后端创建第一个 Pulumi 资源，理解 preview、up 与 destroy 的基本工作流",
+  "title": "在 Linux 上安装 Pulumi",
+  "description": "在干净的 Linux 终端中用官方脚本安装 Pulumi CLI，配置 PATH，运行 pulumi version 验证，并选择本地后端，无需 Pulumi 官方账号",
   "details": {
     "intro": {
       "text": "init/init.md",
@@ -8,8 +8,9 @@
       "foreground": "init/foreground.sh"
     },
     "steps": [
-      { "title": "检查项目结构", "text": "step1/text.md" },
-      { "title": "预览与部署", "text": "step2/text.md" }
+      { "title": "用安装脚本安装 Pulumi CLI", "text": "step1/text.md" },
+      { "title": "配置 PATH 并验证版本", "text": "step2/text.md" },
+      { "title": "选择状态后端", "text": "step3/text.md" }
     ],
     "finish": { "text": "finish/finish.md" },
     "assets": {

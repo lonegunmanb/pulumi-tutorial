@@ -35,9 +35,10 @@ group: 起步
 
 ## 全书目录
 
-### 第 1 篇：Get Started & 架构基石
+### 第 1 篇：Get Started
 
 - [IaC 范式转移与 Pulumi 架构解析](architecture.md)
+- [如何安装 Pulumi](install.md)
 - [项目、堆栈与状态管理](projects-stacks-state.md)
 
 ### 第 2 篇：Concepts 深度剖析

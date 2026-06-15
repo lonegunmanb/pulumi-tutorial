@@ -26,7 +26,8 @@ if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'Number(process.versions.no
   apt-get install -y nodejs >/dev/null
 fi
 
-if ! command -v pulumi >/dev/null 2>&1; then
+# “安装 Pulumi”实验需要由学员自己安装 CLI，设 SKIP_PULUMI_INSTALL=1 可跳过预装。
+if [ "${SKIP_PULUMI_INSTALL:-0}" != "1" ] && ! command -v pulumi >/dev/null 2>&1; then
   curl -fsSL https://get.pulumi.com | sh >/dev/null
 fi
 

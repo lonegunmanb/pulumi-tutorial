@@ -1,5 +1,5 @@
-# Pulumi 起步实验
+# 在 Linux 上安装 Pulumi
 
-实验环境会自动安装 Pulumi CLI、Node.js，并在 `/root/workspace` 中创建一个最小 TypeScript Pulumi 项目。
+本实验提供一台干净的 Ubuntu 终端，已预装 `curl`、`git` 与 Node.js，但**没有预装 Pulumi**。
 
-本实验使用本地后端和 `@pulumi/random` Provider，不需要真实云账号。
+你将亲手完成官方安装页的标准流程：用安装脚本安装 Pulumi CLI、把 `~/.pulumi/bin` 加入 `PATH`、运行 `pulumi version` 验证，并用 `pulumi login --local` 选择本地后端。全程无需任何账号。
