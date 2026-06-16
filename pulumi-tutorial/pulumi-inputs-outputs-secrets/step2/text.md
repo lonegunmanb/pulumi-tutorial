@@ -9,8 +9,8 @@ export const message = pulumi.secret(pulumi.interpolate`Hello from ${pet.id}`);
 然后运行：
 
 ```bash
-pulumi up --yes
-pulumi stack output
+pulumi up --yes && \
+pulumi stack output && \
 pulumi stack export | jq '.deployment.resources[] | select(.outputs) | .outputs'
 ```{{exec}}
 

@@ -3,8 +3,8 @@
 MiniStack 会在本地 `4566` 端口模拟 AWS API。先启动它并检查健康状态：
 
 ```bash
-cd /root/workspace
-docker compose up -d
+cd /root/workspace && \
+docker compose up -d && \
 curl -s http://localhost:4566/_ministack/health | jq .
 ```{{exec}}
 

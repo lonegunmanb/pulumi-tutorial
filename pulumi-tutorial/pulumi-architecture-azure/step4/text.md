@@ -3,7 +3,7 @@
 先看 Pulumi State 中记录的资源：
 
 ```bash
-cd /root/workspace
+cd /root/workspace && \
 pulumi stack export | jq -r '.deployment.resources[] | [.type, .urn] | @tsv'
 ```{{exec}}
 

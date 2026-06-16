@@ -3,9 +3,9 @@
 导出 `prod` Stack 的本地状态快照：
 
 ```bash
-cd /root/workspace/azure-infra
-pulumi stack select prod
-pulumi stack export --file prod-state.json
+cd /root/workspace/azure-infra && \
+pulumi stack select prod && \
+pulumi stack export --file prod-state.json && \
 jq '.deployment.resources[] | {urn, type, id}' prod-state.json
 ```{{exec}}
 

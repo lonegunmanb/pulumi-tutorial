@@ -3,7 +3,7 @@
 打开 `index.ts`，给资源增加 `protect: true` 选项，然后执行：
 
 ```bash
-pulumi up --yes
+pulumi up --yes && \
 pulumi destroy --yes
 ```{{exec}}
 

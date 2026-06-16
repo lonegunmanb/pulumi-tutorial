@@ -1,8 +1,8 @@
 # 运行示例堆栈
 
 ```bash
-cd /root/workspace
-pulumi preview
+cd /root/workspace && \
+pulumi preview && \
 pulumi up --yes
 ```{{exec}}
 

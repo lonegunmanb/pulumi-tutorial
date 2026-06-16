@@ -1,9 +1,9 @@
 # 运行 CLI 基线
 
 ```bash
-cd /root/workspace
-pulumi preview
-pulumi up --yes
+cd /root/workspace && \
+pulumi preview && \
+pulumi up --yes && \
 pulumi destroy --yes
 ```{{exec}}
 

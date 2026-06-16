@@ -1,9 +1,9 @@
 # 运行基线部署
 
 ```bash
-cd /root/workspace
-pulumi preview
-pulumi up --yes
+cd /root/workspace && \
+pulumi preview && \
+pulumi up --yes && \
 pulumi stack output
 ```{{exec}}
 

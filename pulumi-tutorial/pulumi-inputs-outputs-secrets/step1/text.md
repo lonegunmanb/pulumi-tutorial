@@ -1,8 +1,8 @@
 # 读取输出
 
 ```bash
-cd /root/workspace
-pulumi up --yes
+cd /root/workspace && \
+pulumi up --yes && \
 pulumi stack output
 ```{{exec}}
 

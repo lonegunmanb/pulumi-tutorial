@@ -1,8 +1,8 @@
 # 观察资源 URN
 
 ```bash
-cd /root/workspace
-pulumi up --yes
+cd /root/workspace && \
+pulumi up --yes && \
 pulumi stack export | jq -r '.deployment.resources[].urn'
 ```{{exec}}
 

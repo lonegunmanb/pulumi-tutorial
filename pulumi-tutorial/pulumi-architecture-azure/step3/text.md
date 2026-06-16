@@ -3,8 +3,8 @@
 激活 Python 虚拟环境，然后运行预览：
 
 ```bash
-cd /root/workspace
-source venv/bin/activate
+cd /root/workspace && \
+source venv/bin/activate && \
 pulumi preview
 ```{{exec}}
 
@@ -19,7 +19,7 @@ export PULUMI_CONFIG_PASSPHRASE=""
 执行部署。这里把 `pulumi up` 与 `pulumi stack output` 拆成两个代码块分别点击，避免部署过程中的交互界面吞掉下一行命令：
 
 ```bash
-source venv/bin/activate
+source venv/bin/activate && \
 pulumi up --yes
 ```{{exec}}
 

@@ -5,6 +5,6 @@
 现在先导出资源图：
 
 ```bash
-pulumi stack export > state.json
+pulumi stack export > state.json && \
 jq '.deployment.resources[] | {type, urn}' state.json
 ```{{exec}}

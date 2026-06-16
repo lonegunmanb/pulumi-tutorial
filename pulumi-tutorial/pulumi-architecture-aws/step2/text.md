@@ -3,9 +3,9 @@
 查看当前项目文件：
 
 ```bash
-cd /root/workspace
-cat Pulumi.yaml
-sed -n '1,240p' index.ts
+cd /root/workspace && \
+cat Pulumi.yaml && \
+sed -n '1,240p' index.ts && \
 pulumi stack ls
 ```{{exec}}
 

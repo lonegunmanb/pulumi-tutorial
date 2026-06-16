@@ -3,17 +3,17 @@
 先启动本地 AWS 模拟器。MiniStack 会在 `localhost:4566` 暴露 AWS 风格 API：
 
 ```bash
-cd /root/workspace
-docker compose up -d
+cd /root/workspace && \
+docker compose up -d && \
 docker compose ps
 ```{{exec}}
 
 查看上游 Project 的结构：
 
 ```bash
-cd /root/workspace/aws-infra
-ls -la
-cat Pulumi.yaml
+cd /root/workspace/aws-infra && \
+ls -la && \
+cat Pulumi.yaml && \
 sed -n '1,120p' index.ts
 ```{{exec}}
 

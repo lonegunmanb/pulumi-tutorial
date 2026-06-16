@@ -3,17 +3,17 @@
 先启动本地 Azure 风格模拟器。miniblue 会在 `localhost:4566` 暴露 API：
 
 ```bash
-cd /root/workspace
-docker compose up -d
+cd /root/workspace && \
+docker compose up -d && \
 docker compose ps
 ```{{exec}}
 
 查看上游 Project 的结构：
 
 ```bash
-cd /root/workspace/azure-infra
-ls -la
-cat Pulumi.yaml
+cd /root/workspace/azure-infra && \
+ls -la && \
+cat Pulumi.yaml && \
 sed -n '1,180p' __main__.py
 ```{{exec}}
 

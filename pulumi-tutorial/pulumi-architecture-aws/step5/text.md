@@ -3,8 +3,8 @@
 现在只修改 `media-bucket` 的标签，观察 Pulumi 如何从 `create` 变成 `update`：
 
 ```bash
-cd /root/workspace
-sed -i 's/stage: "first-up"/stage: "updated-in-place"/' index.ts
+cd /root/workspace && \
+sed -i 's/stage: "first-up"/stage: "updated-in-place"/' index.ts && \
 pulumi preview
 ```{{exec}}
 

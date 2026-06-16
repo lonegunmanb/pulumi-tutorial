@@ -3,14 +3,14 @@
 把 `~/.pulumi/bin` 加入 `PATH`，并写入 `~/.bashrc` 让新开的终端也能用：
 
 ```bash
-export PATH="$PATH:$HOME/.pulumi/bin"
+export PATH="$PATH:$HOME/.pulumi/bin" && \
 echo 'export PATH="$PATH:$HOME/.pulumi/bin"' >> ~/.bashrc
 ```{{exec}}
 
 验证 CLI 是否就绪：
 
 ```bash
-pulumi version
+pulumi version && \
 pulumi help
 ```{{exec}}
 

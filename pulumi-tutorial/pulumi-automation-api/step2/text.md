@@ -5,6 +5,6 @@
 你可以先查看版本：
 
 ```bash
-npm list @pulumi/pulumi
+npm list @pulumi/pulumi && \
 pulumi version
 ```{{exec}}

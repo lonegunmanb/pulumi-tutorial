@@ -3,7 +3,7 @@
 先让 Engine 读取程序并计算计划：
 
 ```bash
-cd /root/workspace
+cd /root/workspace && \
 pulumi preview
 ```{{exec}}
 

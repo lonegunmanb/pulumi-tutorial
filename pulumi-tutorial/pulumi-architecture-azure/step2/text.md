@@ -3,8 +3,8 @@
 查看 Pulumi Python 程序：
 
 ```bash
-cd /root/workspace
-cat Pulumi.yaml
+cd /root/workspace && \
+cat Pulumi.yaml && \
 sed -n '1,260p' __main__.py
 ```{{exec}}
 

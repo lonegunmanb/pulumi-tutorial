@@ -3,9 +3,9 @@
 State 是 Pulumi 的验收档案。导出 `prod` Stack 的本地状态快照：
 
 ```bash
-cd /root/workspace/aws-infra
-pulumi stack select prod
-pulumi stack export --file prod-state.json
+cd /root/workspace/aws-infra && \
+pulumi stack select prod && \
+pulumi stack export --file prod-state.json && \
 jq '.deployment.resources[] | {urn, type, id}' prod-state.json
 ```{{exec}}
 

@@ -3,8 +3,8 @@
 删除前先用预览确认会发生什么：
 
 ```bash
-cd /root/workspace
-source venv/bin/activate
+cd /root/workspace && \
+source venv/bin/activate && \
 pulumi preview --diff
 ```{{exec}}
 

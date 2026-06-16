@@ -3,21 +3,21 @@
 创建 `dev` Stack，并为它设置明文 Config 与加密 Secret：
 
 ```bash
-cd /root/workspace/aws-infra
-pulumi stack init dev || pulumi stack select dev
-pulumi config set bucketBase pulumi-stack-lab
-pulumi config set owner dev-team
-pulumi config set --secret serviceToken dev-token-123
-pulumi config
+cd /root/workspace/aws-infra && \
+{ pulumi stack init dev || pulumi stack select dev; } && \
+pulumi config set bucketBase pulumi-stack-lab && \
+pulumi config set owner dev-team && \
+pulumi config set --secret serviceToken dev-token-123 && \
+pulumi config && \
 cat Pulumi.dev.yaml
 ```{{exec}}
 
 部署 `dev` Stack，并读取输出：
 
 ```bash
-pulumi preview
-pulumi up --yes
-pulumi stack output
+pulumi preview && \
+pulumi up --yes && \
+pulumi stack output && \
 pulumi stack output serviceTokenPreview --show-secrets
 ```{{exec}}
 
