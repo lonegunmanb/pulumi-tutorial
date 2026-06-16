@@ -22,14 +22,14 @@ cd /root/workspace
 
 cat > docker-compose.yml <<'YAML'
 services:
-	ministack:
-		image: ministackorg/ministack:latest
-		container_name: pulumi-stacks-ministack
-		ports:
-			- "4566:4566"
-		environment:
-			MINISTACK_REGION: us-east-1
-			MINISTACK_ACCOUNT_ID: "000000000000"
+  ministack:
+    image: ministackorg/ministack:latest
+    container_name: pulumi-stacks-ministack
+    ports:
+      - "4566:4566"
+    environment:
+      MINISTACK_REGION: us-east-1
+      MINISTACK_ACCOUNT_ID: "000000000000"
 YAML
 
 cd /root/workspace/aws-infra
@@ -55,7 +55,7 @@ JSON
 cat > Pulumi.yaml <<'YAML'
 name: projects-stacks-aws-infra
 runtime:
-	name: nodejs
+  name: nodejs
 description: Demonstrate Pulumi projects, stacks, config, secrets, outputs and local state with MiniStack.
 YAML
 
@@ -127,7 +127,7 @@ JSON
 cat > Pulumi.yaml <<'YAML'
 name: projects-stacks-aws-consumer
 runtime:
-	name: nodejs
+  name: nodejs
 description: Consume outputs from the AWS infra project through StackReference.
 YAML
 
