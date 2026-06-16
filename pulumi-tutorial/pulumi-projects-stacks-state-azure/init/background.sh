@@ -6,6 +6,8 @@ export SCENARIO_TITLE="Projects、Stacks 与 State（Azure / miniblue）"
 export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 
+rm -f /tmp/.setup-done
+
 bash /root/setup-common.sh
 export PATH="$HOME/.pulumi/bin:$PATH"
 
@@ -187,4 +189,5 @@ venv/bin/pip install -r requirements.txt >/dev/null
 pulumi login --local >/dev/null
 docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 >/dev/null 2>&1 || true
 
+touch /tmp/.setup-done
 echo "Azure / miniblue projects-stacks-state lab is ready in /root/workspace"

@@ -5,6 +5,8 @@ export SCENARIO_TITLE="Projects、Stacks 与 State（AWS / MiniStack）"
 export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 
+rm -f /tmp/.setup-done
+
 bash /root/setup-common.sh
 export PATH="$HOME/.pulumi/bin:$PATH"
 
@@ -148,4 +150,5 @@ npm install --no-audit --no-fund >/dev/null
 pulumi login --local >/dev/null
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
 
+touch /tmp/.setup-done
 echo "AWS / MiniStack projects-stacks-state lab is ready in /root/workspace"
