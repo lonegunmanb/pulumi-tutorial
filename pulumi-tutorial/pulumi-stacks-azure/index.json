@@ -1,0 +1,18 @@
+{
+  "title": "Stack 详解（Azure / miniblue）",
+  "description": "使用 miniblue 模拟 Azure 风格资源，练习 Stack 创建、选择、配置隔离、Outputs、State export、空 Stack rename 与 stack rm",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "启动 miniblue 与认识 Project", "text": "step1/text.md" },
+      { "title": "创建 dev/prod Stack 与配置", "text": "step2/text.md" },
+      { "title": "部署 dev 并查看 Stack", "text": "step3/text.md" },
+      { "title": "部署 prod 并导出 State", "text": "step4/text.md" },
+      { "title": "重命名空 Stack 与清理", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
