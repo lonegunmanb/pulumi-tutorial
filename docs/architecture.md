@@ -199,7 +199,23 @@ State 中通常包含：
 
 使用默认 Pulumi Cloud 后端时，State 存在 Pulumi Cloud；使用本地或对象存储后端时，State 存在你指定的位置。无论后端在哪里，Pulumi 的核心思想都一样：用新程序表达的期望状态去调和旧 State 中记录的现实状态。
 
-## 1.8 Pulumi Cloud 不会替你拿云账号钥匙
+## 1.8 Pulumi Cloud 是什么（本教程不会使用）
+
+上一节提到的“默认 Pulumi Cloud 后端”常让新手以为 Pulumi 必须联网、必须注册账号。这里先澄清一下。
+
+[Pulumi Cloud](https://www.pulumi.com/docs/iac/concepts/pulumi-cloud/) 是 Pulumi CLI **默认**的状态后端，同时也是一个面向团队的托管平台。它在“保存 State”之外，还提供了在团队规模下运维 IaC 所需的能力，例如：
+
+- 基于角色的访问控制（RBAC），支持 SAML/SSO 与细粒度访问令牌。
+- 用 Pulumi ESC 集中管理可复用的配置与 Secret。
+- Policy as Code，在每次更新时统一执行安全、合规、成本策略。
+- 云资源清单（Inventory）与定时漂移检测（Drift Detection）。
+- 托管部署（Deployments）、Webhook，以及 AI 助手 Pulumi Neo。
+
+它提供托管 SaaS 和自托管两种形态，个人版免费。但请记住：**使用 Pulumi Cloud 是可选的**，Pulumi 同样支持自管理的 DIY 后端（本地文件、S3、Azure Blob 等）。
+
+> 本教程**不会使用 Pulumi Cloud**。为了让你无需注册账号、无需联网即可完整跑通所有实验，我们统一聚焦于 **local state（本地后端）**，用 `pulumi login --local` 把 State 保存在本地文件里。理解了本地后端，迁移到 Pulumi Cloud 或对象存储后端只是换一个 `login` 目标，核心心智模型完全一致。
+
+## 1.9 Pulumi Cloud 不会替你拿云账号钥匙
 
 Pulumi 官方架构中特别强调：Language Host、Engine、Provider 都运行在执行 Pulumi CLI 的地方，也就是你的电脑、CI Runner 或平台后端。
 
@@ -211,7 +227,7 @@ Pulumi 官方架构中特别强调：Language Host、Engine、Provider 都运行
 - 企业可以继续使用已有的 OIDC、IAM Role、Managed Identity、Key Vault 等凭据体系。
 - CI/CD 的安全边界主要由运行 Pulumi CLI 的环境决定。
 
-## 1.9 新手最容易踩的三个坑
+## 1.10 新手最容易踩的三个坑
 
 ### 坑一：以为 `new Resource()` 立刻创建云资源
 
@@ -225,7 +241,7 @@ Pulumi 官方架构中特别强调：Language Host、Engine、Provider 都运行
 
 逻辑名称参与 URN。修改逻辑名称可能导致 Pulumi 认为旧资源要删、新资源要建。生产重构要配合 `aliases`。
 
-## 1.10 本章小结
+## 1.11 本章小结
 
 本章要建立的核心心智模型如下：
 

@@ -196,19 +196,33 @@ pulumi up
 pulumi stack
 ```
 
-导出状态用于观察或排障：
+导出状态用于观察或排障，相当于把这本“账本”复印一份出来看，安全无副作用：
 
 ```bash
 pulumi stack export --file stack.json
 ```
 
-导入状态也存在，但它会直接改写 Pulumi 对现实世界的认知：
+导入则相反：它用一份 JSON 文件**整本覆盖** Pulumi 的 State 账本。
 
 ```bash
 pulumi stack import --file stack.json
 ```
 
-生产环境中不要把 import 当成日常操作。它适合少数需要修复状态的场景，执行前要备份、评审和演练。
+这里有一个容易被忽视、却很关键的前提：**Pulumi 只认这本账本，不会自己跑到云上挨家挨户核对真实资源。** 所以 import 改写的不是云上的真实资源，而是 Pulumi“以为现实长什么样”。
+
+![State import 像更换一本资产登记簿](./images/stacks-state-import-ledger.png)
+
+打个比方：State 就像一本 asset ledger（资产登记簿），Pulumi 是只照着账本办事的管理员。
+
+- `export` 像把账本复印一份带走研究，怎么看都不影响现实。
+- `import` 像直接给管理员换上一本新账本。他不会逐户核实，而是完全相信新账本上的每一行。
+
+风险也正来自这里：
+
+- 如果新账本写着“某资源还在”，但云上其实已被删除，Pulumi 之后就会基于错误认知做决策。
+- 如果账本里漏写了某个资源，它就变成没人登记、也没人管理的 orphan resource（孤儿资源）。
+
+所以生产环境中不要把 import 当成日常操作。它只适合少数需要手工修复 State 的场景，执行前务必**备份、评审、演练**。
 
 销毁 Stack 管理的资源：
 
@@ -216,13 +230,19 @@ pulumi stack import --file stack.json
 pulumi destroy
 ```
 
-删除没有资源的 Stack 记录：
+当一个 Stack 里的资源都已经销毁、这个环境也不再需要时，可以把这条 Stack 记录本身删掉：
 
 ```bash
 pulumi stack rm dev
 ```
 
-顺序要记牢：**先 destroy 资源，再 stack rm 删除 Stack 记录**。如果强行删除还有资源的 Stack，可能会留下 Pulumi 不再管理的孤儿资源。
+这里要分清两件事：`pulumi destroy` 处理的是**云上的真实资源**，而 `pulumi stack rm` 处理的是 **Pulumi 这一侧的 Stack 记录**——也就是这个 Stack 的 State、配置元数据和操作历史。换句话说，`destroy` 让现实里的资源消失，`stack rm` 让 Pulumi 里“曾经有过这个环境”的记录消失。两者职责不同，不能互相替代。
+
+正因为如此，正常情况下 `pulumi stack rm` 会先检查这个 Stack 的 State 里是否还登记着资源。如果还有资源，它会拒绝删除并报错，提醒你“这个环境还没清理干净”。这是一道保护栏，避免你在资源还活着的时候就把账本丢掉。
+
+Pulumi 也提供了 `pulumi stack rm --force` 来跳过这道检查、强行删除还登记着资源的 Stack。但请把它当成危险操作：一旦删掉记录，State 里登记的那些资源在云上很可能仍然存在，只是再也没有任何 Pulumi Stack 认领它们，于是变成无人管理、还在持续计费的 orphan resource（孤儿资源），日后只能手动到云控制台里清理。
+
+顺序要记牢：**先 `pulumi destroy` 销毁资源，再 `pulumi stack rm` 删除 Stack 记录**。先清场、再撤记录，才能既不留孤儿资源，也不留多余的空 Stack。
 
 ## 2A.9 Stack 标签与适用边界
 
