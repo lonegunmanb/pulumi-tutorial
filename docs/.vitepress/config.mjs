@@ -39,14 +39,14 @@ export default defineConfig({
                 collapsed: false,
                 items: [
                   { text: "IaC 范式转移与 Pulumi 架构解析", link: "/architecture" },
-                  { text: "如何安装 Pulumi", link: "/install" },
-                  { text: "项目、堆栈与状态管理", link: "/projects-stacks-state" }
+                  { text: "如何安装 Pulumi", link: "/install" }
                 ]
               },
               {
                 text: "第 2 篇：Concepts 深度剖析",
                 collapsed: false,
                 items: [
+                  { text: "项目、堆栈与状态管理", link: "/projects-stacks-state" },
                   { text: "资源与精细控制", link: "/resources" },
                   { text: "Inputs, Outputs & Secrets", link: "/inputs-outputs-secrets" },
                   { text: "企业级架构：Components", link: "/components" }

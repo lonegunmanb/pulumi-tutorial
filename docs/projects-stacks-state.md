@@ -1,7 +1,7 @@
 ---
 order: 20
 title: 项目、堆栈与状态管理
-group: 第 1 篇：Get Started & 架构基石
+group: 第 2 篇：Concepts 深度剖析
 ---
 
 # 项目、堆栈与状态管理
@@ -32,6 +32,8 @@ group: 第 1 篇：Get Started & 架构基石
 - [Understanding Stack Outputs](https://www.pulumi.com/tutorials/building-with-pulumi/stack-outputs/)：`export const ...` 与 `pulumi stack output`。
 - [Working with Secrets](https://www.pulumi.com/tutorials/building-with-pulumi/secrets/)：`pulumi config set --secret`、`requireSecret` 与 `--show-secrets`。
 - [Understanding Stack References](https://www.pulumi.com/tutorials/building-with-pulumi/stack-references/)：一个 Stack 如何读取另一个 Stack 的输出。
+- [Project file reference](https://www.pulumi.com/docs/iac/concepts/projects/project-file/)：`Pulumi.yaml` 字段全集与语义。
+- [Stack settings file reference](https://www.pulumi.com/docs/iac/concepts/projects/stack-settings-file/)：`Pulumi.<stack>.yaml` 字段与加密语义。
 - 延伸概念文档：`content/docs/iac/concepts/projects/`、`content/docs/iac/concepts/stacks.md`、`content/docs/iac/concepts/state-and-backends.md`、`content/docs/iac/concepts/config.md`。
 
 > 本章保持上一章约定：**使用 `pulumi login --local` 与本地 State Backend，不要求 Pulumi Cloud 账号**。在本地后端中引用其他 Stack 时，组织名前缀使用固定值 `organization`，例如 `organization/infra/dev`。
@@ -73,6 +75,34 @@ config:
 ```
 
 这可以避免同一个 Stack 中不同 Provider 或不同组件的配置键互相撞名。比如 `aws:region` 是 AWS Provider 的命名空间，`shop-api:port` 是你这个 Project 的命名空间。
+
+### 2.1.1 `Pulumi.yaml`（Project File）速览
+
+官方文档里把 `Pulumi.yaml` 叫作 Project file。你可以把它理解成“这份 IaC 工程的项目清单”。有几个初学者经常忽略、但很关键的点：
+
+- 文件名必须是大写 `P` 开头，即 `Pulumi.yaml` 或 `Pulumi.yml`。
+- 最少需要两个字段：`name` 和 `runtime`。
+- `main` 可以改变程序入口目录或入口文件；在 Node.js 中它和 `package.json` 的 `main` 类似，但 `Pulumi.yaml` 优先级更高。
+
+最常用字段可以先记这张表：
+
+| 字段 | 用途 | 什么时候要关心 |
+|------|------|----------------|
+| `name` | Project 名，参与配置命名空间（如 `shop-api:port`） | 所有项目都要明确命名 |
+| `runtime` | 运行时（`nodejs`、`python`、`go`、`dotnet`、`java`、`yaml`、`bun`） | 新建项目或跨语言迁移时 |
+| `main` | 指定程序入口目录/文件 | 代码不在默认目录、或需要自定义入口时 |
+| `description`/`author`/`website`/`license` | 项目元信息 | 团队协作、模板沉淀时 |
+| `config` | 项目级配置 schema（类型、默认值、是否 secret） | 想把配置约束前置到项目规范时 |
+| `stackConfigDir` | 自定义 `Pulumi.<stack>.yaml` 所在目录 | 多环境配置需要集中管理时 |
+| `backend.url` | 指定状态后端地址 | 使用本地后端或自建后端时 |
+| `requiredPulumiVersion` | 约束 CLI 版本范围 | 团队需要锁定最低版本能力时 |
+
+再补两个容易踩坑的细节：
+
+- Python 项目常见 `runtime.options.virtualenv`，用于告诉 Pulumi 使用哪个虚拟环境。
+- `options.refresh: always` 可让每次操作前先 refresh state，但会增加执行时间，通常用于对一致性要求很高的场景。
+
+一句话总结：`Pulumi.yaml` 不只是“写个项目名就完了”，它是 Project 的控制面。前期把关键字段约定好，后面多环境和多人协作会顺很多。
 
 ## 2.2 Program：代码不是“执行步骤”，而是“声明目标状态”
 
@@ -155,6 +185,52 @@ pulumi stack init staging --copy-config-from dev
 ```
 
 它适合创建一个新环境时先复制已有环境的配置，再修改少数差异。生产实践中常见做法是：复制 `staging` 到 `prod`，然后只调整规模、域名、保护开关和凭据。
+
+### 2.4.1 `Pulumi.<stack>.yaml`（Stack Settings File）速览
+
+每个 Stack 都有一份独立设置文件，文件名固定是：
+
+```text
+Pulumi.<stack-name>.yaml
+```
+
+例如 `dev` 对应 `Pulumi.dev.yaml`，`prod` 对应 `Pulumi.prod.yaml`。你可以把它理解成“这家分店自己的配置和保险柜标签”。
+
+官方文档里最常见的字段有这些：
+
+| 字段 | 作用 | 初学者怎么理解 |
+|------|------|----------------|
+| `config` | 这个 Stack 的配置键值 | 这家环境专属参数表 |
+| `secretsprovider` | 机密加密方式 | 保险柜用什么锁 |
+| `encryptionsalt` / `encryptedkey` | 加密元数据（Pulumi 自动维护） | 锁的内部参数，别手改 |
+| `environment` | ESC 环境导入（可选） | 额外引用一份集中配置 |
+
+一个最小示例：
+
+```yaml
+config:
+	shop-api:namePrefix: demo
+	aws:region: us-west-2
+```
+
+包含 Secret 的示例（注意 `secure:`）：
+
+```yaml
+secretsprovider: passphrase
+encryptionsalt: v1:...snip...
+config:
+	shop-api:serviceToken:
+		secure: v1:...encrypted...
+```
+
+初学者最需要记住的 4 条实践：
+
+- 优先用 CLI 改配置（`pulumi config set` / `pulumi config set --secret`），不要手工拼 `secure:` 值。
+- `encryptionsalt` 和 `encryptedkey` 是 Pulumi 自动管理字段，不要手改。
+- 团队共享环境（如 `dev`、`staging`、`prod`）通常建议把 `Pulumi.<stack>.yaml` 纳入版本控制；临时测试 Stack 可以不提交。
+- 如果想把这些文件放到子目录集中管理，可在 `Pulumi.yaml` 里设置 `stackConfigDir`。
+
+一句话总结：`Pulumi.yaml` 是“项目总说明”，`Pulumi.<stack>.yaml` 是“某个环境的具体配置单”。两者配合，才能把多环境管理做稳。
 
 ## 2.5 Stack Outputs：部署后的“门牌号”
 
