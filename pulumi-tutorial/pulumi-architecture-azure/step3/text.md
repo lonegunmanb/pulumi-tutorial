@@ -1,6 +1,10 @@
 # 预览并部署资源
 
-激活 Python 虚拟环境，然后运行预览：
+现在开始真正让 Pulumi 干活。这里有两个阶段要区分清楚：
+- `preview` 只是先看计划，告诉你“如果执行，会发生什么”。
+- `up` 才会真的去创建资源。
+
+先激活 Python 虚拟环境，然后运行预览：
 
 ```bash
 cd /root/workspace && \
@@ -16,7 +20,7 @@ pulumi preview
 export PULUMI_CONFIG_PASSPHRASE=""
 ```{{exec}}
 
-执行部署。这里把 `pulumi up` 与 `pulumi stack output` 拆成两个代码块分别点击，避免部署过程中的交互界面吞掉下一行命令：
+如果 `preview` 里看到的是要创建资源，就继续执行部署。这里把 `pulumi up` 与 `pulumi stack output` 拆成两个代码块分别点击，避免部署过程中的交互界面吞掉下一行命令：
 
 ```bash
 source venv/bin/activate && \
@@ -27,4 +31,9 @@ pulumi up --yes
 pulumi stack output
 ```{{exec}}
 
-观察 `architecture-rg` 与 `engine-token` 两个资源。`engine-token` 显式依赖 `architecture-rg`，所以 Engine 会先创建资源组，再创建 Key Vault Secret。
+部署后再读取输出结果：
+
+- `architecture-rg` 可以理解为这组资源放在哪个“资源容器”里。
+- `engine-token` 是一个依赖前置资源的机密值。
+
+观察 `architecture-rg` 与 `engine-token` 的关系：`engine-token` 显式依赖 `architecture-rg`，所以 Engine 会先创建资源组，再创建 Key Vault Secret。这个顺序不是你手工控制的，而是 Pulumi 根据依赖关系自动安排的。
