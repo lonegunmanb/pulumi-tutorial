@@ -16,7 +16,7 @@ cat /root/workspace/variants/step2-pre.ts
 cd /root/workspace && cp variants/step2-pre.ts index.ts && pulumi preview
 ```{{exec}}
 
-`step2-pre.ts` 给 `data-bucket` 加了 `replaceOnChanges: ["tags"]` 并改了 tag。预览里 `data-bucket` 会显示 `+-replace`。由于它的物理名固定为 `resources-lab-data`，默认的「先建后删」会与现存同名 Bucket 冲突。
+`step2-pre.ts` 给 `data-bucket` 加了 `replaceOnChanges: ["tags"]` 并改了 tag。预览里 `data-bucket` 会显示 `+-replace`，这是一份「先建后删」的替换**计划**。注意这里只是 `pulumi preview`，并未真正执行，所以**此刻看不到冲突**。同名冲突要等 `pulumi up` 真正执行时才会暴露：默认的「先建后删」会先去创建第二个物理名同为 `resources-lab-data` 的 Bucket，与现存的撞名。所以我们不直接应用这一版，而是下一步先补上 `deleteBeforeReplace` 再 up。
 
 **2) 加上 `deleteBeforeReplace: true`，改成先删后建**：
 

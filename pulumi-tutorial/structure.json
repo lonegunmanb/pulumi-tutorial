@@ -28,6 +28,12 @@
       "path": "pulumi-providers"
     },
     {
+      "path": "pulumi-inputs-outputs"
+    },
+    {
+      "path": "pulumi-inputs-outputs-azure"
+    },
+    {
       "path": "pulumi-inputs-outputs-secrets"
     },
     {

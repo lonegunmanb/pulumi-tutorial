@@ -15,6 +15,8 @@ const preferredOrder = [
   'pulumi-resources-options',
   'pulumi-resources-options-azure',
   'pulumi-providers',
+  'pulumi-inputs-outputs',
+  'pulumi-inputs-outputs-azure',
   'pulumi-inputs-outputs-secrets',
   'pulumi-components',
   'pulumi-automation-api',

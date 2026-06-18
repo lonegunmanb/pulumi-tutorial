@@ -34,6 +34,8 @@ cp variants/step4.ts index.ts && pulumi preview
 
 `step4.ts` 在 `assets-rg` 上加了 `aliases: [{ name: "media-rg" }]`。这次预览里**没有 create/delete**，最多是一次 metadata 层面的 update——物理 Resource Group 原地保留。
 
+> 你会注意到预览顶部的 `Outputs:` 里有 `+ assetsPhysical` 和 `- mediaId` / `- mediaLogical` / `- mediaPhysical`。这些 `+/-` 是 **stack output** 的增减，**不是**资源的创建/删除：stack output 由程序里的 `export const` 语句决定，step4 的代码把变量 `media` 改名为 `assets`，导出也从 `export const mediaId = ...` 换成了 `export const assetsPhysical = ...`，于是旧导出消失、新导出出现。真正反映资源是否重建的是下面的 `Resources:` 段，这里写着 `6 unchanged`，证明物理资源原地保留。**`Outputs:` 的 `+/-` 看的是导出变量增减，`Resources:` 的 `+/-` 才是资源生命周期，两者别混。**
+
 应用它：
 
 ```bash

@@ -1,0 +1,26 @@
+{
+  "title": "Inputs 与 Outputs：数据流与依赖（AWS / MiniStack）",
+  "description": "用 @pulumi/aws 对接本地 MiniStack 模拟器，围绕一组 S3 Bucket 跑通 Output/apply/all 与依赖追踪，以及 interpolate / concat / jsonStringify 等 helpers。全程无需真实 AWS 账号。",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "Output 不是普通值", "text": "step1/text.md" },
+      { "title": "用 apply 变换 Output", "text": "step2/text.md" },
+      { "title": "Output→Input 与依赖", "text": "step3/text.md" },
+      { "title": "用 all 组合多个 Output", "text": "step4/text.md" },
+      { "title": "Output Helpers", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

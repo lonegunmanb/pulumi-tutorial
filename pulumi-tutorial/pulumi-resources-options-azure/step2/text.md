@@ -10,13 +10,20 @@
 cat /root/workspace/variants/step2-pre.ts
 ```{{exec}}
 
-再应用它：
+再应用它（这一步会**故意失败**）：
 
 ```bash
-cd /root/workspace && cp variants/step2-pre.ts index.ts && pulumi preview
+cd /root/workspace && cp variants/step2-pre.ts index.ts && pulumi up --yes
 ```{{exec}}
 
-`step2-pre.ts` 给 `data-rg` 加了 `replaceOnChanges: ["tags"]` 并改了 tag。预览里 `data-rg` 会显示 `+-replace`。由于它的物理名固定为 `resources-lab-data-rg`，默认的「先建后删」会与现存同名 Resource Group 冲突。
+`step2-pre.ts` 给 `data-rg` 加了 `replaceOnChanges: ["tags"]` 并改了 tag，强制把这次 tag 变化当成一次替换。`up` 会先打印 `+-replace` 的计划，真正执行时却**报错失败**，错误大致如下：
+
+```text
+azure:core:ResourceGroup (data-rg):
+  error: a resource with the ID ".../resourceGroups/resources-lab-data-rg" already exists ...
+```
+
+原因正是「固定物理名 + 默认的先建后删」：替换时 Pulumi 想先创建一个新的 `data-rg`，但它的物理名被写死成 `resources-lab-data-rg`，与正在被替换的旧资源同名，于是在**创建阶段**就撞名失败。旧资源仍原封不动留在 state 里，下一步我们用 `deleteBeforeReplace` 把顺序改成「先删后建」来解决。
 
 **2) 加上 `deleteBeforeReplace: true`，改成先删后建**：
 
