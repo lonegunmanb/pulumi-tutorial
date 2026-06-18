@@ -25,6 +25,9 @@
       "path": "pulumi-resources-options-azure"
     },
     {
+      "path": "pulumi-providers"
+    },
+    {
       "path": "pulumi-inputs-outputs-secrets"
     },
     {

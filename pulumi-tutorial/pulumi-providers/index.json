@@ -1,0 +1,16 @@
+{
+  "title": "Provider 抽象（纯本地）",
+  "description": "在零云依赖的 TypeScript 项目里走完三种 provider 形态：default/explicit、Any Terraform Provider、Dynamic Provider",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "default 与 explicit provider", "text": "step1/text.md" },
+      { "title": "Any Terraform Provider", "text": "step2/text.md" },
+      { "title": "Dynamic Provider：亲手写 CRUD", "text": "step3/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

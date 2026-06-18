@@ -49,6 +49,7 @@ export default defineConfig({
                   { text: "项目、堆栈与状态管理", link: "/projects-stacks-state" },
                   { text: "Stack 详解", link: "/stacks" },
                   { text: "资源与精细控制", link: "/resources" },
+                  { text: "Provider 抽象", link: "/providers" },
                   { text: "Inputs, Outputs & Secrets", link: "/inputs-outputs-secrets" },
                   { text: "企业级架构：Components", link: "/components" }
                 ]
