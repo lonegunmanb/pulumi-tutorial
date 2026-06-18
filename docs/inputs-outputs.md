@@ -8,7 +8,7 @@ group: 第 2 篇：Concepts 深度剖析
 
 ## 本章定位
 
-::: 导言
+::: tip 导言
 从本章开始，我们进入 Pulumi 最核心、也最有别于普通程序的概念。它之所以特别，根源在于 IaC 程序的运行时特点：资源的许多属性要等资源真正创建后才能确定（known after apply），程序「书写时」根本拿不到这些值。为此，Pulumi 借鉴了**函数式编程**的思路，把「将来才知道的值」装进一个类似 future / monad 的容器 `Output<T>`，再用 `apply`、`all` 等组合子把它们串联起来——串联的同时自动记录值与值之间的依赖，最终织出一张运行时 DAG，引擎据此规划求值与创建顺序。这种「靠推断出的依赖关系自动传播数据流」的特征，与**响应式编程（reactive programming）**确实同源；二者的区别在于 `Output<T>` 是一次性求值的延迟值，而非随时间持续变化的数据流（stream），因此严格说它更贴近响应式编程的近亲——**数据流编程（dataflow programming）**。无论归到哪一类，关键是先记住一句话：**你在代码里操作的，往往不是「值本身」，而是「装着未来之值的盒子」**——这正是后面所有 `apply` / `all` / helper 用法的由来。
 :::
 
@@ -492,8 +492,6 @@ const example = new aws.rds.Instance("example", {
 
 ![一次 pulumi up 里，Output 经 apply 变换后再作为 Input 流入下一个资源](./images/inputs-outputs-apply-pipeline.png)
 
-> 绘图提示词：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感。画面是一条横向流水线：左端一个写着「RandomPassword」的盒子流出一根标着「result (Output)」的水管，中间经过一个写着「apply / interpolate」的小阀门做变换，右端流入一个写着「rds.Instance」盒子的「password (Input)」接口。一只 Pulumi 吉祥物小鸭子（the Pulumi mascot duck）戴着工程帽站在阀门旁，手里举一块红色禁止牌，牌上画着「在 apply 里 new 资源」的图案被划掉，提醒不要在 apply 里创建资源。professional / technical terms（Output、Input、apply、interpolate、resource）用英语，其余文字用中文。
-
 ## 6.8 物理 ID、URN 与逻辑名：传的到底是哪个身份
 
 当你把一个资源的 Output 传给另一个资源的 Input 时，传的几乎总是该资源的**物理 ID（physical ID）**——provider 创建资源后分配、由 Pulumi 通过 `resource.id` 暴露的标识符。它既不是 URN（Pulumi 内部用），也不是你在代码里写的逻辑名（logical name）。
@@ -517,3 +515,14 @@ const example = new aws.rds.Instance("example", {
 - [ ] **没有在 `apply` / `all` 回调里创建资源或 stack output**；依赖 Output 的资源，直接把 Output 当 Input 传入。
 - [ ] 接受 `Input<T>` 的工具函数 / component 内部，用 `pulumi.output()` 转成 `Output<T>` 再 `apply`。
 - [ ] 资源间接线时，确认传的是物理 ID（`resource.id`）而非逻辑名或 URN。
+
+## 动手实验
+
+本章提供 **AWS** 与 **Azure** 两版实验，分别使用真实的云 provider SDK 对接本地模拟器，因此无需任何云账号或凭据：
+
+- AWS 版用 `pulumi/pulumi-aws`（`@pulumi/aws`）对接 **MiniStack**，以一组 S3 Bucket 演示 Output 不是普通值、`apply` 变换、Output→Input 依赖追踪、`all` 组合与 `interpolate` / `concat` / `jsonStringify` 等 helpers。
+- Azure 版用 `pulumi/pulumi-azure`（`@pulumi/azure`）对接 **miniblue**，以一组 Resource Group 演示同一组概念。
+
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-inputs-outputs" title="实验：Inputs 与 Outputs（AWS / MiniStack）" desc="用 @pulumi/aws 对接 MiniStack，以 S3 Bucket 演示 Output 不是普通值、apply 变换、Output→Input 依赖、all 组合，以及 interpolate / concat / jsonStringify。" />
+
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-inputs-outputs-azure" title="实验：Inputs 与 Outputs（Azure / miniblue）" desc="用 @pulumi/azure 对接 miniblue，以 Resource Group 演示 Output 不是普通值、apply 变换、Output→Input 依赖、all 组合，以及 interpolate / concat / jsonStringify。" />
