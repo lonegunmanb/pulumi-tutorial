@@ -51,8 +51,6 @@ new aws.s3.Bucket("media", { tags: { team: "platform" } });
 
 ![Provider 是期望状态与云 API 之间的翻译官](./images/providers-abstraction-translator.png)
 
-> 绘图提示词：light watercolor shaded comic illustration，cyan 主色调，拟物风格。画面中间是一位「翻译官」(provider)，左手接过一张写着 desired state 的设计图纸（上面画着一个 bucket / resource group 的草图），右手把它翻译成一叠贴着 cloud API logo 的工单（CREATE / UPDATE / DELETE 三种工单）递给右侧的云厂商柜台。翻译官胸前挂着工牌写 "Resource Provider"，强调它是「期望状态 → 云 API」的中间人。technical terms（desired state、CREATE/UPDATE/DELETE、Resource Provider）用英语，其余说明文字用中文。
-
 ## 4.2 一次 `pulumi up` 里 provider 站在哪
 
 provider 由**两部分**组成：
@@ -78,6 +76,8 @@ Provider 可执行文件 (pulumi-resource-aws) ← 翻译成真实 API 调用
 云厂商 API (AWS / Azure / ...)
 ```
 
+![一次 pulumi up 的接力流水线：期望状态如何一路翻译成真实云资源](./images/providers-up-pipeline.png)
+
 关键点：**你的代码只负责「构建期望状态的资源图」，真正的 API 调用发生在 provider 进程里，由引擎在 diff 之后调度。** 这也是为什么 `pulumi preview` 能在不真正动云的情况下算出计划——它走完了「程序 → 引擎 diff」，但不让 provider 执行写操作。
 
 > 第一次 `pulumi up` 时，CLI 会自动把程序需要、但本地插件缓存里还没有的 provider 可执行文件下载下来。这就是为什么新项目第一次部署会看到「Downloading provider...」。
@@ -92,6 +92,8 @@ Provider 可执行文件 (pulumi-resource-aws) ← 翻译成真实 API 调用
 | **Dynamic（动态）** | 在程序里内联实现 `ResourceProvider`，无需单独打包 | 你自己写的 `pulumi.dynamic.Resource` | 简单 API、临时对接、Registry 与 TF 都没有 |
 
 > 需要注意：`azure-native` 本质上是 **native** provider，同时**可选地**支持参数化——安装时传入一个 Azure API 版本，生成针对该版本的 SDK。参数化是它的额外能力，并非使用它的必要步骤；上表把它同时列在 native 与 parameterized 两行，正是为了表达这一点。
+
+![四种 provider 实现形态：同一只翻译官的四种制造方式](./images/providers-implementation-forms.png)
 
 选型直觉（从左往右优先级递减）：
 
