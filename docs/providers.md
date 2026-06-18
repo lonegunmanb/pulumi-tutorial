@@ -8,13 +8,13 @@ group: 第 2 篇：Concepts 深度剖析
 
 ## 本章定位
 
-上一章我们反复用到一个东西：把 `aws.Provider` / `azure.Provider` 显式 `new` 出来，再用 `{ provider }` 挂到资源上，让资源指向本地模拟器。这一章就专门把这个被一笔带过的主角讲透——**Resource Provider（资源 provider）**。
+上一章我们反复用到一个东西：把 `aws.Provider` / `azure.Provider` 显式 `new` 出来，再用 `{ provider }` 挂到资源上，让资源指向本地模拟器。本章就专门把这个之前一笔带过的主角讲清楚——**Resource Provider（资源 provider）**。
 
-一句话先立靶子：**Provider 是「你的期望状态」和「云厂商 API」之间的翻译官。** 没有它，你的 Pulumi 程序只是一堆描述「我想要什么」的对象，没人去把它们变成云上真实的资源。
+先给出本章的核心论断：**Provider 是「你的期望状态」和「云厂商 API」之间的翻译官。** 没有它，你的 Pulumi 程序只是一堆描述「我想要什么」的对象，无人将它们落实为云上真实的资源。
 
 本章回答四个问题：
 
-- 为什么 IaC 程序非要 provider 这层抽象不可？它到底解决了什么问题？
+- 为什么 IaC 程序需要 provider 这层抽象？它究竟解决了什么问题？
 - 一次 `pulumi up` 里，你的代码、language host、provider 可执行文件、云 API 是怎么协作的？
 - provider 有哪几种实现形态（bridged / native / parameterized / dynamic）？该怎么选？
 - default provider 和 explicit provider 有什么区别，什么时候必须用 explicit？
@@ -35,7 +35,7 @@ group: 第 2 篇：Concepts 深度剖析
 4. 把创建后云返回的 ID、ARN 等存下来，下次好对得上；
 5. 换一朵云（Azure、GCP、Kubernetes）就把上面全部重写一遍。
 
-这五件事，**每一种资源、每一朵云都要做一遍**——这正是 provider 替你封装掉的东西。有了 provider 抽象，你的程序只需要声明**期望状态（desired state）**：
+这五件事，**每一种资源、每一朵云都要重复一遍**——这正是 provider 为你封装的部分。有了 provider 抽象，你的程序只需要声明**期望状态（desired state）**：
 
 ```ts
 new aws.s3.Bucket("media", { tags: { team: "platform" } });
@@ -89,13 +89,15 @@ Provider 可执行文件 (pulumi-resource-aws) ← 翻译成真实 API 调用
 | **Bridged（桥接）** | 用 [Pulumi Terraform Bridge](https://github.com/pulumi/pulumi-terraform-bridge) 把一个 Terraform/OpenTofu provider 的 schema 翻译成 Pulumi schema | `@pulumi/aws`、`@pulumi/gcp`、`@pulumi/azure` | 绝大多数主流云，直接装 SDK 即可 |
 | **Native（原生）** | 从云厂商 API 规范直接生成资源定义与 CRUD | `@pulumi/azure-native`、`@pulumi/kubernetes` | 想要最新、最全的云 API 覆盖 |
 | **Parameterized（参数化）** | 安装时传参，在本地生成 SDK；典型是 **Any Terraform Provider** | `terraform-provider`（包裹任意 TF provider）、`azure-native`（指定 API 版本） | Registry 里没有现成 Pulumi 包，但有 Terraform provider |
-| **Dynamic（动态）** | 在程序里内联实现 `ResourceProvider`，无需单独打包 | 你自己写的 `pulumi.dynamic.Resource` | 简单 API、临时粘合、Registry 与 TF 都没有 |
+| **Dynamic（动态）** | 在程序里内联实现 `ResourceProvider`，无需单独打包 | 你自己写的 `pulumi.dynamic.Resource` | 简单 API、临时对接、Registry 与 TF 都没有 |
+
+> 需要注意：`azure-native` 本质上是 **native** provider，同时**可选地**支持参数化——安装时传入一个 Azure API 版本，生成针对该版本的 SDK。参数化是它的额外能力，并非使用它的必要步骤；上表把它同时列在 native 与 parameterized 两行，正是为了表达这一点。
 
 选型直觉（从左往右优先级递减）：
 
 1. **Registry 里有现成 Pulumi 包** → 直接 `npm install`，体验最好。
 2. **没有 Pulumi 包，但有 Terraform/OpenTofu provider** → 用 Any Terraform Provider（4.5）。
-3. **连 TF provider 都没有，只是想粘一个简单 API** → 先考虑 [Command provider](https://www.pulumi.com/registry/packages/command/)，再考虑 dynamic provider（4.6）。
+3. **连 TF provider 都没有，只是想对接一个简单 API** → 先考虑 [Command provider](https://www.pulumi.com/registry/packages/command/)，再考虑 dynamic provider（4.6）。
 
 ## 4.4 Default provider 与 Explicit provider
 
@@ -109,7 +111,7 @@ Provider 可执行文件 (pulumi-resource-aws) ← 翻译成真实 API 调用
 | 能否禁用 | 能 | 不能（它就是你创建的） |
 | 最适合 | 单 provider、单环境的简单场景 | 多区域 / 多集群 / 同栈多环境 |
 
-**Default provider** 是最省事的方式。配置走 stack 配置键：
+**Default provider** 是最简便的方式。配置通过 stack 配置键设置：
 
 ```bash
 pulumi config set aws:region us-east-1     # 明文
@@ -118,7 +120,7 @@ pulumi config set --secret aws:secretKey ... # 密文要加 --secret
 
 stack 配置里的默认 provider 配置**优先于**环境变量等隐式来源。
 
-**Explicit provider** 解锁了 default provider 做不到的场景。最典型的两个：
+**Explicit provider** 支持 default provider 无法实现的场景。最典型的两个：
 
 ```ts
 // 1) 同一个程序里部署到多个 AWS 区域
@@ -135,7 +137,9 @@ const pod = new kubernetes.core.v1.Pod("pod", { /* ... */ }, { provider: k8s });
 
 第二个场景**只能**用 explicit provider：default provider 的配置在程序启动时就固定了，而新集群的 kubeconfig 要等集群建好才知道——这正是「explicit provider 的配置是 Pulumi Input/Output」的价值。
 
-> 上一章实验里我们 `new aws.Provider("ministack", { endpoints: ... })`，本质就是用 explicit provider 把所有调用改指向本地模拟器——这是 explicit provider 的第三类常见用途：**把整朵云替换成测试替身**。
+> 需要注意：上面「多区域要用 explicit provider」是 **AWS** 的情况。**Azure** 不受默认区域限制，可以直接在资源定义里指定区域，无需为每个区域单独创建并配置 provider。
+
+> 上一章实验里我们 `new aws.Provider("ministack", { endpoints: ... })`，本质就是用 explicit provider 把所有调用改指向本地模拟器——这是 explicit provider 的第三类常见用途：**把整朵云替换为测试替身**。
 
 Component 还能用 `providers`（复数）给所有子资源批量指定：
 
@@ -145,14 +149,14 @@ const app = new MyApp("app", {}, { providers: { aws: useast1, kubernetes: k8s } 
 
 ### 禁用 default provider
 
-`provider` 选项漏设是个常见且危险的错误：资源会**悄悄落到 default provider**，可能被部署到错误的环境。想强制「每个资源都必须显式指定 provider」，可以在 stack 级禁用 default provider：
+遗漏 `provider` 选项是一个常见且危险的错误：资源会**默默使用 default provider**，可能被部署到错误的环境。如果想强制「每个资源都必须显式指定 provider」，可以在 stack 级禁用 default provider：
 
 ```bash
 pulumi config set --path 'pulumi:disable-default-providers[0]' aws   # 只禁用 aws
 pulumi config set --path 'pulumi:disable-default-providers[0]' '*'   # 禁用全部
 ```
 
-禁用后，任何没设 `{ provider }` 的资源都会直接报错，而不是默默用系统配置。生产项目、尤其是多环境项目，强烈建议这样兜底。
+禁用后，任何没有设置 `{ provider }` 的资源都会直接报错，而不是默默使用系统配置。生产项目、尤其是多环境项目，强烈建议以此作为保障。
 
 ## 4.5 Any Terraform Provider：把任意 TF provider 拉进 Pulumi
 
@@ -174,7 +178,7 @@ packages:
     version: 0.10.0          # terraform-provider 桥接包的版本
     parameters:
       - hashicorp/local      # 被包裹的 TF provider
-      - 2.5.1                # 建议钉死 TF provider 版本，保证可复现
+      - 2.5.1                # 建议锁定 TF provider 版本，保证可复现
 ```
 
 随后像用任何 Pulumi 包一样用它：
@@ -191,8 +195,8 @@ const file = new local.File("hello", {
 要点与最佳实践：
 
 - **默认从 OpenTofu registry 拉取**，它与 Terraform registry API 兼容，两边的 provider 都能用。也可指定具体 registry、版本，甚至本地 provider 二进制（适合公司内部 provider）。
-- **钉死版本**：`pulumi package add terraform-provider hashicorp/local 2.5.1`，否则默认拉 latest，破坏可复现性。
-- **`pulumi install`**：克隆仓库后用它一键补齐——它会读 `Pulumi.yaml` 的 `packages`，必要时重新生成本地 SDK 并下载 provider 二进制（二进制缓存在项目外，全机器只下一次）。
+- **锁定版本**：`pulumi package add terraform-provider hashicorp/local 2.5.1`，否则会默认使用 latest 版本，破坏可复现性。
+- **`pulumi install`**：克隆仓库后用它一次性补齐——它会读取 `Pulumi.yaml` 的 `packages`，必要时重新生成本地 SDK 并下载 provider 二进制（二进制缓存在项目外，整台机器只需下载一次）。
 - 生成的 SDK 自带 `.gitignore`，你可以选择把 SDK 代码提交进版本库（CI 更快）或不提交（仓库更小、克隆后 `pulumi install` 现生成）。
 
 局限：本地包没有 Registry 上的网页文档（只有内联文档）；provider 本身的功能 bug 要找该 TF provider 的维护者，而不是 Pulumi。
@@ -248,16 +252,16 @@ class Greeting extends pulumi.dynamic.Resource {
 ## 4.7 选型决策清单
 
 - [ ] 这朵云 / 这个服务，**Registry 有现成 Pulumi 包吗**？有就直接装 SDK。
-- [ ] 没有，但**有 Terraform/OpenTofu provider**？用 `pulumi package add terraform-provider`，并钉死版本。
-- [ ] 都没有，只是粘一个简单 API？先看 **Command provider**，不够再写 **dynamic provider**。
+- [ ] 没有，但**有 Terraform/OpenTofu provider**？用 `pulumi package add terraform-provider`，并锁定版本。
+- [ ] 都没有，只是想对接一个简单 API？先看 **Command provider**，不够再写 **dynamic provider**。
 - [ ] 单云单环境？用 **default provider**，配置走 `pulumi config set <provider>:<key>`。
 - [ ] 多区域 / 多集群 / 同栈多环境 / 指向测试替身？用 **explicit provider**，把它当资源 `new` 出来再 `{ provider }` 挂上。
-- [ ] 生产 / 多环境项目？考虑 `pulumi:disable-default-providers` 兜底，强制显式指定 provider。
-- [ ] 用了 Any Terraform Provider？把 `Pulumi.yaml` 的 `packages` 版本钉死，团队成员用 `pulumi install` 补齐。
+- [ ] 生产 / 多环境项目？考虑用 `pulumi:disable-default-providers` 作为保障，强制显式指定 provider。
+- [ ] 用了 Any Terraform Provider？锁定 `Pulumi.yaml` 中 `packages` 的版本，团队成员用 `pulumi install` 补齐。
 
 ## 动手实验
 
-本章实验是一个**纯本地、零云依赖**的 TypeScript 项目，一口气把三种 provider 形态走一遍：
+本章实验是一个**纯本地、零云依赖**的 TypeScript 项目，完整体验三种 provider 形态：
 
 - **default vs explicit provider**：用 `@pulumi/random`（一个 bridged provider，无需任何凭据）对比两种用法。
 - **Any Terraform Provider**：用 `pulumi package add terraform-provider hashicorp/local` 把一个**没有官方 Pulumi 包**的 Terraform provider 拉进来，创建一个本地文件。
@@ -271,5 +275,5 @@ class Greeting extends pulumi.dynamic.Resource {
 - 一次 `pulumi up` 中代码、language host、引擎、provider 可执行文件、云 API 的协作链路。
 - bridged / native / parameterized / dynamic 四种形态的辨别与选型直觉。
 - default 与 explicit provider 的对照表，以及「何时必须用 explicit」「如何禁用 default」。
-- 用 Any Terraform Provider 接入任意 TF provider 的完整流程与钉版本习惯。
+- 用 Any Terraform Provider 接入任意 TF provider 的完整流程与锁定版本的习惯。
 - 亲手实现一个 dynamic provider 的 CRUD，理解 provider 进程在做什么。

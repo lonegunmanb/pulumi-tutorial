@@ -14,13 +14,27 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
 - Keep each scenario self-contained with `index.json`, `init/`, `step*/`, and `finish/`.
 - Use `scripts/setup-common.sh` as the single source for shared lab setup, then run `npm run sync-killercoda`.
 - Prefer local or simulated resources in labs. Avoid requiring real cloud credentials unless a chapter explicitly explains credential setup.
-- When a lab needs a cloud provider example, use `pulumi/pulumi-aws` for AWS examples and `pulumi/pulumi-azure` for Azure examples. Keep this provider choice consistent across all hands-on labs.
+- When a lab needs a cloud provider example, use `pulumi/pulumi-aws` for AWS examples and `pulumi/pulumi-azure` for Azure examples. Keep this provider choice consistent across all new hands-on labs.
 
 ## Writing style
 
 - Explain Pulumi concepts through architecture diagrams, short examples, production pitfalls, and checklists.
 - Keep code examples runnable in Killercoda whenever possible.
 - Map each chapter back to the relevant Pulumi official documentation path.
+- 文章要浅显易懂，读者默认是初学者：多用类比、循序渐进、把抽象概念讲清楚。但措辞要**书面化**，避免过于口语化的网络用语或俚语（例如「立靶子」「钉死」「省事」「兜底」「一口气走一遍」等），改用对应的书面表达。
+
+## 基于官方文档撰写后的事实核查
+
+当本次撰写/改写的内容是**参考官方文档**完成的（例如用户给了一个或多个官方文档链接作为依据），正文写完后**必须**走一遍事实核查流程：
+
+- **启动独立子 agent 核查**：写完后启动一个独立的子 agent（subagent），把本次撰写的内容与所引用的官方文档逐条对比，检查两件事：
+  - **对不对**：有没有与官方文档相悖、过时或臆造的说法（命令、参数、行为、限制等）。
+  - **全不全**：官方文档里与本章主题密切相关的重要点，有没有遗漏。
+  - 子 agent 应在反馈中明确指出每条问题对应的官方文档出处，便于复核。
+- **批判性对待子 agent 的反馈**：禁止无脑照单全收。要逐条独立思考、对照官方文档原文判断子 agent 的意见是否成立。
+  - **认同的**：照子 agent 的意见修改正文。
+  - **不认同的**：允许与子 agent 进行辩论，往返**至多 10 轮**，用官方文档原文作为裁决依据。
+  - **僵持的**：如果 10 轮辩论仍无法达成一致，则把**分歧意见**（双方各自的主张与依据）写在文章最前面（frontmatter 之后、正文之前）的一个醒目区块里，标注「待人类裁决」，交由人类裁决，不要擅自定稿删除分歧。
 
 ## 插图占位与绘图提示词
 
