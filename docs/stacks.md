@@ -262,7 +262,7 @@ Pulumi Cloud 支持 Stack tags，可用来按 `environment=production`、`team=p
 
 ## 动手实验
 
-本章实验只配置 Azure 版，使用本地后端和 `miniblue` 模拟 Azure 风格资源。你会创建 `dev` 与 `prod` 两个 Stack，观察 active stack、配置文件、输出、状态导出，并安全演示空 Stack 的 rename / rm 流程。
+本章实验只配置 Azure 版，使用本地后端和 `miniblue` 模拟 Azure 风格资源。你会创建 `dev` 与 `prod` 两个 Stack，观察 active stack、配置文件、输出、状态导出，并亲眼看到“资源名依赖 Stack 名”的 Stack 改名后会触发资源替换，再对比空 Stack 的 rename / rm 有多安全。
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-stacks-azure" title="实验：Stack 详解（Azure / miniblue）" desc="使用 miniblue 模拟 Azure 风格资源，练习 Stack 创建、选择、配置隔离、Outputs、State export、空 Stack rename 与 stack rm。" />
 
@@ -273,4 +273,4 @@ Pulumi Cloud 支持 Stack tags，可用来按 `environment=production`、`team=p
 - 由 `pulumi.get_stack()` / `pulumi.getStack()` 思路生成的环境化资源名。
 - 可查询的 Stack Outputs 与 JSON 输出。
 - 一份导出的 Stack State 快照。
-- 一次空 Stack rename / rm 的安全演示。
+- 一次“有资源 Stack 改名触发替换”的演示，以及一次空 Stack rename / rm 的安全对照。

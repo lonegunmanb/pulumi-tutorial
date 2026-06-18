@@ -10,6 +10,7 @@
 - 使用 `pulumi.get_stack()` 让同一份代码按环境生成不同资源名。
 - 查看 Stack Outputs 与 JSON 输出。
 - 导出 State 并理解它为什么需要谨慎处理。
-- 安全演示空 Stack 的 rename 与 rm。
+- 亲眼看到“资源名依赖 Stack 名”的 Stack 改名后会触发资源替换。
+- 对比空 Stack 的 rename 与 rm 有多安全。
 
 下一章进入资源模型，你会进一步学习 Pulumi 如何追踪资源身份、依赖关系与安全重构。
