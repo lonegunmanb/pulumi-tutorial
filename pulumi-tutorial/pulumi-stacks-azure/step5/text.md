@@ -1,6 +1,6 @@
 # 重命名 Stack：有资源 vs 空 Stack
 
-官方文档里有 `pulumi stack rename`。它会更新 Stack 在 State 里的名字（包括 URN 中的 stack 段），但**不会**自动改写云上的真实资源。问题在于：如果你的程序用 Stack 名生成资源的物理名，重命名后下一次 `pulumi up` 会算出一套新名字，从而计划**替换**资源。
+官方文档里有 `pulumi stack rename`。它会更新 Stack 在 State 里的名字（包括 URN 中的 stack 段），但**不会**自动改写云上的真实资源。问题在于：如果你的程序用 Stack 名生成资源的物理名，重命名后下一次 `pulumi up` 会算出一套新名字，从而计划修改这些资源。
 
 本实验的 `__main__.py` 正是这样写的：
 
@@ -24,9 +24,11 @@ pulumi stack rename dev2 && \
 pulumi preview --diff
 ```{{exec}}
 
-注意 diff 里出现的 `replace`（或 `+-`）操作：因为 Resource Group 与 Key Vault 的物理名从 `stack-lab-dev-*` 变成了 `stack-lab-dev2-*`，名字变更属于不可原地修改的属性，Pulumi 只能**先建新、再删旧**。在真实云上，这意味着资源真的会被重建——可能伴随停机、数据丢失或 IP 变化。
+preview 会列出两个资源的 `~`（update）操作：Resource Group 的 `name`、`tags`，以及 Key Vault Secret 的 `vault` 都从 `stack-lab-dev-*` 变成了 `stack-lab-dev2-*`，所有 outputs 也跟着变。
 
-因为本实验用的是 `miniblue` 模拟资源，替换没有任何现实风险，所以这里可以放心地把替换真正执行一遍，亲眼看到资源名变化：
+这里有一个重要细节：**是 update 还是 replace，由 provider 决定。** 本实验的 `miniblue` dynamic provider 把 `name` 当成一个可以原地修改的普通属性，所以你看到的是 `~ 2 to update`。但在真实的 Azure provider 里，Resource Group / Key Vault 的 `name` 通常是不可变的（immutable），同样的改名会被标成 `replace`（`+-`）——也就是**先建新、再删旧**，可能伴随停机、数据丢失或 IP 变化。换句话说：这里模拟环境的 update 是“温和版”，生产环境里同样的改名往往是“重建版”。
+
+因为本实验用的是 `miniblue` 模拟资源，这一步没有任何现实风险，可以放心把变更真正执行一遍，亲眼看到资源名变化：
 
 ```bash
 pulumi up --yes && \
@@ -34,7 +36,7 @@ pulumi stack output resource_group && \
 pulumi stack output key_vault
 ```{{exec}}
 
-输出已经变成 `stack-lab-dev2-rg` 和 `stack-lab-dev2-kv`，旧的 `stack-lab-dev-*` 资源在这一步被销毁了。**记住这个教训：生产环境里，重命名“资源名依赖 Stack 名”的 Stack 前，一定先 `pulumi preview` 确认是否会触发替换。**
+输出已经变成 `stack-lab-dev2-rg` 和 `stack-lab-dev2-kv`。在这个模拟 provider 里资源是被原地更新的；换成真实 Azure，同一步则会是“先建 `stack-lab-dev2-*`、再删 `stack-lab-dev-*`”的重建。**记住这个教训：生产环境里，重命名“资源名依赖 Stack 名”的 Stack 前，一定先 `pulumi preview --diff` 看清楚是 update 还是 replace。**
 
 ## 再看“空 Stack 改名”有多安全
 
