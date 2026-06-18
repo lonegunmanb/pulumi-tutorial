@@ -2,7 +2,13 @@
 
 Pulumi 的依赖图大多是**隐式**建立的：只要一个资源的参数引用了另一个资源的 Output，依赖关系就自动产生。少数没有数据引用、却仍需排序的场景，才用显式 `dependsOn`。
 
-部署带依赖的版本：
+先看这一步要运行的代码：
+
+```bash
+cat /root/workspace/variants/step3.ts
+```{{exec}}
+
+再部署带依赖的版本：
 
 ```bash
 cd /root/workspace && cp variants/step3.ts index.ts && pulumi up --yes

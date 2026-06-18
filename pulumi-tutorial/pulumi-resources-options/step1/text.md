@@ -9,10 +9,18 @@ curl -s http://localhost:4566/_ministack/health | jq . && \
 pulumi up --yes
 ```{{exec}}
 
-初始程序在 `index.ts` 里声明了两个 S3 Bucket：
+先看一眼初始程序声明了什么：
+
+```bash
+cat /root/workspace/index.ts
+```{{exec}}
+
+它在 `index.ts` 里声明了两个 S3 Bucket：
 
 - `media-bucket`：只给了 logical name，未指定物理名 → 由 provider **auto-name**（带随机后缀）。
 - `data-bucket`：用 `bucket: "resources-lab-data"` **显式指定**了固定物理名。
+
+并通过 `export` 把这两个桶的 logical name、physical name、physical ID 暴露成 stack output，方便下一步对照。
 
 部署完成后，对照看一个资源的四种身份：
 

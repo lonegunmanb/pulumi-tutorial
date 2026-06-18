@@ -4,6 +4,14 @@
 
 **1) 用 `replaceOnChanges` 把 tag 变化强制当成 replace**：
 
+先看这一步要运行的代码：
+
+```bash
+cat /root/workspace/variants/step2-pre.ts
+```{{exec}}
+
+再应用它：
+
 ```bash
 cd /root/workspace && cp variants/step2-pre.ts index.ts && pulumi preview
 ```{{exec}}
@@ -11,6 +19,14 @@ cd /root/workspace && cp variants/step2-pre.ts index.ts && pulumi preview
 `step2-pre.ts` 给 `data-rg` 加了 `replaceOnChanges: ["tags"]` 并改了 tag。预览里 `data-rg` 会显示 `+-replace`。由于它的物理名固定为 `resources-lab-data-rg`，默认的「先建后删」会与现存同名 Resource Group 冲突。
 
 **2) 加上 `deleteBeforeReplace: true`，改成先删后建**：
+
+先看改动后的代码：
+
+```bash
+cat /root/workspace/variants/step2.ts
+```{{exec}}
+
+再应用它：
 
 ```bash
 cp variants/step2.ts index.ts && pulumi up --yes

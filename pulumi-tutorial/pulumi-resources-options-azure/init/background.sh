@@ -326,5 +326,17 @@ pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
 docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 >/dev/null 2>&1 || true
 
+# 启动 miniblue 并等待 metadata 端口就绪。
+docker compose up -d >/dev/null 2>&1 || true
+for _ in $(seq 1 60); do
+  curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1 && break
+  sleep 2
+done
+
+# 导出 miniblue 证书并加入系统信任库（azurerm provider 是 Go 二进制，使用系统 CA）。
+openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null \
+  | openssl x509 > /usr/local/share/ca-certificates/miniblue.crt 2>/dev/null || true
+update-ca-certificates >/dev/null 2>&1 || true
+
 touch /tmp/.setup-done
 echo "Azure / miniblue resources lab is ready in /root/workspace"

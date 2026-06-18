@@ -4,6 +4,14 @@
 
 **1) 用 `protect: true` 给关键资源上锁**：
 
+先看这一步要运行的代码：
+
+```bash
+cat /root/workspace/variants/step5.ts
+```{{exec}}
+
+再应用它：
+
 ```bash
 cd /root/workspace && cp variants/step5.ts index.ts && pulumi up --yes
 ```{{exec}}
@@ -17,6 +25,14 @@ pulumi destroy --yes
 你会看到类似 `resource ... is protected and can't be deleted` 的报错——这正是 `protect` 在生产里防止误删核心订阅资源、状态存储的价值。
 
 **2) 用 `ignoreChanges` 忽略 tag 漂移，并解除保护以便清理**：
+
+先看改动后的代码：
+
+```bash
+cat /root/workspace/variants/step5-clean.ts
+```{{exec}}
+
+再应用它：
 
 ```bash
 cp variants/step5-clean.ts index.ts && pulumi up --yes

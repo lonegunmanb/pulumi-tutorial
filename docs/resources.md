@@ -277,6 +277,30 @@ const frontend = new aws.s3.Bucket("frontend", { /* ... */ }, {
 
 这样 `pulumi preview` 就不再是「删 web、建 frontend」，而是「把 web 这条 state 记录改名为 frontend」，云上资源原地保留。重构父子结构时同理。
 
+#### alias 什么时候能删？
+
+alias 是**迁移期的桥梁**：它只在某个 stack 执行 `pulumi up` 时，把那个 stack 的 state 里的旧 URN 迁移成新名字。迁移是**每个 stack 各自发生**的——所以能不能删 alias，取决于「是否所有用到它的 stack 都已经迁移完毕」。对比两种情况：
+
+**场景 A：自己的项目，stack 数量可控 → 可以删。**
+
+假设一个 project 有 `dev`/`staging`/`prod` 三个 stack，你把 `web` 改名为 `frontend` 并加了 alias。先把三个 stack 各跑一遍，它们的 state 就都从 `web` 迁移到了 `frontend`：
+
+```bash
+pulumi stack select dev     && pulumi up   # state: web → frontend
+pulumi stack select staging && pulumi up   # state: web → frontend
+pulumi stack select prod    && pulumi up   # state: web → frontend
+```
+
+此时三个 state 里都只剩 `frontend`、旧 URN 不复存在。**因为你掌握全部 stack 列表、且确认每个都迁移过了**，下一次提交就可以安全删掉 alias——再跑 `up` 是 state 与代码完全一致的 no-op。
+
+**场景 B：对外发布、被他人复用的 component → 不要轻易删。**
+
+假设你维护一个公共包，`v1.0.0` 里资源叫 `web`，`v1.1.0` 改名 `frontend` 并加了 alias。如果你在 `v1.2.0` 顺手删掉 alias，而某个消费者还停在 `v1.0.0`（state 里是 `web`），他一旦**直接升级到 v1.2.0**（代码是 `frontend`、且没有 alias），就**跳过了**带 alias 的 v1.1.0，迁移桥梁断裂——他的 `pulumi up` 会把 `web` 删掉（真实资源销毁）再新建 `frontend`。
+
+因为你无法枚举所有消费者、也无法替他们 `up`，公共 component 的 alias 往往要**保留很长的弃用周期，甚至长期保留**（留着几乎没有成本）。
+
+> 一句话判断：**能列举出「所有」用到该资源的 stack、并确认它们「每一个」都跑过带 alias 的 `up`，才可以删 alias。** 自己的项目通常满足；对外发布的 component 通常不满足。
+
 ### `deleteBeforeReplace` 与 `replaceOnChanges`
 
 - `replaceOnChanges`：把某些属性的变化**强制**当作替换，即使 provider 本来认为可以原地更新。
