@@ -1,6 +1,6 @@
 {
-  "title": "资源与精细控制（AWS / MiniStack）",
-  "description": "用 @pulumi/aws 对接 MiniStack，掌握资源四种身份与 deleteBeforeReplace、dependsOn、aliases、protect、ignoreChanges 等资源选项",
+  "title": "资源与精细控制（Azure / miniblue）",
+  "description": "用 @pulumi/azure 对接 miniblue，掌握资源四种身份与 deleteBeforeReplace、dependsOn、aliases、protect、ignoreChanges 等资源选项",
   "details": {
     "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
     "steps": [

@@ -13,6 +13,7 @@ const preferredOrder = [
   'pulumi-projects-stacks-state-azure',
   'pulumi-stacks-azure',
   'pulumi-resources-options',
+  'pulumi-resources-options-azure',
   'pulumi-inputs-outputs-secrets',
   'pulumi-components',
   'pulumi-automation-api',
