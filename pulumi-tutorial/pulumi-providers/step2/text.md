@@ -16,7 +16,13 @@ cat Pulumi.yaml && echo '---' && ls sdks
 
 `Pulumi.yaml` 的 `packages` 段记录了 `source: terraform-provider` 与参数 `hashicorp/local`，`sdks/` 下是现生成的强类型 SDK。
 
-现在切换到使用它的程序——用这个 Terraform provider 在本地写出一个文件：
+现在切换到使用它的程序——用这个 Terraform provider 在本地写出一个文件。先看看 `step2.ts` 写了什么：
+
+```bash
+cat variants/step2.ts
+```{{exec}}
+
+它 `import * as local from "@pulumi/local"`，再 `new local.File(...)`，把 `content` 写到 `filename` 指定的路径——这正是待会儿那个文件被写出来的原因。确认逻辑后再部署：
 
 ```bash
 cp variants/step2.ts index.ts && pulumi up --yes

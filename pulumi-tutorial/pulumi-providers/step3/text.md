@@ -2,10 +2,16 @@
 
 当一个东西**既没有 Pulumi 包、也没有 Terraform provider**，但逻辑很简单时，你可以在程序里内联实现一个 **dynamic provider**——亲手写 `create`/`update`/`delete`。这是理解 provider 抽象最直观的方式：你就是那个「翻译官」。
 
-切到 dynamic provider 版本并创建资源：
+切到 dynamic provider 版本并创建资源。先看看 `step3.ts` 写了什么：
 
 ```bash
-cd /root/workspace && cp variants/step3.ts index.ts && pulumi up --yes
+cd /root/workspace && cat variants/step3.ts
+```{{exec}}
+
+它实现了一个 `pulumi.dynamic.ResourceProvider`——`create` 把 `message` 转成大写存进 `shout`、把 `version` 置 1，`update` 在改动时把 `version` 自增，`delete` 负责清理；再用这个 provider 定义了一个 `Greeting` 资源。理解了这段逻辑，下面的输出就都能对上号了。现在部署：
+
+```bash
+cp variants/step3.ts index.ts && pulumi up --yes
 ```{{exec}}
 
 `step3.ts` 实现了一个 `pulumi.dynamic.ResourceProvider`，并用它定义了一个 `Greeting` 资源。这次 `pulumi up` 显示 `+ 1 created`——引擎调用了你写的 **create**。看看它返回的输出：

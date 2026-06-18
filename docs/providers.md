@@ -1,5 +1,5 @@
 ---
-order: 35
+order: 28
 title: Provider 抽象
 group: 第 2 篇：Concepts 深度剖析
 ---
@@ -47,7 +47,7 @@ new aws.s3.Bucket("media", { tags: { team: "platform" } });
 - **多云统一**：AWS、Azure、Kubernetes、Cloudflare……都是「装一个 provider」，编程模型完全一致。
 - **可组合**：provider 是插件，社区和厂商各自维护，你按需安装，像装 npm 包一样。
 
-> 换句话说：**Resource 是名词（你想要的东西），Provider 是动词（把名词变成现实的人）。** 上一章讲名词，这一章讲动词。
+> 换句话说：**Resource 是名词（你想要的东西），Provider 是动词（把名词变成现实的人）。**
 
 ![Provider 是期望状态与云 API 之间的翻译官](./images/providers-abstraction-translator.png)
 
@@ -242,7 +242,7 @@ class Greeting extends pulumi.dynamic.Resource {
 
 也就是说，**你写的 `create`/`update`/`delete` 就是 4.2 那条链路里 provider 进程要执行的部分**——dynamic provider 把「翻译官」这个角色直接交到你手里，是理解 provider 抽象最直观的方式。
 
-注意它的**关键限制**（来自官方文档）：
+注意它的**关键限制**：
 
 - **单语言**：只能被同语言（写它的那门语言）的程序使用。要跨语言，得做 bridged / native provider。
 - **不支持 `read`**：因此 `pulumi import` 和静态 `get` 对 dynamic 资源不可用。
