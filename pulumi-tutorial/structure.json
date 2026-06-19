@@ -37,6 +37,9 @@
       "path": "pulumi-inputs-outputs-secrets"
     },
     {
+      "path": "pulumi-functions"
+    },
+    {
       "path": "pulumi-components"
     },
     {

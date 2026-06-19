@@ -53,4 +53,4 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
   > 绘图提示词：……
   ```
 - 绘图提示词的固定风格：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感，用真实实物打比方引导读者理解复杂概念；提示词中 professional / technical terms 用英语，其余用中文。
-- 绘图提示词里如果出现代表 Pulumi 的角色，必须用 Pulumi 的吉祥物——一只鸭子（the Pulumi mascot duck）的形象来表现，不要用其他拟人形象代替。
+- 绘图提示词里如果出现代表 Pulumi 的角色，必须用 Pulumi 的吉祥物——一只鸭嘴兽（the Pulumi mascot platypus）的形象来表现，不要用其他拟人形象代替。鸭嘴兽青色身体，嘴巴颜色是 #F361D6，圆圆的眼睛，短短的四肢，憨态可掬的样子。可以参考 Pulumi 官网和文档里吉祥物的各种形象来描绘。

@@ -280,8 +280,6 @@ $ pulumi stack init my-stack \
 
 ![不同的 secret provider 就像不同的钥匙串，决定由谁来保管那把加密密钥](./images/secrets-provider-keyring.png)
 
-> 绘图提示词：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感。画面中央是一个上锁的保险箱（the encrypted state），保险箱上有多个钥匙孔，旁边挂着一排标签各异的钥匙串：`default`、`passphrase`、`awskms`、`azurekeyvault`、`gcpkms`、`hashivault`，每把钥匙造型对应其品牌气质。一只 the Pulumi mascot duck（Pulumi 吉祥物鸭子）正从钥匙串里挑选一把准备插入，表情认真。强调「同一个保险箱可以换不同的钥匙保管方」。professional / technical terms 用英语，其余用中文。
-
 ### 7.6.2 为已有 stack 更换加密 provider
 
 要给一个**已经存在**的 stack 更换 secret provider，用 [`pulumi stack change-secrets-provider`](https://www.pulumi.com/docs/iac/cli/commands/pulumi_stack_change-secrets-provider)：
@@ -377,8 +375,6 @@ const updatedParameter = new aws.ssm.Parameter("test-param", {
 > 本章动手实验用的是 AWS **Secrets Manager** 的 `aws.secretsmanager.SecretVersion`，它的只写字段是 `secretStringWo`，配套版本字段是 `secretStringWoVersion`，版本字段的把控机制与上面的 SSM 例子一致：只改 `secretStringWo` 而不动 `secretStringWoVersion`，Pulumi 不会触发更新；要让新值生效，必须把 `secretStringWoVersion` 递增。**一点差异**：SSM 的 `valueWo` 在 outputs 里显示为 `null`，而 Secrets Manager 的 `secretStringWo` 在 outputs 里显示为一段**加密占位密文**——但两者都遵守同一条不变量：只写值绝不以明文进 state，也无法从云端读回真实内容。
 
 ![只写字段像一个只投不取的信箱：能往里塞，但邮局不会让你取回来](./images/secrets-write-only-mailbox.png)
-
-> 绘图提示词：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感。画面是一个挂在墙上的青色邮箱（the write-only field），投信口大大地张着、可以塞信（写入 `secretStringWo`），但取信口被一块写着 `null` 的牌子封死——表示「永远读不回来」。邮箱侧面有一个机械式翻页计数器，显示数字「2」（the version field `secretStringWoVersion`），一只 the Pulumi mascot duck（Pulumi 吉祥物鸭子）正把计数器从 1 拨到 2，同时往投信口塞一封新信，示意「只有拨动版本号，新信才会真正寄出」。professional / technical terms 用英语，其余用中文。
 
 ## 本章小结与检查清单
 

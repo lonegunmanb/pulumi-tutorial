@@ -1,0 +1,25 @@
+{
+  "title": "Functions 四类函数（AWS / MiniStack）",
+  "description": "在 MiniStack 上体验 provider functions（direct/output 形态）、get functions、function serialization（把闭包变成 Lambda）与 resource methods（EKS getKubeconfig）",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "Provider functions：direct 与 output form", "text": "step1/text.md" },
+      { "title": "Get functions：引用未托管资源", "text": "step2/text.md" },
+      { "title": "Function serialization：把闭包变成 Lambda", "text": "step3/text.md" },
+      { "title": "Resource methods：EKS getKubeconfig", "text": "step4/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

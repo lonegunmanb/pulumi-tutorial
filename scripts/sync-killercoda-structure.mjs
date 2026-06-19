@@ -18,6 +18,7 @@ const preferredOrder = [
   'pulumi-inputs-outputs',
   'pulumi-inputs-outputs-azure',
   'pulumi-inputs-outputs-secrets',
+  'pulumi-functions',
   'pulumi-components',
   'pulumi-automation-api',
   'pulumi-packages-crossguard',
