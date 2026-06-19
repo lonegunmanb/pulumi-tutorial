@@ -1,12 +1,9 @@
 # 资源的四种身份
 
-先启动 LocalStack（本地 AWS 模拟器），确认健康后部署初始程序：
+LocalStack（本地 AWS 模拟器）已在后台启动并就绪，直接部署初始程序：
 
 ```bash
-cd /root/workspace && \
-docker compose up -d && \
-curl -s http://localhost:4566/_localstack/health | jq . && \
-pulumi up --yes
+cd /root/workspace && pulumi up --yes
 ```{{exec}}
 
 先看一眼初始程序声明了什么：

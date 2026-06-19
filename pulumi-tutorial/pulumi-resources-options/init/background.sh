@@ -377,5 +377,16 @@ pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
 docker pull localstack/localstack:3 >/dev/null 2>&1 || true
 
+# 启动 LocalStack 并等待健康检查通过，确保学员到达 step1 时模拟器已就绪。
+echo "启动 LocalStack……"
+docker compose up -d >/dev/null 2>&1 || true
+for i in $(seq 1 60); do
+  if curl -fs http://localhost:4566/_localstack/health >/dev/null 2>&1; then
+    echo "LocalStack 已就绪。"
+    break
+  fi
+  sleep 2
+done
+
 touch /tmp/.setup-done
 echo "AWS / LocalStack resources lab is ready in /root/workspace"
