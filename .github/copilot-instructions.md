@@ -15,6 +15,7 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
 - Use `scripts/setup-common.sh` as the single source for shared lab setup, then run `npm run sync-killercoda`.
 - Prefer local or simulated resources in labs. Avoid requiring real cloud credentials unless a chapter explicitly explains credential setup.
 - When a lab needs a cloud provider example, use `pulumi/pulumi-aws` for AWS examples and `pulumi/pulumi-azure` for Azure examples. Keep this provider choice consistent across all new hands-on labs.
+- Put environment-preparation code in `init/background.sh`, not in `step*/`. This includes starting the simulated public-cloud environment (`ministack` for AWS, `miniblue` for Azure) via `docker compose up -d` and waiting for its health check to pass. By the time a learner reaches step 1, the simulator should already be up; steps should only contain the lab's teaching commands (e.g. `pulumi up`).
 
 ## Writing style
 

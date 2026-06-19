@@ -267,5 +267,12 @@ pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
 
+# 启动 MiniStack 并等待健康检查通过，学员到 step1 时即可直接部署。
+docker compose up -d >/dev/null 2>&1 || true
+for _ in $(seq 1 60); do
+  curl -sf http://localhost:4566/_ministack/health >/dev/null 2>&1 && break
+  sleep 2
+done
+
 touch /tmp/.setup-done
 echo "AWS / MiniStack components lab is ready in /root/workspace"
