@@ -34,5 +34,5 @@ pulumi stack output
 要点：
 
 - `get` 只**读**既有资源，绝不修改或删除它。
-- 如果你真的想接管既有资源（让 Pulumi 管它），那不是 `get`，而是 `pulumi import`。
+- 如果你真的想接管既有资源（让 Pulumi 管它），那不是 get，而是 `pulumi import`。
 - `get` 找不到资源时会直接报错并终止程序。

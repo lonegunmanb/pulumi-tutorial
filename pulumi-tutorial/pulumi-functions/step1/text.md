@@ -10,8 +10,8 @@ cd /root/workspace && cat variants/step1.ts
 
 要点：
 
-- `aws.getCallerIdentityOutput({})` 是 `output form`：返回 `Output`，能参与依赖图、能直接接住别的 `Output`。
-- `aws.getCallerIdentity({})` 是 `direct form`：返回 `Promise`，`await` 后拿到普通值——适合用在「函数结果决定某资源是否创建」这类必须提前算出来的分支里。
+- `aws.getCallerIdentityOutput({})` 是 output form：返回 Output，能参与依赖图、能直接接住别的 Output。
+- `aws.getCallerIdentity({})` 是 direct form：返回 Promise，await 后拿到普通值——适合用在「函数结果决定某资源是否创建」这类必须提前算出来的分支里。
 
 把它复制为入口程序并部署：
 

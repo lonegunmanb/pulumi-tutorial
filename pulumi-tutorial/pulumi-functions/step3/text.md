@@ -39,5 +39,5 @@ cat /tmp/out.json; echo
 要点：
 
 - 捕获的变量在**序列化时求值**并定格——所以**不要捕获会被修改的可变值**。
-- 模块（如 `fs`）会被转成运行时的 `require`，而不是整体序列化；`@pulumi/*` 包会被自动剔除。
+- 模块（如 fs）会被转成运行时的 `require`，而不是整体序列化；@pulumi/* 包会被自动剔除。
 - 这套机制仅支持 **Node.js（JavaScript/TypeScript）**，且不支持 Bun runtime。
