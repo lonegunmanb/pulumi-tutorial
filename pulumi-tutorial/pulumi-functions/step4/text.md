@@ -10,7 +10,9 @@
 cd /root/workspace && cat variants/step4.ts
 ```{{exec}}
 
-注意结尾的 `cluster.getKubeconfig()`：它不是普通的 provider function，而是**绑定在 `cluster` 实例上的方法**。它一定返回 `Output`（永远是 output form），也没有 `provider`、`parent` 这类 invoke 选项——因为它的「上下文」就来自所属资源本身。
+注意结尾的 `cluster.getKubeconfig()`：它不是普通的 provider function，而是绑定在 `cluster` 实例上的方法（一个 **resource method**）。它一定返回 `Output`（永远是 output form），也没有 `provider`、`parent` 这类 invoke 选项——因为它的「上下文」就来自所属资源本身。
+
+> 程序里关掉了 `vpc-cni` / `kube-proxy` / `coredns` 这几个托管插件（`useDefaultVpcCni`、`kubeProxyAddonOptions`、`corednsAddonOptions`）。原因是它们会调用 `aws:eks/getAddonVersion` 去查插件版本，而 MiniStack 没有实现这个 invoke。`getKubeconfig()` 只依赖集群的 endpoint 与证书，与这些插件无关，所以关掉不影响本步骤。
 
 部署（请耐心等待 k3s 容器拉起）：
 

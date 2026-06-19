@@ -186,6 +186,10 @@ const cluster = new eks.Cluster("fn-eks", {
   skipDefaultNodeGroup: true,   // 不建节点组，保持轻量
   createOidcProvider: false,
   authenticationMode: "API",    // 用 EKS Access Entry，免去往集群里写 aws-auth
+  // MiniStack 未实现 aws:eks/getAddonVersion，关掉这几个托管插件，避免 invoke 报错。
+  useDefaultVpcCni: true,                  // 不把 vpc-cni 作为独立 addon 管理
+  kubeProxyAddonOptions: { enabled: false },
+  corednsAddonOptions: { enabled: false },
 });
 
 // resource method：从这个"已托管"的集群上取派生值——kubeconfig。
