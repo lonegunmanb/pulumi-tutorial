@@ -56,8 +56,8 @@ chmod +x /usr/local/bin/awslocal
 
 cd /root/workspace
 
-# MiniStack：挂载 Docker socket 让 Lambda 以 docker executor 运行官方 Node.js 运行时镜像，
-# 同时让 EKS 能拉起真实的 k3s 容器。固定 network/volume 名称以匹配环境变量。
+# MiniStack：仅挂载 Docker socket 让 EKS 能拉起真实的 k3s 容器。
+# Node.js Lambda 走默认的 local 执行器（在 MiniStack 容器内以 node 子进程运行），无需 DinD。
 cat > docker-compose.yml <<'YAML'
 services:
   ministack:
@@ -69,20 +69,10 @@ services:
     environment:
       MINISTACK_REGION: us-east-1
       MINISTACK_ACCOUNT_ID: "000000000000"
-      LAMBDA_EXECUTOR: docker
-      DOCKER_NETWORK: pulumi-functions_ministack-net
-      LAMBDA_REMOTE_DOCKER_VOLUME_MOUNT: pulumi-functions_lambda-task
     volumes:
+      # 挂载 Docker socket 仅用于 EKS——CreateCluster 会拉起一个真实的 k3s 容器。
+      # Node.js Lambda 默认以 local（node 子进程）模式在 MiniStack 容器内执行，无需 DinD。
       - /var/run/docker.sock:/var/run/docker.sock
-      - lambda-task:/var/task
-    networks:
-      - ministack-net
-volumes:
-  lambda-task:
-    name: pulumi-functions_lambda-task
-networks:
-  ministack-net:
-    name: pulumi-functions_ministack-net
 YAML
 
 cat > package.json <<'JSON'
@@ -225,9 +215,8 @@ for svc in sts iam lambda sns sqs ec2 eks cloudwatchlogs cloudwatch s3; do
   pulumi config set --path "aws:endpoints[0].$svc" http://localhost:4566 >/dev/null 2>&1 || true
 done
 
-# 预拉镜像，缩短各步骤等待：MiniStack、Lambda Node.js 运行时、k3s。
+# 预拉镜像，缩短各步骤等待：MiniStack、k3s（EKS）。
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
-docker pull public.ecr.aws/lambda/nodejs:20 >/dev/null 2>&1 || true
 docker pull rancher/k3s:latest >/dev/null 2>&1 || true
 
 # 启动 MiniStack 并等它健康检查通过——只有通过了才创建 /tmp/.setup-done，

@@ -22,7 +22,7 @@ cp variants/step3.ts index.ts && pulumi up --yes
 pulumi stack output greeterFunctionName
 ```{{exec}}
 
-现在真正 `invoke` 它。MiniStack 会用官方 Node.js 运行时镜像执行这段序列化后的闭包（第一次调用要拉运行时容器，可能稍慢）：
+现在真正 `invoke` 它。MiniStack 会用内置的 Node.js 运行时（`node` 子进程）执行这段序列化后的闭包：
 
 ```bash
 FN=$(pulumi stack output greeterFunctionName) && \
