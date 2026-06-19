@@ -43,6 +43,9 @@
       "path": "pulumi-components"
     },
     {
+      "path": "pulumi-components-azure"
+    },
+    {
       "path": "pulumi-automation-api"
     },
     {

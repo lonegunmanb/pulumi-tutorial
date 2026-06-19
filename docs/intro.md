@@ -45,8 +45,11 @@ group: 起步
 - [项目、堆栈与状态管理](projects-stacks-state.md)
 - [Stack 详解](stacks.md)
 - [Provider 抽象](providers.md)
-- [资源与精细控制](resources.md)
+- [资源](resources.md)
 - [Inputs, Outputs](inputs-outputs.md)
+- [Secrets 机密处理](secrets-handling.md)
+
+- [Functions 函数](functions.md)
 - [企业级架构：Components](components.md)
 
 ### 第 3 篇：Automation API, Packages & Guides

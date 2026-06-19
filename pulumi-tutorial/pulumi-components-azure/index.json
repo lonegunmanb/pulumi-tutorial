@@ -1,6 +1,6 @@
 {
-  "title": "ComponentResource 组件化（AWS / MiniStack）",
-  "description": "用 @pulumi/aws 对接 MiniStack，把平铺的 S3 Bucket 封装成 SecureBucket 组件，观察父子 URN、registerOutputs、providers 继承与子资源改名 + aliases",
+  "title": "ComponentResource 组件化（Azure / miniblue）",
+  "description": "用 @pulumi/azure 对接 miniblue，把主存储账户 + 日志账户封装成 SecureStorage 组件，观察父子 URN、registerOutputs、providers 继承与子资源改名 + aliases",
   "details": {
     "intro": {
       "text": "init/init.md",
