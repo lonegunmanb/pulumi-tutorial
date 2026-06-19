@@ -38,14 +38,15 @@ cd /root/workspace
 
 cat > docker-compose.yml <<'YAML'
 services:
-  ministack:
-    image: ministackorg/ministack:latest
-    container_name: pulumi-resources-ministack
+  localstack:
+    image: localstack/localstack:3
+    container_name: pulumi-resources-localstack
     ports:
       - "4566:4566"
     environment:
-      MINISTACK_REGION: us-east-1
-      MINISTACK_ACCOUNT_ID: "000000000000"
+      DEBUG: "0"
+      SERVICES: "s3,ec2,sts"
+      AWS_DEFAULT_REGION: us-east-1
 YAML
 
 cat > package.json <<'JSON'
@@ -374,7 +375,7 @@ cp variants/base.ts index.ts
 npm install --no-audit --no-fund >/dev/null 2>&1 || true
 pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
-docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
+docker pull localstack/localstack:3 >/dev/null 2>&1 || true
 
 touch /tmp/.setup-done
-echo "AWS / MiniStack resources lab is ready in /root/workspace"
+echo "AWS / LocalStack resources lab is ready in /root/workspace"

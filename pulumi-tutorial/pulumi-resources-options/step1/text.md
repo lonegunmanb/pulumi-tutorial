@@ -1,11 +1,11 @@
 # 资源的四种身份
 
-先启动 MiniStack（本地 AWS 模拟器），确认健康后部署初始程序：
+先启动 LocalStack（本地 AWS 模拟器），确认健康后部署初始程序：
 
 ```bash
 cd /root/workspace && \
 docker compose up -d && \
-curl -s http://localhost:4566/_ministack/health | jq . && \
+curl -s http://localhost:4566/_localstack/health | jq . && \
 pulumi up --yes
 ```{{exec}}
 

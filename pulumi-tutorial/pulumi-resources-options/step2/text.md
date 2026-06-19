@@ -34,6 +34,8 @@ cp variants/step2.ts index.ts && pulumi up --yes
 
 `step2.ts` 在同一资源上加了 `deleteBeforeReplace: true`。这次 Pulumi 先删除旧的 `resources-lab-data`，再用新 tag 重建，避免了同名冲突。
 
+注意：`data-bucket` 的符号**仍然是 `+-`**，这是正常的。`+-` 只表示「该资源会被替换」，并不代表替换顺序；`deleteBeforeReplace` 改变的是**先删后建**的执行顺序，而不是这个图标。真正能证明它生效的证据是这次 `pulumi up` 没有再因撞名而报错、顺利完成了替换（若想看到拆开的「先删 `--`、后建 `++`」子步骤，可加 `--show-replacement-steps`）。
+
 ```bash
 pulumi stack export | jq '.deployment.resources[] | select(.type=="aws:s3/bucket:Bucket") | {urn, physicalName: .outputs.bucket}'
 ```{{exec}}
