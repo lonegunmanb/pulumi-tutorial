@@ -2,7 +2,7 @@
 
 最后一类是 resource method：它挂在某个由 Pulumi 管理的资源上，从该资源派生出一个值。经典例子就是 `@pulumi/eks` 的 `cluster.getKubeconfig()`——从你刚建好的集群算出一份 kubeconfig。
 
-> 这是本实验**最重**的一步：MiniStack 会拉起一个真实的 **k3s 容器**来模拟 EKS，`pulumi up` 可能需要几分钟。即便你的环境跑不完，下面的代码也已经把 resource method 的用法讲清楚了。
+> MiniStack 未挂载 Docker socket，因此 EKS 会回退到轻量的**静态 mock**（而不是拉起真实的 k3s 容器）。这足以演示 resource method 的用法：`getKubeconfig()` 依然会从集群派生出一份 kubeconfig，只是里面的 server / 证书是 mock 值。
 
 先看程序：
 
@@ -14,7 +14,7 @@ cd /root/workspace && cat variants/step4.ts
 
 > 程序里关掉了 `vpc-cni` / `kube-proxy` / `coredns` 这几个托管插件（`useDefaultVpcCni`、`kubeProxyAddonOptions`、`corednsAddonOptions`）。原因是它们会调用 `aws:eks/getAddonVersion` 去查插件版本，而 MiniStack 没有实现这个 invoke。`getKubeconfig()` 只依赖集群的 endpoint 与证书，与这些插件无关，所以关掉不影响本步骤。
 
-部署（请耐心等待 k3s 容器拉起）：
+部署：
 
 ```bash
 cp variants/step4.ts index.ts && pulumi up --yes

@@ -56,23 +56,20 @@ chmod +x /usr/local/bin/awslocal
 
 cd /root/workspace
 
-# MiniStack：仅挂载 Docker socket 让 EKS 能拉起真实的 k3s 容器。
-# Node.js Lambda 走默认的 local 执行器（在 MiniStack 容器内以 node 子进程运行），无需 DinD。
+# MiniStack：纯内存模式即可，不挂载 Docker socket。
+# - Node.js Lambda 走默认的 local 执行器（在 MiniStack 容器内以 node 子进程运行），无需 DinD。
+# - EKS 不挂 Docker socket 时会自动回退到轻量的静态 mock（不拉起真实 k3s 容器），
+#   getKubeconfig() 仍能从被 mock 的集群派生出 kubeconfig，又不会因 k3s 占用内存而压垮 provider。
 cat > docker-compose.yml <<'YAML'
 services:
   ministack:
     image: ministackorg/ministack:latest
     container_name: pulumi-functions-ministack
-    privileged: true
     ports:
       - "4566:4566"
     environment:
       MINISTACK_REGION: us-east-1
       MINISTACK_ACCOUNT_ID: "000000000000"
-    volumes:
-      # 挂载 Docker socket 仅用于 EKS——CreateCluster 会拉起一个真实的 k3s 容器。
-      # Node.js Lambda 默认以 local（node 子进程）模式在 MiniStack 容器内执行，无需 DinD。
-      - /var/run/docker.sock:/var/run/docker.sock
 YAML
 
 cat > package.json <<'JSON'
@@ -178,7 +175,7 @@ const subnetB = new aws.ec2.Subnet("fn-eks-subnet-b", {
   availabilityZone: "us-east-1b",
 });
 
-// 由 Pulumi 管理的 EKS 集群（MiniStack 会拉起一个真实的 k3s 容器来模拟）。
+// 由 Pulumi 管理的 EKS 集群（本实验里 MiniStack 用轻量的静态 mock 代替真实 k3s）。
 const cluster = new eks.Cluster("fn-eks", {
   name: "pulumi-functions-eks",
   vpcId: vpc.id,
@@ -219,9 +216,8 @@ for svc in sts iam lambda sns sqs ec2 eks cloudwatchlogs cloudwatch s3; do
   pulumi config set --path "aws:endpoints[0].$svc" http://localhost:4566 >/dev/null 2>&1 || true
 done
 
-# 预拉镜像，缩短各步骤等待：MiniStack、k3s（EKS）。
+# 预拉镜像，缩短等待：仅 MiniStack（EKS 用静态 mock，不需 k3s；Lambda 走 local 子进程）。
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
-docker pull rancher/k3s:latest >/dev/null 2>&1 || true
 
 # 启动 MiniStack 并等它健康检查通过——只有通过了才创建 /tmp/.setup-done，
 # 让 foreground.sh 据此提示学员开始实验。
