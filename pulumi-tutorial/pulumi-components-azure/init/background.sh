@@ -125,7 +125,8 @@ export class SecureStorage extends pulumi.ComponentResource {
       tags,
     }, { parent: this });
 
-    // 子资源 2：主存储账户。
+    // 子资源 2：主存储账户。dependsOn 让它在日志账户之后创建——仅为绕开本地模拟器
+    // miniblue 对并发数据面探测的限制，真实 Azure 不需要这条依赖。
     const account = new azure.storage.Account(`${name}-data`, {
       name: `${slug}data`,
       resourceGroupName: rg.name,
@@ -133,7 +134,7 @@ export class SecureStorage extends pulumi.ComponentResource {
       accountTier: "Standard",
       accountReplicationType: "LRS",
       tags,
-    }, { parent: this });
+    }, { parent: this, dependsOn: [logs] });
 
     this.accountName = account.name;
     this.logsAccountName = logs.name;
@@ -165,6 +166,8 @@ const logs = new azure.storage.Account("media-logs", {
   tags,
 }, { provider: miniblue });
 
+// dependsOn 让 media-data 在 media-logs 之后创建——仅为绕开本地模拟器 miniblue
+// 对并发数据面探测的限制，真实 Azure 不需要这条依赖。
 const account = new azure.storage.Account("media-data", {
   name: "mediadata",
   resourceGroupName: rg.name,
@@ -172,7 +175,7 @@ const account = new azure.storage.Account("media-data", {
   accountTier: "Standard",
   accountReplicationType: "LRS",
   tags,
-}, { provider: miniblue });
+}, { provider: miniblue, dependsOn: [logs] });
 
 export const accountName = account.name;
 export const logsAccountName = logs.name;
@@ -236,6 +239,7 @@ export class SecureStorage extends pulumi.ComponentResource {
       tags,
     }, { parent: this });
 
+    // dependsOn 仅为绕开本地模拟器 miniblue 对并发数据面探测的限制，真实 Azure 不需要。
     const account = new azure.storage.Account(`${name}-data`, {
       name: `${slug}data`,
       resourceGroupName: rg.name,
@@ -243,7 +247,7 @@ export class SecureStorage extends pulumi.ComponentResource {
       accountTier: "Standard",
       accountReplicationType: "LRS",
       tags,
-    }, { parent: this });
+    }, { parent: this, dependsOn: [logs] });
 
     this.accountName = account.name;
     this.logsAccountName = logs.name;
@@ -301,6 +305,7 @@ export class SecureStorage extends pulumi.ComponentResource {
       aliases: [{ name: `${name}-logs` }],
     });
 
+    // dependsOn 仅为绕开本地模拟器 miniblue 对并发数据面探测的限制，真实 Azure 不需要。
     const account = new azure.storage.Account(`${name}-data`, {
       name: `${slug}data`,
       resourceGroupName: rg.name,
@@ -308,7 +313,7 @@ export class SecureStorage extends pulumi.ComponentResource {
       accountTier: "Standard",
       accountReplicationType: "LRS",
       tags,
-    }, { parent: this });
+    }, { parent: this, dependsOn: [logs] });
 
     this.accountName = account.name;
     this.logsAccountName = logs.name;
