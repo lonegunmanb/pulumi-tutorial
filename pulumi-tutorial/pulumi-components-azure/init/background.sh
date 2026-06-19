@@ -81,12 +81,11 @@ import * as pulumi from "@pulumi/pulumi";
 const miniblue = new azure.Provider("miniblue", {
   features: {},
   metadataHost: "localhost:4567",
-  skipProviderRegistration: true,
+  resourceProviderRegistrations: "none",
   subscriptionId: "00000000-0000-0000-0000-000000000000",
   tenantId: "00000000-0000-0000-0000-000000000001",
   clientId: "miniblue",
   clientSecret: "miniblue",
-  environment: "public",
 });
 
 const location = "eastus";
