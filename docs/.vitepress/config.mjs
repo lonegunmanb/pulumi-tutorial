@@ -51,6 +51,7 @@ export default defineConfig({
                   { text: "Provider 抽象", link: "/providers" },
                   { text: "资源与精细控制", link: "/resources" },
                   { text: "Inputs, Outputs", link: "/inputs-outputs" },
+                  { text: "Secrets 机密处理", link: "/secrets-handling" },
                   { text: "企业级架构：Components", link: "/components" }
                 ]
               },

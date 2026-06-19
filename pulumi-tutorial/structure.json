@@ -47,6 +47,9 @@
     },
     {
       "path": "pulumi-testing-cicd"
+    },
+    {
+      "path": "pulumi-secrets-handling"
     }
   ]
 }

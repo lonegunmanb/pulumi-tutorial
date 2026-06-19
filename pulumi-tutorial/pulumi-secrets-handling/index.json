@@ -1,0 +1,26 @@
+{
+  "title": "Secrets 机密处理（AWS / LocalStack）",
+  "description": "用 @pulumi/aws 对接本地 LocalStack 模拟器，跑通 Pulumi 的机密处理：secret 配置与遮蔽、pulumi.secret 与机密传播、additionalSecretOutputs 与资源 ID 陷阱、Secrets Manager 只写字段（write-only），以及加密 provider 与 encryptionsalt。全程无需真实 AWS 账号。",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "Secret 配置与遮蔽", "text": "step1/text.md" },
+      { "title": "程序内创建 Secret 与机密传播", "text": "step2/text.md" },
+      { "title": "additionalSecretOutputs 与资源 ID 陷阱", "text": "step3/text.md" },
+      { "title": "Write-only 只写字段", "text": "step4/text.md" },
+      { "title": "加密 provider 与 encryptionsalt", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
