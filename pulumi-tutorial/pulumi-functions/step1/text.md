@@ -10,8 +10,8 @@ cd /root/workspace && cat variants/step1.ts
 
 要点：
 
-- `aws.getCallerIdentityOutput({})` 是 **output form**：返回 `Output`，能参与依赖图、能直接接住别的 `Output`。
-- `aws.getCallerIdentity({})` 是 **direct form**：返回 `Promise`，`await` 后拿到普通值——适合用在「函数结果决定某资源是否创建」这类必须提前算出来的分支里。
+- `aws.getCallerIdentityOutput({})` 是 `output form`：返回 `Output`，能参与依赖图、能直接接住别的 `Output`。
+- `aws.getCallerIdentity({})` 是 `direct form`：返回 `Promise`，`await` 后拿到普通值——适合用在「函数结果决定某资源是否创建」这类必须提前算出来的分支里。
 
 把它复制为入口程序并部署：
 
@@ -27,7 +27,7 @@ cp variants/step1.ts index.ts && pulumi up --yes
 pulumi stack output
 ```{{exec}}
 
-你会看到 `accountIdOutputForm` 与 `accountIdDirectForm` 都是 `000000000000`（MiniStack 默认账号），`callerArn` 是一个 STS ARN。两种形态拿到的数据相同，区别只在**何时执行**与**返回类型**：
+你会看到 `accountIdOutputForm` 与 `accountIdDirectForm` 都是 `000000000000`（MiniStack 默认账号），`callerArn` 是一个 STS ARN。两种形态拿到的数据相同，区别只在何时执行与返回类型：
 
 - output form 被引擎追踪、等输入 resolve 后才执行，返回 `Output`。
 - direct form 像普通函数调用一样立即执行，返回 `Promise`，不进依赖图。

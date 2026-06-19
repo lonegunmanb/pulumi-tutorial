@@ -17,13 +17,13 @@ pulumi config set preexistingTopicArn "$TOPIC_ARN"
 cat variants/step2.ts
 ```{{exec}}
 
-`aws.sns.Topic.get("preexisting", topicArn)` 把那个未托管 Topic 读进程序；随后我们用它的 `arn` 作为输入，创建**由 Pulumi 管理**的一个 SQS 队列和一个订阅。部署：
+`aws.sns.Topic.get("preexisting", topicArn)` 把那个未托管 Topic 读进程序；随后我们用它的 `arn` 作为输入，创建由 Pulumi 管理的一个 SQS 队列和一个订阅。部署：
 
 ```bash
 cp variants/step2.ts index.ts && pulumi up --yes
 ```{{exec}}
 
-注意 `pulumi up` 的摘要：只创建了 `fn-demo-queue` 和 `fn-demo-sub`（`+ 2 created`），**那个 SNS Topic 不在创建列表里**——因为它是 `get` 进来的，Pulumi 不管它的生命周期。查看输出：
+注意 `pulumi up` 的摘要：只创建了 `fn-demo-queue` 和 `fn-demo-sub`（`+ 2 created`），那个 SNS Topic 不在创建列表里——因为它是 `get` 进来的，Pulumi 不管它的生命周期。查看输出：
 
 ```bash
 pulumi stack output
@@ -34,5 +34,5 @@ pulumi stack output
 要点：
 
 - `get` 只**读**既有资源，绝不修改或删除它。
-- 如果你真的想**接管**既有资源（让 Pulumi 管它），那不是 `get`，而是 `pulumi import`。
+- 如果你真的想接管既有资源（让 Pulumi 管它），那不是 `get`，而是 `pulumi import`。
 - `get` 找不到资源时会直接报错并终止程序。
