@@ -318,6 +318,77 @@ export const assetsPhysical = assets.name;
 export const dataPhysical = data.name;
 TS
 
+# ---------- step6-pre：一套全新网络资源，子网不带 NSG，且未注册 transform ----------
+cat > variants/step6-pre.ts <<TS
+${PROVIDER_TS}
+
+const rg = new azure.core.ResourceGroup("net-rg", {
+  location,
+  tags: { team: "platform" },
+}, { provider: miniblue });
+
+// 一个"默认 NSG"——稍后用 transform 在缺省时自动关联到子网。
+const defaultNsg = new azure.network.NetworkSecurityGroup("default-nsg", {
+  resourceGroupName: rg.name,
+  location,
+}, { provider: miniblue });
+
+// VNet 内联一个子网，故意不设置 securityGroup，且当前没有注册任何 transform。
+const vnet = new azure.network.VirtualNetwork("app-vnet", {
+  resourceGroupName: rg.name,
+  location,
+  addressSpaces: ["10.0.0.0/16"],
+  subnets: [
+    { name: "app-subnet", addressPrefixes: ["10.0.1.0/24"] },
+  ],
+}, { provider: miniblue });
+
+export const defaultNsgId = defaultNsg.id;
+export const vnetSubnets = vnet.subnets;   // 子网的 securityGroup 还是空的
+TS
+
+# ---------- step6：注册 stack transform，给没有 NSG 的内联子网自动关联默认 NSG ----------
+cat > variants/step6.ts <<TS
+${PROVIDER_TS}
+
+const rg = new azure.core.ResourceGroup("net-rg", {
+  location,
+  tags: { team: "platform" },
+}, { provider: miniblue });
+
+const defaultNsg = new azure.network.NetworkSecurityGroup("default-nsg", {
+  resourceGroupName: rg.name,
+  location,
+}, { provider: miniblue });
+
+// 关键：注册一个 stack transform。
+// 任何 VirtualNetwork 的内联子网只要没有关联 NSG，就自动关联 default-nsg。
+pulumi.runtime.registerResourceTransform(args => {
+  if (args.type === "azure:network/virtualNetwork:VirtualNetwork") {
+    const props: any = args.props;
+    if (Array.isArray(props.subnets)) {
+      props.subnets = props.subnets.map((s: any) =>
+        s.securityGroup ? s : { ...s, securityGroup: defaultNsg.id });
+      return { props, opts: args.opts };
+    }
+  }
+  return undefined;
+});
+
+// 与 step6-pre 完全相同的 VNet 声明——这次 transform 会替每个缺省子网补上 default-nsg。
+const vnet = new azure.network.VirtualNetwork("app-vnet", {
+  resourceGroupName: rg.name,
+  location,
+  addressSpaces: ["10.0.0.0/16"],
+  subnets: [
+    { name: "app-subnet", addressPrefixes: ["10.0.1.0/24"] },
+  ],
+}, { provider: miniblue });
+
+export const defaultNsgId = defaultNsg.id;
+export const vnetSubnets = vnet.subnets;   // 现在每个子网的 securityGroup = default-nsg 的 id
+TS
+
 # 初始程序使用 base 变体。
 cp variants/base.ts index.ts
 

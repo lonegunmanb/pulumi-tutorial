@@ -232,6 +232,7 @@ const obj = new aws.s3.BucketObject("config", { /* ... */ }, {
 | `deleteBeforeReplace` | 替换时先删旧再建新 | custom |
 | `deletedWith` | 父资源被删时跳过本资源的 delete | custom |
 | `dependsOn` | 在依赖图之外补充显式依赖 | custom + component |
+| `hideDiffs` | 只压缩 CLI 里的 diff 显示，不影响实际更新 | custom |
 | `hooks` | 在生命周期特定阶段运行自定义逻辑 | custom + component |
 | `ignoreChanges` | diff 时忽略指定属性的变化 | custom |
 | `import` | 把既有云资源纳入 Pulumi 管理 | custom |
@@ -325,6 +326,8 @@ const role = new aws.iam.Role("app-role", {
 两者常**搭配**使用：`replaceOnChanges` 决定「哪些属性改动会触发替换」，`deleteBeforeReplace` 决定「触发替换后先删还是先建」。
 
 > 代价：先删后建意味着存在一段「资源不存在」的窗口，可能停机。只在确有命名冲突时使用。
+>
+> 还有两个连带风险要留意：一是 `deleteBeforeReplace` 会**沿依赖链向下传染**——被先删的资源若有下游依赖，可能连带触发更多替换，放大停机面；二是某些云 API（如 AWS）是**最终一致**的，旧资源的删除尚未完全传播到位就开始创建新资源，可能让依赖它的资源进入损坏状态。
 
 ### `ignoreChanges`：与外部漂移和平共处
 
@@ -338,10 +341,99 @@ const svc = new aws.ecs.Service("svc", {
 
 > 注意：`ignoreChanges` 比较的是「你程序里的新值」与「state 里记录的旧值」，被忽略的属性会沿用 state 中的旧值，外部对这些属性的改动因此得以保留。若想让 state 跟上云上的真实值，需要主动 `pulumi refresh`（或 `pulumi up --refresh`），否则 state 里仍是旧值。
 
+### `hideDiffs`：只压缩输出，不改变行为
+
+`ignoreChanges` 容易和一个名字相近的选项混淆——`hideDiffs`。两者看起来都和「diff」有关，作用却完全不同：
+
+- `ignoreChanges` 影响**行为**：被列出的属性变化会被忽略，不会触发更新。
+- `hideDiffs` 只影响**显示**：它接受一组属性路径，把这些属性在 CLI 里的 diff 细节**折叠**起来，但 Pulumi 照常检测、照常更新、照常写 state。
+
+换句话说，`hideDiffs` 是给那些「diff 又长又吵、容易刷屏」的属性准备的降噪开关，让 `pulumi preview`/`up` 的输出清爽一些，并不会改变任何资源的实际更新结果。它只对 custom resource 有意义。这在维护开源的公共 Component 时将很有用，有时你需要更新一些不会影响到实际云资源的配置，例如 telemetry 数据，你很清楚这些变更不会造成任何实际的云端变更，但每次发布版本时大量的 telemetry 变化（例如版本号）也会对最终用户的变更审查带来大量的噪音，这时就可以使用 `hideDiffs`。
+
+```ts
+// prop 仍会被正常更新，只是 CLI 不再展开它冗长的前后值对比
+let res = new MyResource("res", { prop: "new-value" }, { hideDiffs: ["prop"] });
+```
+
+它同样支持嵌套的**属性路径**，可以精确折叠对象或数组里的某一层。例如折叠 AWS 负载均衡器监听器里所有 target group 的 `weight`：
+
+```ts
+}, { hideDiffs: ["defaultActions[*].forward.targetGroups[*].weight"] });
+```
+
+> 一句话区分：想**不触发更新**用 `ignoreChanges`；只想**让输出别刷屏**用 `hideDiffs`。
+
 ### `retainOnDelete` 与 `deletedWith`
 
 - `retainOnDelete`：`pulumi destroy` 时把资源**留在云上**，只从 state 移除。适合迁移、交接或保护有状态资源。
-- `deletedWith`：当指定的「伞资源」（如 Resource Group）也在被删时，跳过本资源自己的 delete API（反正会随父一起没）。
+- `deletedWith`：当指定的「伞资源」（如 Resource Group）也在被删时，跳过本资源自己的 delete API（反正会随父一起被删）。
+
+### `transforms`：在资源注册前批量改写
+
+`transforms` 给一个资源（以及它的**所有子资源**）注册一组回调，在每个资源真正被创建之前，**改写它的输入属性或 resource options**。它最典型的用途是作用在 component 上，统一调整 component 内部那些你无法直接配置的子资源——比如给它们补一个 `ignoreChanges`/`protect`，或往 `tags` 里追加内容。
+
+每个 transform 是一个回调，引擎会把资源的**类型、名字、输入属性、resource options** 交给它；回调返回一组新的属性和选项，引擎就用新值来构造资源。返回 `undefined`（或原样返回）表示保持不变。
+
+下面这个例子遍历某个 component 子树里所有 VPC 和 Subnet，给它们统一加上 `ignoreChanges: ["tags"]`（例如 tags 由 Pulumi 之外的系统管理）：
+
+```ts
+const vpc = new MyVpcComponent("vpc", {}, {
+  transforms: [args => {
+    if (args.type === "aws:ec2/vpc:Vpc" || args.type === "aws:ec2/subnet:Subnet") {
+      return {
+        props: args.props,
+        opts: pulumi.mergeOptions(args.opts, { ignoreChanges: ["tags"] }),
+      };
+    }
+    return undefined;
+  }],
+});
+```
+
+如果想作用于**整个 stack 的所有资源**，可以注册 **stack transform**：它挂在根 stack 资源上，被所有资源继承。常见场景是给所有支持 tag 的资源批量打统一标签：
+
+```ts
+pulumi.runtime.registerResourceTransform(args => {
+  if (isTaggable(args.type)) {
+    args.props["tags"] = Object.assign(args.props["tags"], autoTags);
+    return { props: args.props, opts: args.opts };
+  }
+});
+```
+
+> `transforms` 是旧 `transformations` 选项的替代品，后者未来会被弃用。相比之下，`transforms` 能改写 awsx、eks 这类**打包 component** 的子资源，并支持 async 回调。新代码一律用 `transforms`。
+>
+> 还有一个细节：对于 awsx/eks 这种**打包 component**，transform 会被调用**两次**——一次在 component 构造之前（改写传给 provider 的输入与选项），一次在 provider 真正创建 component 时（改写 component 内部配置的选项）。
+
+### `hooks`：在生命周期节点插入自定义逻辑
+
+`hooks` 让你在资源生命周期的特定时刻运行一段自己的代码，按时机分成 **before**（动作之前）和 **after**（动作之后）两类，覆盖三种动作：
+
+- **create**：资源创建前后（首次创建，或因不可变属性变化触发替换时也会跑）。
+- **update**：资源原地更新前后。
+- **delete**：资源删除前后（`destroy`、从程序里移除、或替换时的删除阶段）。
+
+钩子回调会拿到资源的 URN、ID，以及相关的输入/输出属性（after 钩子能读到更新后的新 output）。钩子支持 TypeScript/JavaScript、Python、Go、C#/.NET；**Java 和 YAML 不支持**。挂在 component 上的钩子只对 component 自身的生命周期生效，**不会自动下传给子资源**，需要逐个子资源单独挂。
+
+```ts
+const afterHook = new pulumi.ResourceHook("after", async args => {
+  const outputs = args.newOutputs as aws.ec2.InstanceState;
+  // ……例如轮询健康检查，直到实例就绪才返回
+});
+
+const server = new aws.ec2.Instance("webserver-www", { /* ... */ }, {
+  hooks: { afterCreate: [afterHook], afterUpdate: [afterHook] },
+});
+```
+
+**错误处理**要特别注意：
+
+- **before 钩子返回错误** → 它要拦的那个动作不会执行，整个部署失败。
+- **after 钩子返回错误** → 底层操作其实**已经完成并写入 state**，但部署随后仍判为失败（自 v3.238.0 起的默认行为；更早版本只记一条警告并继续）。
+- 想让某个钩子的失败「不致命」（例如只是发个通知），给它设 `ignoreErrors: true`，失败会降级成警告并继续；也可以给整次部署加 `--continue-on-error`。
+- 还有一类 **error 钩子**（`onError`），在操作失败时触发，可用来重试。它会拿到这个资源之前**历次失败的错误列表**（最新的在前），你可以据此判断该重试还是让失败冲出程序；同一操作最多重试 100 次。
+
+> 删除钩子有个容易踩的坑：`pulumi destroy` 默认不运行你的程序，钩子也就无从注册。要让 delete 钩子生效，必须加 `--run-program`，否则 Pulumi 检测到带钩子的 stack 会直接报错。从程序里移除资源时，也要**先留着 delete 钩子跑完一次 `up`**，再删钩子代码。
 
 ### `import`：在代码里认领一个既有资源
 
@@ -358,8 +450,10 @@ const bucket = new aws.s3.Bucket("media", {
 下一次 `pulumi up` 时会发生三件事：
 
 1. Pulumi **认领**这个既有资源写入 state，而**不是**创建新的；
-2. 它把你声明的属性和云上的真实属性**逐项比对**，只要对不上就报错——所以你得把代码写到和现状一致；
+2. 它会**对照**你声明的属性和云上的真实状态：只要你填齐了该资源的全部必填参数，即使其余属性与现状有出入，导入也仍会**成功**，随后 Pulumi 会按你代码里的输入去**修改**这个资源（preview 里会出现一条 `update`）——所以你得把代码写到和现状一致，否则刚导入就被无意间改了；
 3. 认领成功后，把 `{ import: ... }` 这个选项**删掉**即可（资源声明本身保留），之后它就是一个被 Pulumi 正常管理的资源了。
+
+> 官方还反复强调两点：① 导入前要确保 stack 配置正确（最典型的是 **region**），否则 provider 会去错误的地方读资源；② 如果你导入的资源带 `name` 这类物理名属性、却没有显式写死它，auto-naming 生成的随机名一定和云上现状对不上，preview 里会冒出一条 `update`。解决办法是显式指定物理名，或关闭 auto-naming。
 
 > `import` **选项**是「在代码里手写声明 + 认领」，适合少量、你清楚属性的资源。如果资源很多、或不想手写一长串属性，可以改用 `pulumi import` **命令**：它同样完成认领，还会**自动生成**对应的资源代码供你粘贴。这套命令式 / 批量导入的完整流程见 [Stack 章的 state import](stacks.md) 与官方 Importing resources 指南。两者最终都要求：**程序里必须存在这个资源的声明**，否则下次 `pulumi up` 会把它当成「要删除」。
 
@@ -376,12 +470,12 @@ const bucket = new aws.s3.Bucket("media", {
 
 本章提供 **AWS** 与 **Azure** 两版实验，分别使用真实的云 provider SDK 对接本地模拟器，因此无需任何云账号或凭据：
 
-- AWS 版用 `pulumi/pulumi-aws`（`@pulumi/aws`）对接 **MiniStack**，以 S3 Bucket 演示命名、依赖、`aliases`、`deleteBeforeReplace`、`protect` 与 `ignoreChanges`。
-- Azure 版用 `pulumi/pulumi-azure`（`@pulumi/azure`）对接 **miniblue**，以 Resource Group 和 Storage Account 演示同一组概念，并额外展示 provider 如何改写物理名以满足命名约束。
+- AWS 版用 `pulumi/pulumi-aws`（`@pulumi/aws`）对接 **MiniStack**，以 S3 Bucket 演示命名、依赖、`aliases`、`deleteBeforeReplace`、`protect` 与 `ignoreChanges`，并用一组 VPC/网卡资源演示 `transforms` 如何给未关联安全组的网卡自动补上默认防火墙。
+- Azure 版用 `pulumi/pulumi-azure`（`@pulumi/azure`）对接 **miniblue**，以 Resource Group 和 Storage Account 演示同一组概念，并额外展示 provider 如何改写物理名以满足命名约束；最后用一组 VNet/子网资源演示 `transforms` 如何给未关联 NSG 的子网自动补上默认 NSG。
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-resources-options" title="实验：资源与精细控制（AWS / MiniStack）" desc="用 @pulumi/aws 对接 MiniStack，观察 URN 与四种身份，并演示 deleteBeforeReplace、dependsOn、aliases 零重建迁移、protect 与 ignoreChanges。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-resources-options" title="实验：资源与精细控制（AWS / MiniStack）" desc="用 @pulumi/aws 对接 MiniStack，观察 URN 与四种身份，并演示 deleteBeforeReplace、dependsOn、aliases 零重建迁移、protect、ignoreChanges 与 transforms 自动补默认安全组。" />
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-resources-options-azure" title="实验：资源与精细控制（Azure / miniblue）" desc="用 @pulumi/azure 对接 miniblue，以 Resource Group 演示四种身份、auto-naming、deleteBeforeReplace、隐式/显式依赖、aliases、protect 与 ignoreChanges。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-resources-options-azure" title="实验：资源与精细控制（Azure / miniblue）" desc="用 @pulumi/azure 对接 miniblue，以 Resource Group 演示四种身份、auto-naming、deleteBeforeReplace、隐式/显式依赖、aliases、protect、ignoreChanges 与 transforms 自动补默认 NSG。" />
 
 ## 本章交付物
 

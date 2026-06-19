@@ -86,7 +86,7 @@ const localAws = new aws.Provider("ministack", {
   skipMetadataApiCheck: true,
   skipRequestingAccountId: true,
   s3UsePathStyle: true,
-  endpoints: [{ s3: "http://localhost:4566", sts: "http://localhost:4566" }],
+  endpoints: [{ s3: "http://localhost:4566", sts: "http://localhost:4566", ec2: "http://localhost:4566" }],
 });
 TS
 
@@ -291,6 +291,81 @@ const audit = new aws.s3.Bucket("audit-bucket", {
 
 export const assetsPhysical = assets.bucket;
 export const dataPhysical = data.bucket;
+TS
+
+# ---------- step6-pre：一套全新网络资源，ENI 不带安全组，且未注册 transform ----------
+cat > variants/step6-pre.ts <<TS
+${PROVIDER_TS}
+
+// 一套小型网络：VPC + 子网。
+const vpc = new aws.ec2.Vpc("app-vpc", {
+  cidrBlock: "10.0.0.0/16",
+  tags: { team: "platform" },
+}, { provider: localAws });
+
+const subnet = new aws.ec2.Subnet("app-subnet", {
+  vpcId: vpc.id,
+  cidrBlock: "10.0.1.0/24",
+}, { provider: localAws });
+
+// 一个"默认防火墙"安全组——稍后用 transform 在缺省时自动挂上它。
+const defaultFw = new aws.ec2.SecurityGroup("default-fw", {
+  vpcId: vpc.id,
+  description: "default firewall for ENIs without an explicit security group",
+}, { provider: localAws });
+
+// 这块 ENI 故意不写 securityGroups，且当前没有注册任何 transform。
+const eni = new aws.ec2.NetworkInterface("app-eni", {
+  subnetId: subnet.id,
+  privateIps: ["10.0.1.10"],
+}, { provider: localAws });
+
+export const vpcId = vpc.id;
+export const defaultFwId = defaultFw.id;
+export const eniSecurityGroups = eni.securityGroups;   // 还看不到 default-fw 的 id
+TS
+
+# ---------- step6：注册 stack transform，给没有安全组的 ENI 自动挂默认防火墙 ----------
+cat > variants/step6.ts <<TS
+${PROVIDER_TS}
+
+const vpc = new aws.ec2.Vpc("app-vpc", {
+  cidrBlock: "10.0.0.0/16",
+  tags: { team: "platform" },
+}, { provider: localAws });
+
+const subnet = new aws.ec2.Subnet("app-subnet", {
+  vpcId: vpc.id,
+  cidrBlock: "10.0.1.0/24",
+}, { provider: localAws });
+
+const defaultFw = new aws.ec2.SecurityGroup("default-fw", {
+  vpcId: vpc.id,
+  description: "default firewall for ENIs without an explicit security group",
+}, { provider: localAws });
+
+// 关键：注册一个 stack transform。
+// 任何 NetworkInterface 只要没有显式关联安全组，就自动挂上 default-fw。
+pulumi.runtime.registerResourceTransform(args => {
+  if (args.type === "aws:ec2/networkInterface:NetworkInterface") {
+    const props: any = args.props;
+    if (!props.securityGroups || props.securityGroups.length === 0) {
+      props.securityGroups = [defaultFw.id];
+      return { props, opts: args.opts };
+    }
+  }
+  return undefined;
+});
+
+// 与 step6-pre 完全相同的 ENI 声明——这次 transform 会替它补上 default-fw。
+const eni = new aws.ec2.NetworkInterface("app-eni", {
+  subnetId: subnet.id,
+  privateIps: ["10.0.1.10"],
+}, { provider: localAws });
+
+export const vpcId = vpc.id;
+export const defaultFwId = defaultFw.id;
+export const eniSecurityGroups = eni.securityGroups;   // 现在应包含 default-fw 的 id
 TS
 
 # 初始程序使用 base 变体。

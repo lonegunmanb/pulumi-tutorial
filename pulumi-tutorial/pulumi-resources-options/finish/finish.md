@@ -7,5 +7,6 @@
 - 区分了隐式依赖与显式 `dependsOn`。
 - 用 `aliases` 完成了零重建重命名。
 - 用 `protect` 拦截了误删，用 `ignoreChanges` 忽略了 tag 漂移。
+- 用 `transforms` 给忘记关联安全组的网卡自动补上了默认防火墙。
 
 下一章进入 Components，你会用 `ComponentResource` 把这些资源封装成可复用的高层抽象。

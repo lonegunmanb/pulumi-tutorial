@@ -43,11 +43,4 @@ cp variants/step5-clean.ts index.ts && pulumi up --yes
 - 给 `assets-bucket` 加了 `ignoreChanges: ["tags"]` 并改了 tag——尽管代码里 tag 变了，预览/应用都**不会**产生 diff，模拟「容忍运维手动改过的字段」。
 - 去掉了 `data-bucket` 的 `protect`，让它重新可删除。
 
-**3) 现在可以正常销毁并关停 MiniStack**：
-
-```bash
-pulumi destroy --yes && \
-docker compose down
-```{{exec}}
-
-回顾本实验覆盖的资源选项：`deleteBeforeReplace`、`replaceOnChanges`、`dependsOn`、`aliases`、`protect`、`ignoreChanges`——它们共同构成了在生产环境安全演进基础设施的工具箱。
+现在 `data-bucket` 重新可删除了。先别急着清理——下一步我们再用一套全新的网络资源演示 `transforms`，并在那里统一收尾。
