@@ -13,6 +13,8 @@ export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 # 让 ts-node 只转译、不做类型检查：避免对 @pulumi/aws 庞大的 .d.ts 做全量类型检查而吃掉 1GB+ 内存被 OOM 杀掉。
 export TS_NODE_TRANSPILE_ONLY=1
+# 给 Node language host 一个保守的 old-space 上限，防止宽导入回归时拖垮 Killercoda 小内存机器。
+export NODE_OPTIONS=--max-old-space-size=512
 
 rm -f /tmp/.setup-done
 mkdir -p /root/workspace
@@ -34,6 +36,9 @@ if ! grep -q 'PULUMI_CONFIG_PASSPHRASE' /root/.bashrc 2>/dev/null; then
 fi
 if ! grep -q 'TS_NODE_TRANSPILE_ONLY' /root/.bashrc 2>/dev/null; then
   echo 'export TS_NODE_TRANSPILE_ONLY=1' >> /root/.bashrc
+fi
+if ! grep -q 'NODE_OPTIONS' /root/.bashrc 2>/dev/null; then
+  echo 'export NODE_OPTIONS=--max-old-space-size=512' >> /root/.bashrc
 fi
 
 # Killercoda 已预装 Docker，这里只确保守护进程在运行。
@@ -98,7 +103,10 @@ JSON
 
 cat > Pulumi.yaml <<'YAML'
 name: pulumi-config
-runtime: nodejs
+runtime:
+  name: nodejs
+  options:
+    nodeargs: "--max-old-space-size=512"
 description: Drive AWS resources from Pulumi configuration against MiniStack.
 config:
   owner: platform-team

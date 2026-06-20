@@ -79,13 +79,13 @@ echo "清理：cd $WORKDIR && pulumi destroy --yes --stack dev ; pulumi destroy 
 #   pulumi stack select dev && \
 #   pulumi config set bucketPrefix dev && \
 #   pulumi config set bucketCount 3
-#   NODE_OPTIONS=--max-old-space-size=512 pulumi up --yes --non-interactive && pulumi stack output
+#   pulumi up --yes --non-interactive && pulumi stack output
 #   pulumi stack select prod || pulumi stack init prod
 #   pulumi config set bucketPrefix prod && \
 #   pulumi config set bucketCount 4 && \
 #   pulumi config set aws:region us-west-2 && \
 #   pulumi config set owner prod-team
-#   NODE_OPTIONS=--max-old-space-size=512 pulumi up --yes --non-interactive && pulumi stack output
+#   pulumi up --yes --non-interactive && pulumi stack output
 #   echo '--- dev ---' && pulumi stack output --stack dev bucketNames && \
 #   echo '--- prod ---' && pulumi stack output --stack prod bucketNames
 # ----------------------------------------------------------------------------

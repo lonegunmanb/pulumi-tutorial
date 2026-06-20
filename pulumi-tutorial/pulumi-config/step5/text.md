@@ -1,6 +1,6 @@
 # 一套程序，多个 Stack
 
-配置系统的终极用途：**同一套程序，不同 Stack 各用一份配置，产出不同的基础设施**。这一步继续使用 TypeScript，并且沿用前面已经看到的窄导入方式，只加载 S3 与 Provider 相关模块，避免把整个 AWS SDK 入口一次性载入 Node 进程。
+配置系统的终极用途：**同一套程序，不同 Stack 各用一份配置，产出不同的基础设施**。这一步我们用同一段程序分别部署 dev 与 prod，观察配置如何改变资源的数量、标签与归属。
 
 先切换到这一步的程序，看看它如何读取配置：
 
@@ -24,10 +24,10 @@ pulumi config set bucketPrefix dev && \
 pulumi config set bucketCount 3
 ```{{exec}}
 
-部署 dev。这里给 Node 设置一个保守的堆上限，作为防止宽导入回归的保险丝：
+部署 dev：
 
 ```bash
-NODE_OPTIONS=--max-old-space-size=512 pulumi up --yes --non-interactive && pulumi stack output
+pulumi up --yes --non-interactive && pulumi stack output
 ```{{exec}}
 
 现在切换到 prod Stack，给它一份**完全不同**的配置：
@@ -46,7 +46,7 @@ pulumi config set owner prod-team
 其中 owner 这一行**覆盖**了项目级默认值。部署 prod：
 
 ```bash
-NODE_OPTIONS=--max-old-space-size=512 pulumi up --yes --non-interactive && pulumi stack output
+pulumi up --yes --non-interactive && pulumi stack output
 ```{{exec}}
 
 最后对比两个 Stack 的产出——同一套程序，规模与归属却各不相同：
