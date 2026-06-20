@@ -12,8 +12,10 @@ set -uo pipefail
 WORKDIR_GO="/root/workspace-go"
 
 # Pulumi / Go 的运行环境（background.sh 已写进 .bashrc，这里再导一次，确保当前 shell 可用）。
-export PATH="$HOME/.pulumi/bin:$PATH:/usr/local/go/bin"
+# /usr/local/go/bin 必须前置，否则镜像自带的老版 go 1.18 会抢在前面。
+export PATH="/usr/local/go/bin:$HOME/.pulumi/bin:$PATH"
 export GOPATH="${GOPATH:-/root/go}"
+export GOFLAGS="${GOFLAGS:--mod=mod}"
 export PULUMI_CONFIG_PASSPHRASE="${PULUMI_CONFIG_PASSPHRASE:-}"
 
 echo "==> [1/5] 等待场景初始化（init/background.sh）完成"
@@ -39,12 +41,14 @@ for i in $(seq 1 60); do
 done
 
 echo "==> [3/5] 确保 Go 已安装并预热编译缓存（首次较慢，请耐心等待）"
-if ! command -v go >/dev/null 2>&1; then
-  echo "Go 尚未安装，正在安装 go1.23.4…"
+# 不能用 `command -v go` 判断——镜像自带的 go 1.18 会让它误以为已装好。
+if [ ! -x /usr/local/go/bin/go ]; then
+  echo "Go 1.23 尚未安装，正在安装 go1.23.4…"
   curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
     && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
-  export PATH="$PATH:/usr/local/go/bin"
 fi
+export PATH="/usr/local/go/bin:$PATH"
+hash -r 2>/dev/null || true
 go version
 cd "$WORKDIR_GO"
 go mod tidy
