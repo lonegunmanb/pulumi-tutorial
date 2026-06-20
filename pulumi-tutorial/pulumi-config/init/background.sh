@@ -39,6 +39,8 @@ fi
 if ! grep -q '/usr/local/go/bin' /root/.bashrc 2>/dev/null; then
   echo 'export PATH="$PATH:/usr/local/go/bin"' >> /root/.bashrc
   echo 'export GOPATH=/root/go' >> /root/.bashrc
+  # -mod=mod 让 go build 在缺依赖时能自动补齐 go.mod / go.sum，作为兴底。
+  echo 'export GOFLAGS=-mod=mod' >> /root/.bashrc
 fi
 
 # Killercoda 已预装 Docker，这里只确保守护进程在运行。
@@ -394,17 +396,24 @@ pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1
 pulumi config set bucketPrefix dev >/dev/null 2>&1 || true
 pulumi config set bucketCount 3 >/dev/null 2>&1 || true
 
-# 安装 Go 工具链并预热模块下载与编译缓存——整体放到后台执行，避免阻塞 step1。
-# 学员到达 step5 前还有 4 步要做，通常足够 Go 依赖与编译缓存就绪，届时 pulumi up 会很快。
+# 安装 Go 工具链（同步）。
+if ! command -v go >/dev/null 2>&1 && [ ! -x /usr/local/go/bin/go ]; then
+  curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
+    && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
+fi
+export PATH="$PATH:/usr/local/go/bin"
+export GOPATH=/root/go
+export GOFLAGS=-mod=mod
+
+# 关键：同步解析 Go 依赖（扫描 main.go 的 import，写好 go.mod / go.sum 并下载模块）。
+# 这一步必须在学员运行 pulumi up 之前完成，否则 pulumi 的 go build 会因 go.mod
+# 缺少 require 而报 "no required module provides package ..." 直接失败。
+go mod tidy || true
+
+# 编译缓存预热放后台，只为加速 step5 首次 pulumi up；即便没跑完，pulumi up 也只是慢一点、不会失败。
 (
-  if ! command -v go >/dev/null 2>&1 && [ ! -x /usr/local/go/bin/go ]; then
-    curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
-      && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
-  fi
   export PATH="$PATH:/usr/local/go/bin"
-  export GOPATH=/root/go
   cd /root/workspace-go
-  go mod tidy >/dev/null 2>&1 || true
   go build -o /tmp/go-warm . >/dev/null 2>&1 || true
   touch /tmp/.go-ready
 ) &
