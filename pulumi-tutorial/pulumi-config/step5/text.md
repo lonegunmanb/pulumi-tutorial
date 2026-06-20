@@ -33,7 +33,7 @@ pulumi up --yes && pulumi stack output
 现在切换到 prod Stack，给它一份**完全不同**的配置：
 
 ```bash
-pulumi stack select prod || pulumi stack init prod
+pulumi stack init prod || pulumi stack select prod
 ```{{exec}}
 
 ```bash
