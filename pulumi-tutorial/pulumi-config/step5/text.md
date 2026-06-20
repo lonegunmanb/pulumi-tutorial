@@ -27,7 +27,7 @@ pulumi config set bucketCount 3
 部署 dev：
 
 ```bash
-pulumi up --yes --non-interactive && pulumi stack output
+pulumi up --yes && pulumi stack output
 ```{{exec}}
 
 现在切换到 prod Stack，给它一份**完全不同**的配置：
@@ -46,7 +46,7 @@ pulumi config set owner prod-team
 其中 owner 这一行**覆盖**了项目级默认值。部署 prod：
 
 ```bash
-pulumi up --yes --non-interactive && pulumi stack output
+pulumi up --yes && pulumi stack output
 ```{{exec}}
 
 最后对比两个 Stack 的产出——同一套程序，规模与归属却各不相同：
