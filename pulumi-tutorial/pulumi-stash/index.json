@@ -1,0 +1,26 @@
+{
+  "title": "Stash 状态暂存（纯本地）",
+  "description": "使用 @pulumi/pulumi 的内置 Stash 资源，在本地后端中观察 input 与 output 的差异、用 --target-replace 刷新保存值、保存复杂对象和 secret，并删除 Stash 资源。全程无需任何云 provider。",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "创建第一个 Stash", "text": "step1/text.md" },
+      { "title": "更新 input，观察 output 保持不变", "text": "step2/text.md" },
+      { "title": "替换 Stash，刷新保存值", "text": "step3/text.md" },
+      { "title": "保存复杂值与 secret", "text": "step4/text.md" },
+      { "title": "删除 Stash", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

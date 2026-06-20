@@ -37,6 +37,12 @@
       "path": "pulumi-inputs-outputs-secrets"
     },
     {
+      "path": "pulumi-secrets-handling"
+    },
+    {
+      "path": "pulumi-stash"
+    },
+    {
       "path": "pulumi-functions"
     },
     {
@@ -56,9 +62,6 @@
     },
     {
       "path": "pulumi-testing-cicd"
-    },
-    {
-      "path": "pulumi-secrets-handling"
     }
   ]
 }

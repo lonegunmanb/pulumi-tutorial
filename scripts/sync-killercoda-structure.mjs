@@ -18,6 +18,8 @@ const preferredOrder = [
   'pulumi-inputs-outputs',
   'pulumi-inputs-outputs-azure',
   'pulumi-inputs-outputs-secrets',
+  'pulumi-secrets-handling',
+  'pulumi-stash',
   'pulumi-functions',
   'pulumi-components',
   'pulumi-components-azure',

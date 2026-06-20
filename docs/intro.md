@@ -49,6 +49,7 @@ group: 起步
 
 - [Inputs, Outputs](inputs-outputs.md)
 - [Secrets 机密处理](secrets-handling.md)
+- [Stash 状态暂存](stash.md)
 
 - [Functions 函数](functions.md)
 - [企业级架构：Components](components.md)
