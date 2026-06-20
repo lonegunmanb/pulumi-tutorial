@@ -36,11 +36,14 @@ if ! grep -q 'TS_NODE_TRANSPILE_ONLY' /root/.bashrc 2>/dev/null; then
   echo 'export TS_NODE_TRANSPILE_ONLY=1' >> /root/.bashrc
 fi
 # step5 改用 Go：把 Go 工具链放到 PATH 最前（镜像可能自带老版 go 1.18，必须被我们装的 1.23 覆盖）。
-if ! grep -q '/usr/local/go/bin' /root/.bashrc 2>/dev/null; then
-  echo 'export PATH="/usr/local/go/bin:$PATH"' >> /root/.bashrc
-  echo 'export GOPATH=/root/go' >> /root/.bashrc
-  # -mod=mod 让 go build 在缺依赖时能自动补齐 go.mod / go.sum，作为兴底。
-  echo 'export GOFLAGS=-mod=mod' >> /root/.bashrc
+if ! grep -q 'pulumi-config-go-toolchain' /root/.bashrc 2>/dev/null; then
+  cat >> /root/.bashrc <<'BASHRC'
+# pulumi-config-go-toolchain
+export PATH="/usr/local/go/bin:$PATH"
+export GOPATH=/root/go
+# -mod=mod 让 go build 在缺依赖时能自动补齐 go.mod / go.sum，作为保险。
+export GOFLAGS=-mod=mod
+BASHRC
 fi
 
 # Killercoda 已预装 Docker，这里只确保守护进程在运行。
@@ -396,9 +399,9 @@ pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1
 pulumi config set bucketPrefix dev >/dev/null 2>&1 || true
 pulumi config set bucketCount 3 >/dev/null 2>&1 || true
 
-# 安装 Go 工具链（同步）。注意：不能用 `command -v go` 做守卫——镜像自带的
-# 老版 go（如 1.18）会让守卫误以为已装好。pulumi 与依赖需要 go >= 1.23。
-if [ ! -x /usr/local/go/bin/go ]; then
+# 安装 Go 工具链（同步）。注意：不能只判断文件是否存在——旧会话里
+# /usr/local/go/bin/go 也可能已经是老版 go（如 1.18）。pulumi 与依赖需要 go >= 1.23。
+if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then
   curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
     && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
 fi
@@ -411,13 +414,13 @@ hash -r 2>/dev/null || true
 # 关键：同步解析 Go 依赖（扫描 main.go 的 import，写好 go.mod / go.sum 并下载模块）。
 # 这一步必须在学员运行 pulumi up 之前完成，否则 pulumi 的 go build 会因 go.mod
 # 缺少 require 而报 "no required module provides package ..." 直接失败。
-go mod tidy || true
+/usr/local/go/bin/go mod tidy || true
 
 # 编译缓存预热放后台，只为加速 step5 首次 pulumi up；即便没跑完，pulumi up 也只是慢一点、不会失败。
 (
   export PATH="/usr/local/go/bin:$PATH"
   cd /root/workspace-go
-  go build -o /tmp/go-warm . >/dev/null 2>&1 || true
+  /usr/local/go/bin/go build -o /tmp/go-warm . >/dev/null 2>&1 || true
   touch /tmp/.go-ready
 ) &
 

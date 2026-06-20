@@ -20,13 +20,13 @@ cat Pulumi.yaml
 
 ```bash
 cd /root/workspace-go && \
-( [ -x /usr/local/go/bin/go ] || (curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz) ) && \
+if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz; fi && \
 export PATH=/usr/local/go/bin:$PATH && \
 export GOPATH=/root/go && \
 export GOFLAGS=-mod=mod && \
 hash -r && \
-go version && \
-go mod tidy
+/usr/local/go/bin/go version && \
+/usr/local/go/bin/go mod tidy
 ```{{exec}}
 
 dev Stack 已经预置好（bucketPrefix=dev、bucketCount=3），但它的配置里从没设过 owner。部署它，却能读到 `platform-team`——这就是项目级默认值在起作用：

@@ -41,18 +41,18 @@ for i in $(seq 1 60); do
 done
 
 echo "==> [3/5] 确保 Go 已安装并预热编译缓存（首次较慢，请耐心等待）"
-# 不能用 `command -v go` 判断——镜像自带的 go 1.18 会让它误以为已装好。
-if [ ! -x /usr/local/go/bin/go ]; then
-  echo "Go 1.23 尚未安装，正在安装 go1.23.4…"
+# 不能只判断 go 是否存在——镜像或旧会话可能留下 go 1.18。
+if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then
+  echo "Go 1.23.4 尚未就绪，正在安装 go1.23.4…"
   curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
     && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
 fi
 export PATH="/usr/local/go/bin:$PATH"
 hash -r 2>/dev/null || true
-go version
+/usr/local/go/bin/go version
 cd "$WORKDIR_GO"
-go mod tidy
-go build -o /tmp/go-warm .
+/usr/local/go/bin/go mod tidy
+/usr/local/go/bin/go build -o /tmp/go-warm .
 echo "Go 编译缓存已就绪。"
 
 echo "==> [4/5] 部署 dev（应读到项目级默认 owner=platform-team）"
@@ -87,13 +87,13 @@ echo "清理：cd $WORKDIR_GO && pulumi destroy --yes --stack dev ; pulumi destr
 #   cd /root/workspace-go && cat main.go
 #   cat Pulumi.yaml
 #   cd /root/workspace-go && \
-#   ( [ -x /usr/local/go/bin/go ] || (curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz) ) && \
+#   if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz; fi && \
 #   export PATH=/usr/local/go/bin:$PATH && \
 #   export GOPATH=/root/go && \
 #   export GOFLAGS=-mod=mod && \
 #   hash -r && \
-#   go version && \
-#   go mod tidy
+#   /usr/local/go/bin/go version && \
+#   /usr/local/go/bin/go mod tidy
 #   pulumi stack select dev && pulumi up --yes --non-interactive && pulumi stack output
 #   pulumi stack init prod
 #   pulumi config set bucketPrefix prod && \
