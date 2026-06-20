@@ -21,7 +21,7 @@ cd /root/workspace && cp variants/step6-pre.ts index.ts && pulumi up --yes
 看看子网当前关联了哪个 NSG，再看看我们准备好的默认 NSG 的 id：
 
 ```bash
-pulumi stack output vnetSubnets; echo "default-nsg ="; pulumi stack output defaultNsgId
+pulumi stack output vnetSubnets; echo -n "default-nsg = "; pulumi stack output defaultNsgId
 ```{{exec}}
 
 你会看到子网的 `securityGroup` 字段是空的——它没有关联任何 NSG。
@@ -43,7 +43,7 @@ cp variants/step6.ts index.ts && pulumi up --yes
 `pulumi up` 会显示这个 VNet 被更新——子网关联上了我们的默认 NSG。再看一次输出确认：
 
 ```bash
-pulumi stack output vnetSubnets; echo "default-nsg ="; pulumi stack output defaultNsgId
+pulumi stack output vnetSubnets; echo -n "default-nsg = "; pulumi stack output defaultNsgId
 ```{{exec}}
 
 现在子网的 `securityGroup` 字段填上了 `defaultNsgId` 的值。注意：我们既没有改 VNet 的声明，也没有逐个子网加配置，只是注册了一条规则，就让所有「缺省 NSG 的子网」统一拿到了兜底 NSG——这正是 transform 的价值。

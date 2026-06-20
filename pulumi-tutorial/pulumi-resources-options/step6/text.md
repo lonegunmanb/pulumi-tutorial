@@ -21,7 +21,7 @@ cd /root/workspace && cp variants/step6-pre.ts index.ts && pulumi up --yes
 看看这块网卡关联了哪些安全组，再看看我们准备好的默认防火墙的 id：
 
 ```bash
-pulumi stack output eniSecurityGroups; echo "default-fw ="; pulumi stack output defaultFwId
+pulumi stack output eniSecurityGroups; echo -n "default-fw = "; pulumi stack output defaultFwId
 ```{{exec}}
 
 你会发现网卡上并没有挂着我们的默认防火墙——它要么是空的，要么是模拟器随手分配的另一个安全组。
@@ -43,7 +43,7 @@ cp variants/step6.ts index.ts && pulumi up --yes
 `pulumi up` 会显示这块网卡被更新——它关联的安全组变成了我们的默认防火墙。再看一次输出确认：
 
 ```bash
-pulumi stack output eniSecurityGroups; echo "default-fw ="; pulumi stack output defaultFwId
+pulumi stack output eniSecurityGroups; echo -n "default-fw = "; pulumi stack output defaultFwId
 ```{{exec}}
 
 现在 `eniSecurityGroups` 里出现了 `defaultFwId` 的值。注意：我们既没有改 ENI 的声明，也没有逐个资源加选项，只是注册了一条规则，就让所有「缺省安全组的网卡」统一拿到了兜底防火墙——这正是 transform 的价值。
