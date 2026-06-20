@@ -11,13 +11,13 @@
 
 ## 清理
 
-销毁 TypeScript 项目（dev）与 Go 项目（dev / prod）的资源并停掉 MiniStack：
+销毁 dev 与 prod 两个 Stack 的资源并停掉 MiniStack：
 
 ```bash
-cd /root/workspace && pulumi destroy --yes --stack dev ; \
-cd /root/workspace-go && pulumi destroy --yes --stack dev ; \
-pulumi destroy --yes --stack prod ; \
-cd /root/workspace && docker compose down
+cd /root/workspace && \
+pulumi destroy --yes --stack dev && \
+pulumi destroy --yes --stack prod && \
+docker compose down
 ```{{exec}}
 
 ## 延伸阅读

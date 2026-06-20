@@ -8,7 +8,7 @@
       { "title": "在程序里读取配置驱动资源", "text": "step2/text.md" },
       { "title": "结构化配置：--path 与 requireObject", "text": "step3/text.md" },
       { "title": "机密配置：--secret 的加密与遮蔽", "text": "step4/text.md" },
-      { "title": "一套程序，多个 Stack（改用 Go）", "text": "step5/text.md" },
+      { "title": "一套程序，多个 Stack", "text": "step5/text.md" },
       { "title": "组件配置：组件读取自己命名空间的配置", "text": "step6/text.md" }
     ],
     "finish": { "text": "finish/finish.md" },

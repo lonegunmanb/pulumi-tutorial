@@ -2,7 +2,7 @@
 
 前面所有配置键都属于**项目自己的命名空间**（在本实验里就是 `pulumi-config:`）。但当你把一组资源封装成可复用的 **Component** 时，更好的做法是：让组件从**它自己的命名空间**读配置，与宿主项目互不干扰。
 
-先回到本项目（TypeScript，/root/workspace）和它的 `dev` Stack——上一步我们在另一个 Go 项目目录里操作：
+先回到本项目和它的 `dev` Stack：
 
 ```bash
 cd /root/workspace && pulumi stack select dev

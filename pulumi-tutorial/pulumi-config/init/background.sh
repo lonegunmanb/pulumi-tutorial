@@ -17,7 +17,7 @@ export TS_NODE_TRANSPILE_ONLY=1
 rm -f /tmp/.setup-done
 mkdir -p /root/workspace
 
-# 给小内存的实验机加一块 swap 作为安全垫，缓解 pulumi up / go build 的内存峰值（尽力而为，容器内 swapon 可能不被允许，失败也无妨）。
+# 给小内存的实验机加一块 swap 作为安全垫，缓解 pulumi up 的内存峰值（尽力而为，容器内 swapon 可能不被允许，失败也无妨）。
 if [ ! -f /swapfile ]; then
   fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 2>/dev/null || true
   chmod 600 /swapfile 2>/dev/null || true
@@ -34,16 +34,6 @@ if ! grep -q 'PULUMI_CONFIG_PASSPHRASE' /root/.bashrc 2>/dev/null; then
 fi
 if ! grep -q 'TS_NODE_TRANSPILE_ONLY' /root/.bashrc 2>/dev/null; then
   echo 'export TS_NODE_TRANSPILE_ONLY=1' >> /root/.bashrc
-fi
-# step5 改用 Go：把 Go 工具链放到 PATH 最前（镜像可能自带老版 go 1.18，必须被我们装的 1.23 覆盖）。
-if ! grep -q 'pulumi-config-go-toolchain' /root/.bashrc 2>/dev/null; then
-  cat >> /root/.bashrc <<'BASHRC'
-# pulumi-config-go-toolchain
-export PATH="/usr/local/go/bin:$PATH"
-export GOPATH=/root/go
-# -mod=mod 让 go build 在缺依赖时能自动补齐 go.mod / go.sum，作为保险。
-export GOFLAGS=-mod=mod
-BASHRC
 fi
 
 # Killercoda 已预装 Docker，这里只确保守护进程在运行。
@@ -110,6 +100,8 @@ cat > Pulumi.yaml <<'YAML'
 name: pulumi-config
 runtime: nodejs
 description: Drive AWS resources from Pulumi configuration against MiniStack.
+config:
+  owner: platform-team
 YAML
 
 # ---------- 共享的 provider 片段（每个变体都会复用） ----------
@@ -293,138 +285,6 @@ for i in $(seq 1 60); do
   fi
   sleep 2
 done
-
-# ---------- step5 用 Go 重写 ----------
-# 说明：step1-4 与 step6 仍是 TypeScript；只有 step5 改用 Go。
-# 原因：Node 版 @pulumi/aws 体积庞大，语言宿主进程会吃掉 1GB+ 内存，在小内存的实验机上做
-# “一套程序、多个 Stack”（连续两次 pulumi up）时容易被内核 OOM 杀掉；Go 语言宿主是编译出来的
-# 原生二进制，运行时内存占用低得多。一个 Pulumi 项目的 runtime 是固定的，无法在同一目录里混用
-# 语言，所以 Go 版独立放在 /root/workspace-go。
-mkdir -p /root/workspace-go
-cd /root/workspace-go
-
-cat > Pulumi.yaml <<'YAML'
-name: pulumi-config-go
-runtime: go
-description: Drive AWS resources from Pulumi configuration against MiniStack (Go).
-config:
-  owner: platform-team
-YAML
-
-cat > go.mod <<'GOMOD'
-module pulumi-config-go
-
-go 1.23
-GOMOD
-
-cat > main.go <<'GO'
-package main
-
-import (
-	"fmt"
-
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws"
-	"github.com/pulumi/pulumi-aws/sdk/v7/go/aws/s3"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
-)
-
-func main() {
-	pulumi.Run(func(ctx *pulumi.Context) error {
-		// 显式构造 provider：把所有 AWS 调用指向本地 MiniStack（而非真实 AWS）。
-		// 与本实验前几步的 TypeScript 程序做的是同一件事，只是换成了 Go。
-		localAws, err := aws.NewProvider(ctx, "ministack", &aws.ProviderArgs{
-			Region:                    pulumi.String("us-east-1"),
-			AccessKey:                 pulumi.String("test"),
-			SecretKey:                 pulumi.String("test"),
-			SkipCredentialsValidation: pulumi.Bool(true),
-			SkipMetadataApiCheck:      pulumi.Bool(true),
-			SkipRequestingAccountId:   pulumi.Bool(true),
-			S3UsePathStyle:            pulumi.Bool(true),
-			Endpoints: aws.ProviderEndpointArray{
-				aws.ProviderEndpointArgs{
-					S3:  pulumi.String("http://localhost:4566"),
-					Sts: pulumi.String("http://localhost:4566"),
-				},
-			},
-		})
-		if err != nil {
-			return err
-		}
-
-		// 从配置里读取程序需要的值——而不是硬编码。
-		cfg := config.New(ctx, "")
-		prefix := cfg.Require("bucketPrefix") // 必填：缺失就报错
-		count := 1                            // 可选：缺失则用默认值 1
-		if v, err := cfg.TryInt("bucketCount"); err == nil {
-			count = v
-		}
-		owner := cfg.Require("owner") // 来自项目级 Pulumi.yaml 的默认值，可被 Stack 覆盖
-
-		// 读取 aws 命名空间下的 region，仅作标签值展示（provider 用的是上面写死的 region）。
-		awsCfg := config.New(ctx, "aws")
-		region := awsCfg.Get("region")
-		if region == "" {
-			region = "us-east-1"
-		}
-
-		// 按配置的数量创建若干 S3 Bucket，名字带上配置的前缀。
-		var bucketNames pulumi.StringArray
-		for i := 0; i < count; i++ {
-			b, err := s3.NewBucket(ctx, fmt.Sprintf("%s-bucket-%d", prefix, i), &s3.BucketArgs{
-				Tags: pulumi.StringMap{
-					"owner":            pulumi.String(owner),
-					"configuredRegion": pulumi.String(region),
-				},
-			}, pulumi.Provider(localAws))
-			if err != nil {
-				return err
-			}
-			bucketNames = append(bucketNames, b.Bucket)
-		}
-
-		ctx.Export("stackPrefix", pulumi.String(prefix))
-		ctx.Export("bucketCount", pulumi.Int(count))
-		ctx.Export("ownerName", pulumi.String(owner))
-		ctx.Export("configuredRegion", pulumi.String(region))
-		ctx.Export("bucketNames", bucketNames)
-		return nil
-	})
-}
-GO
-
-# 预创建 dev Stack 并写好它的配置（dev 从不设置 owner，却能读到项目级默认值 platform-team）。
-# 这些命令不触发语言运行时，因此无需 Go 工具链即可执行。
-pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
-pulumi config set bucketPrefix dev >/dev/null 2>&1 || true
-pulumi config set bucketCount 3 >/dev/null 2>&1 || true
-
-# 安装 Go 工具链（同步）。注意：不能只判断文件是否存在——旧会话里
-# /usr/local/go/bin/go 也可能已经是老版 go（如 1.18）。pulumi 与依赖需要 go >= 1.23。
-if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then
-  curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz \
-    && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
-fi
-# 必须前置 /usr/local/go/bin，让 1.23 赢过系统的老版 go。
-export PATH="/usr/local/go/bin:$PATH"
-export GOPATH=/root/go
-export GOFLAGS=-mod=mod
-hash -r 2>/dev/null || true
-
-# 关键：同步解析 Go 依赖（扫描 main.go 的 import，写好 go.mod / go.sum 并下载模块）。
-# 这一步必须在学员运行 pulumi up 之前完成，否则 pulumi 的 go build 会因 go.mod
-# 缺少 require 而报 "no required module provides package ..." 直接失败。
-/usr/local/go/bin/go mod tidy || true
-
-# 编译缓存预热放后台，只为加速 step5 首次 pulumi up；即便没跑完，pulumi up 也只是慢一点、不会失败。
-(
-  export PATH="/usr/local/go/bin:$PATH"
-  cd /root/workspace-go
-  /usr/local/go/bin/go build -o /tmp/go-warm . >/dev/null 2>&1 || true
-  touch /tmp/.go-ready
-) &
-
-cd /root/workspace
 
 touch /tmp/.setup-done
 echo "[$(date +%Y-%m-%dT%H:%M:%S)] AWS / MiniStack config lab is ready in /root/workspace"
