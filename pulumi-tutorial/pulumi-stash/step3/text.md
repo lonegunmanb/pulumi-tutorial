@@ -13,7 +13,7 @@ pulumi stack export | jq -r '.deployment.resources[] | select(.type == "pulumi:i
 cd /root/workspace && \
 STASH_URN="$(pulumi stack export | jq -r '.deployment.resources[] | select(.type == "pulumi:index:Stash" and (.urn | endswith("::release-label"))) | .urn')" && \
 printf '%s\n' "$STASH_URN" && \
-pulumi up --yes --non-interactive --target-replace "$STASH_URN" && \
+pulumi up --yes --target-replace "$STASH_URN" && \
 pulumi stack output
 ```{{exec}}
 

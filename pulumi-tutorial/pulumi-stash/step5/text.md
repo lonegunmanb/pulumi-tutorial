@@ -12,7 +12,7 @@ cat index.ts
 
 ```bash
 cd /root/workspace && \
-pulumi up --yes --non-interactive && \
+pulumi up --yes && \
 pulumi stack output
 ```{{exec}}
 

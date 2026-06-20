@@ -59,6 +59,7 @@ cat > package.json <<'JSON'
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.0.0"
   }
 }
