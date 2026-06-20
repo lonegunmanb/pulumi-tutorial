@@ -16,6 +16,7 @@ group: 起步
 - Project、Stack、Config、State 与 Backend 的生产语义。
 - `Input<T>`、`Output<T>`、Secrets、资源依赖和生命周期选项。
 - 使用 `ComponentResource` 封装企业级基础设施组件。
+- 使用 Asset 与 Archive 把文件、目录和代码包交给资源输入。
 - 使用 Automation API 构建自助式平台工程后端。
 - 使用 Packages、Dynamic Providers 与 CrossGuard 扩展组织级能力。
 - 使用 Mock、Preview、CI/CD 与策略检查构建安全交付流水线。
@@ -46,12 +47,11 @@ group: 起步
 - [Stack 详解](stacks.md)
 - [Provider 抽象](providers.md)
 - [资源](resources.md)
-
 - [Inputs, Outputs](inputs-outputs.md)
 - [Secrets 机密处理](secrets-handling.md)
 - [Stash 状态暂存](stash.md)
-
 - [Functions 函数](functions.md)
+- [Assets 与 Archives](assets_archives.md)
 - [企业级架构：Components](components.md)
 - [Configuration 配置](configs.md)
 

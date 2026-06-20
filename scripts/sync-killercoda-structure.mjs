@@ -21,6 +21,7 @@ const preferredOrder = [
   'pulumi-secrets-handling',
   'pulumi-stash',
   'pulumi-functions',
+  'pulumi-assets-archives',
   'pulumi-components',
   'pulumi-components-azure',
   'pulumi-config',

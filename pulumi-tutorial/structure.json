@@ -46,6 +46,9 @@
       "path": "pulumi-functions"
     },
     {
+      "path": "pulumi-assets-archives"
+    },
+    {
       "path": "pulumi-components"
     },
     {

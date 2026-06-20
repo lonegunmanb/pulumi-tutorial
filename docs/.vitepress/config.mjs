@@ -54,6 +54,7 @@ export default defineConfig({
                   { text: "Secrets 机密处理", link: "/secrets-handling" },
                   { text: "Stash 状态暂存", link: "/stash" },
                   { text: "Functions 函数", link: "/functions" },
+                  { text: "Assets 与 Archives", link: "/assets_archives" },
                   { text: "企业级架构：Components", link: "/components" },
                   { text: "Configuration 配置", link: "/configs" }
                 ]
