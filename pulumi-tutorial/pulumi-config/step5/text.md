@@ -29,9 +29,9 @@ pulumi stack init prod
 ```{{exec}}
 
 ```bash
-pulumi config set bucketPrefix prod
-pulumi config set bucketCount 4
-pulumi config set aws:region us-west-2
+pulumi config set bucketPrefix prod && \
+pulumi config set bucketCount 4 && \
+pulumi config set aws:region us-west-2 && \
 pulumi config set owner prod-team
 ```{{exec}}
 
@@ -44,7 +44,7 @@ pulumi up --yes && pulumi stack output
 最后对比两个 Stack 的产出——同一套程序，规模与归属却各不相同：
 
 ```bash
-echo '--- dev ---' && pulumi stack output --stack dev bucketNames
+echo '--- dev ---' && pulumi stack output --stack dev bucketNames && \
 echo '--- prod ---' && pulumi stack output --stack prod bucketNames
 ```{{exec}}
 

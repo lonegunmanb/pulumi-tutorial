@@ -28,7 +28,7 @@ cat Pulumi.dev.yaml
 cp variants/step3.ts index.ts && cat index.ts
 ```{{exec}}
 
-程序里用 `requireObject<Tags>("tags")` 一次读出整个对象。这里有个常见陷阱：它返回的是一个普通对象，不是 Config 实例，所以取嵌套值要用标准的属性访问（`tags.team`），不能再链式调用 `require`。
+程序里用 `requireObject<Tags>("tags")` 一次读出整个对象。这里有个常见陷阱：它返回的是一个普通对象，不是 Config 实例，所以取嵌套值要用标准的属性访问（形如 tags.team），不能再像 Config 那样链式调用 require。
 
 部署，再看桶上的标签：
 
