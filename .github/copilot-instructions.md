@@ -27,6 +27,15 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
   ```
 
   例外：heredoc（如 `cat >> Pulumi.yaml <<'YAML' ... YAML`）本身就是单条命令，无需也不能用 `&& \` 拆分。
+- **Killercoda 终端会被「交互式命令 + 管道截断」搞到重连**：像 `pulumi preview` / `pulumi up` 这类命令默认是**交互式**输出，会持续刷新一棵带 ANSI 控制序列的进度树。如果用 `... 2>&1 | head -n N` 之类在中途关闭管道，会同时发生两件坏事——一是 `head` 提前退出关闭管道，上游 `pulumi` 收到 SIGPIPE 被强行终止；二是被截断在半截的 ANSI 转义序列会把终端状态弄乱。Killercoda 的终端包在 websocket 里，终端状态损坏叠加子进程被信号杀掉，会触发它「重连一下」（SSH reconnect）。**正确做法**：加 `--non-interactive` 关掉动态进度树，并且**先把输出重定向到文件、再 `head` 那个文件**，彻底避开管道 SIGPIPE 和半截转义序列。例如：
+
+  ```bash
+  pulumi config rm bucketPrefix && \
+  pulumi preview --non-interactive > /tmp/preview.out 2>&1; \
+  head -n 20 /tmp/preview.out
+  ```
+
+  注意这里末尾用 `;` 接 `head`（而非 `&&`），因为要演示的 `pulumi preview` 失败会返回非零码，用 `;` 才能保证无论成败都打印输出。
 
 ## Writing style
 
