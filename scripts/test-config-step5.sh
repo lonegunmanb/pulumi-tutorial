@@ -86,13 +86,21 @@ echo "清理：cd $WORKDIR_GO && pulumi destroy --yes --stack dev ; pulumi destr
 #
 #   cd /root/workspace-go && cat main.go
 #   cat Pulumi.yaml
-#   pulumi stack select dev && pulumi up --yes && pulumi stack output
+#   cd /root/workspace-go && \
+#   ( [ -x /usr/local/go/bin/go ] || (curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz) ) && \
+#   export PATH=/usr/local/go/bin:$PATH && \
+#   export GOPATH=/root/go && \
+#   export GOFLAGS=-mod=mod && \
+#   hash -r && \
+#   go version && \
+#   go mod tidy
+#   pulumi stack select dev && pulumi up --yes --non-interactive && pulumi stack output
 #   pulumi stack init prod
 #   pulumi config set bucketPrefix prod && \
 #   pulumi config set bucketCount 4 && \
 #   pulumi config set aws:region us-west-2 && \
 #   pulumi config set owner prod-team
-#   pulumi up --yes && pulumi stack output
+#   pulumi up --yes --non-interactive && pulumi stack output
 #   echo '--- dev ---' && pulumi stack output --stack dev bucketNames && \
 #   echo '--- prod ---' && pulumi stack output --stack prod bucketNames
 # ----------------------------------------------------------------------------

@@ -16,10 +16,23 @@ cd /root/workspace-go && cat main.go
 cat Pulumi.yaml
 ```{{exec}}
 
+第一次部署前，先确认当前终端使用的是 Go 1.23，并补齐模块依赖。这个命令可以重复执行；依赖已经齐全时不会改变部署结果：
+
+```bash
+cd /root/workspace-go && \
+( [ -x /usr/local/go/bin/go ] || (curl -fsSL https://go.dev/dl/go1.23.4.linux-amd64.tar.gz -o /tmp/go.tgz && rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz) ) && \
+export PATH=/usr/local/go/bin:$PATH && \
+export GOPATH=/root/go && \
+export GOFLAGS=-mod=mod && \
+hash -r && \
+go version && \
+go mod tidy
+```{{exec}}
+
 dev Stack 已经预置好（bucketPrefix=dev、bucketCount=3），但它的配置里从没设过 owner。部署它，却能读到 `platform-team`——这就是项目级默认值在起作用：
 
 ```bash
-pulumi stack select dev && pulumi up --yes && pulumi stack output
+pulumi stack select dev && pulumi up --yes --non-interactive && pulumi stack output
 ```{{exec}}
 
 现在新建一个 `prod` Stack，给它一份**完全不同**的配置：
@@ -38,7 +51,7 @@ pulumi config set owner prod-team
 其中 owner 这一行**覆盖**了项目级默认值。部署 `prod`：
 
 ```bash
-pulumi up --yes && pulumi stack output
+pulumi up --yes --non-interactive && pulumi stack output
 ```{{exec}}
 
 最后对比两个 Stack 的产出——同一套程序，规模与归属却各不相同：
