@@ -1,0 +1,19 @@
+{
+  "title": "Configuration 配置（AWS / MiniStack）",
+  "description": "用 @pulumi/aws 对接 MiniStack，掌握 CLI 存取配置与命名空间、在程序里 require/get 驱动资源、结构化配置 --path 与 requireObject、机密配置 --secret、dev/prod 多 Stack 的配置差异，以及组件从自己命名空间读取配置",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "用 CLI 存取配置与命名空间", "text": "step1/text.md" },
+      { "title": "在程序里读取配置驱动资源", "text": "step2/text.md" },
+      { "title": "结构化配置：--path 与 requireObject", "text": "step3/text.md" },
+      { "title": "机密配置：--secret 的加密与遮蔽", "text": "step4/text.md" },
+      { "title": "一套程序，多个 Stack", "text": "step5/text.md" },
+      { "title": "组件配置：组件读取自己命名空间的配置", "text": "step6/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

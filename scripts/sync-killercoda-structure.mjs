@@ -21,6 +21,7 @@ const preferredOrder = [
   'pulumi-functions',
   'pulumi-components',
   'pulumi-components-azure',
+  'pulumi-config',
   'pulumi-automation-api',
   'pulumi-packages-crossguard',
   'pulumi-testing-cicd',

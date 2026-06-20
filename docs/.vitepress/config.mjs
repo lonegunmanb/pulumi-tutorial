@@ -53,7 +53,8 @@ export default defineConfig({
                   { text: "Inputs, Outputs", link: "/inputs-outputs" },
                   { text: "Secrets 机密处理", link: "/secrets-handling" },
                   { text: "Functions 函数", link: "/functions" },
-                  { text: "企业级架构：Components", link: "/components" }
+                  { text: "企业级架构：Components", link: "/components" },
+                  { text: "Configuration 配置", link: "/configs" }
                 ]
               },
               {

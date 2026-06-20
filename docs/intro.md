@@ -46,11 +46,13 @@ group: 起步
 - [Stack 详解](stacks.md)
 - [Provider 抽象](providers.md)
 - [资源](resources.md)
+
 - [Inputs, Outputs](inputs-outputs.md)
 - [Secrets 机密处理](secrets-handling.md)
 
 - [Functions 函数](functions.md)
 - [企业级架构：Components](components.md)
+- [Configuration 配置](configs.md)
 
 ### 第 3 篇：Automation API, Packages & Guides
 
