@@ -29,15 +29,3 @@ pulumi up --yes && pulumi stack output
 ```{{exec}}
 
 这次新增了 2 个桶。配置驱动资源的威力就在这里：同一套逻辑，靠配置就能伸缩。
-
-再看 `require` 的「快速失败」是什么样。先临时删掉必填项，再预览。这里用 `--non-interactive` 关掉动态进度树，让输出直接、平稳地打到终端（既不截断管道，也不让终端长时间静默）：
-
-```bash
-pulumi config rm bucketPrefix && pulumi preview --non-interactive
-```{{exec}}
-
-`require` 在缺失时抛出带提示的异常，阻止部署带着空值继续。把它补回来：
-
-```bash
-pulumi config set bucketPrefix demo
-```{{exec}}
