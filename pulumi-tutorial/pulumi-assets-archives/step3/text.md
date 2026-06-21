@@ -8,7 +8,7 @@ AssetArchive 用一个 map 描述最终包内的文件结构。这个 map 的值
 cd /root/workspace && cat variants/step3-asset-archive.ts
 ```{{exec}}
 
-这个包里有三类内容：index.js 来自 StringAsset，config/message.txt 来自 FileAsset，public 目录来自 FileArchive。
+这个包里有三类内容：index.js 来自 StringAsset，config 目录来自嵌套的 AssetArchive，public 目录来自 FileArchive。
 
 应用它并再次调用 Lambda：
 

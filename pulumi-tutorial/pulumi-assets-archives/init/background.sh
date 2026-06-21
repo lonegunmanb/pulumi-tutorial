@@ -284,7 +284,9 @@ exports.handler = async () => {
   };
 };
 `),
-  "config/message.txt": new pulumi.asset.FileAsset("./payload/message.txt"),
+  "config": new pulumi.asset.AssetArchive({
+    "message.txt": new pulumi.asset.FileAsset("./payload/message.txt"),
+  }),
   "public": new pulumi.asset.FileArchive("./site"),
 });
 
