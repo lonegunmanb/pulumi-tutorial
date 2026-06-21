@@ -42,8 +42,6 @@ group: 第 2 篇：Concepts 深度剖析
 
 ![Asset 是单个文件，Archive 是一组文件或打包箱](./images/assets-archives-file-package.png)
 
-> 绘图提示词：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感。画面左侧是一只 Pulumi 吉祥物鸭嘴兽（the Pulumi mascot platypus），青色身体，嘴巴颜色是 #F361D6，圆圆的眼睛，短短的四肢，憨态可掬，手里拿着一张写有 Asset 的单页文件；右侧是一个打开的文件箱，里面有多份文件、一个小 ZIP 包和一个写着 Archive 的标签。中间用一条传送带连接到云端资源图标，表示 Pulumi engine 会把 file contents package 交给 resource provider。professional / technical terms（Asset、Archive、Pulumi engine、resource provider、file contents package）用英语，其余说明文字用中文。
-
 ## 9.2 Asset：单个文件的三种来源
 
 官方定义了三类 Asset，它们的差别只在于内容从哪里来。

@@ -274,19 +274,18 @@ const role = createLambdaRole();
 const code = new pulumi.asset.AssetArchive({
   "index.js": new pulumi.asset.StringAsset(`
 const fs = require("fs");
+const path = require("path");
 
 exports.handler = async () => {
-  const message = fs.readFileSync("./config/message.txt", "utf8").trim();
+  const message = fs.readFileSync(path.join(__dirname, "message.txt"), "utf8").trim();
   return {
     packageKind: "AssetArchive",
     message,
-    hasPublicFolder: fs.existsSync("./public/index.html"),
+    hasPublicFolder: fs.existsSync(path.join(__dirname, "public", "index.html")),
   };
 };
 `),
-  "config": new pulumi.asset.AssetArchive({
-    "message.txt": new pulumi.asset.FileAsset("./payload/message.txt"),
-  }),
+  "message.txt": new pulumi.asset.FileAsset("./payload/message.txt"),
   "public": new pulumi.asset.FileArchive("./site"),
 });
 
