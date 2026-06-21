@@ -7,6 +7,12 @@
       "path": "pulumi-architecture-azure"
     },
     {
+      "path": "pulumi-how-pulumi-works-aws"
+    },
+    {
+      "path": "pulumi-how-pulumi-works-azure"
+    },
+    {
       "path": "pulumi-get-started"
     },
     {

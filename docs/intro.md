@@ -39,11 +39,13 @@ group: 起步
 ### 第 1 篇：Get Started
 
 - [IaC 范式转移与 Pulumi 架构解析](architecture.md)
+- [Pulumi 是如何工作的](how-pulumi-works.md)
 - [如何安装 Pulumi](install.md)
 
 ### 第 2 篇：Concepts 深度剖析
 
 - [项目、堆栈与状态管理](projects-stacks-state.md)
+
 - [Stack 详解](stacks.md)
 - [Provider 抽象](providers.md)
 - [资源](resources.md)

@@ -8,6 +8,8 @@ const structurePath = path.join(scenariosDir, 'structure.json')
 const preferredOrder = [
   'pulumi-architecture-aws',
   'pulumi-architecture-azure',
+  'pulumi-how-pulumi-works-aws',
+  'pulumi-how-pulumi-works-azure',
   'pulumi-get-started',
   'pulumi-projects-stacks-state',
   'pulumi-projects-stacks-state-azure',

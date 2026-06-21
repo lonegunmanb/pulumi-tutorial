@@ -39,6 +39,7 @@ export default defineConfig({
                 collapsed: false,
                 items: [
                   { text: "IaC 范式转移与 Pulumi 架构解析", link: "/architecture" },
+                  { text: "Pulumi 是如何工作的", link: "/how-pulumi-works" },
                   { text: "如何安装 Pulumi", link: "/install" }
                 ]
               },

@@ -1,0 +1,18 @@
+{
+  "title": "Pulumi 是如何工作的（AWS / MiniStack）",
+  "description": "用 @pulumi/aws 对接 MiniStack，观察 Pulumi 程序如何注册 S3 Bucket，Engine 如何计算 create/update/delete，Provider 如何执行变更并写回 State",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "第一次 preview 与 up", "text": "step1/text.md" },
+      { "title": "查看 State 与 Provider", "text": "step2/text.md" },
+      { "title": "标签变化产生 update", "text": "step3/text.md" },
+      { "title": "逻辑名变化产生 create/delete", "text": "step4/text.md" },
+      { "title": "删除声明并清理", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
