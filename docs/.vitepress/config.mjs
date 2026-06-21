@@ -61,11 +61,14 @@ export default defineConfig({
                 ]
               },
               {
-                text: "第 3 篇：Automation API, Packages & Guides",
+                text: "第 3 篇：Pulumi OSS 工程化扩展与交付实践",
                 collapsed: false,
                 items: [
+                  { text: "多环境 Stack 配置与动态基础设施", link: "/dynamic-stacks" },
                   { text: "Automation API", link: "/automation-api" },
-                  { text: "Packages 与 CrossGuard", link: "/packages-crossguard" },
+                  { text: "Pulumi Packages", link: "/packages" },
+                  { text: "Policy as Code", link: "/policy-as-code" },
+                  { text: "Pulumi 调试与故障排查", link: "/debugging" },
                   { text: "测试驱动开发与 CI/CD 实践", link: "/testing-cicd" }
                 ]
               },

@@ -1,0 +1,18 @@
+{
+  "title": "动态 Stack 配置（Azure / miniblue）",
+  "description": "用 @pulumi/azure 对接 miniblue，让 dev/prod 配置矩阵驱动 Resource Group、Virtual Network、Subnet 与条件 NSG，并练习 preview、refresh、状态备份和配置恢复",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "读取网络配置矩阵", "text": "step1/text.md" },
+      { "title": "部署 dev 的单子网网络", "text": "step2/text.md" },
+      { "title": "部署 prod 的多子网网络", "text": "step3/text.md" },
+      { "title": "用 refresh 发现标签漂移", "text": "step4/text.md" },
+      { "title": "备份与网络配置恢复", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

@@ -64,6 +64,12 @@
       "path": "pulumi-config"
     },
     {
+      "path": "pulumi-dynamic-stacks-aws"
+    },
+    {
+      "path": "pulumi-dynamic-stacks-azure"
+    },
+    {
       "path": "pulumi-automation-api"
     },
     {

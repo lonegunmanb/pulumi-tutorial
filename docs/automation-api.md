@@ -1,7 +1,7 @@
 ---
 order: 60
 title: Automation API
-group: 第 3 篇：Automation API, Packages & Guides
+group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
 # Automation API
@@ -17,15 +17,15 @@ group: 第 3 篇：Automation API, Packages & Guides
 
 ## 完成版目录
 
-6.1 从 CLI 到 SDK：Automation API 解决的核心问题  
-6.2 Workspace 模型：LocalWorkspace、ProjectSettings、StackSettings 与依赖安装  
-6.3 Stack 操作编排：`selectStack`、`up`、`preview`、`refresh`、`destroy`  
-6.4 构建平台后端：用 Express.js/FastAPI 暴露环境申请 API  
-6.5 Inline Programs：在内存闭包中动态组装架构  
-6.6 事件流与可观测性：捕获日志、资源事件、诊断与进度  
-6.7 与 Pulumi ESC 集成：按请求注入环境、机密与配置  
-6.8 安全模型：租户隔离、凭据边界、并发锁与超时回收  
-6.9 本章实验：实现一个“临时测试环境即服务”的后端
+- 7.1 从 CLI 到 SDK：Automation API 解决的核心问题
+- 7.2 Workspace 模型：LocalWorkspace、ProjectSettings、StackSettings 与依赖安装
+- 7.3 Stack 操作编排：`selectStack`、`up`、`preview`、`refresh`、`destroy`
+- 7.4 构建平台后端：用 Express.js/FastAPI 暴露环境申请 API
+- 7.5 Inline Programs：在内存闭包中动态组装架构
+- 7.6 事件流与可观测性：捕获日志、资源事件、诊断与进度
+- 7.7 配置与机密注入：StackSettings、环境变量与本地 secrets provider
+- 7.8 安全模型：租户隔离、凭据边界、并发锁与超时回收
+- 7.9 本章实验：实现一个“临时测试环境即服务”的后端
 
 ## 动手实验
 

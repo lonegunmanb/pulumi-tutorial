@@ -27,6 +27,8 @@ const preferredOrder = [
   'pulumi-components',
   'pulumi-components-azure',
   'pulumi-config',
+  'pulumi-dynamic-stacks-aws',
+  'pulumi-dynamic-stacks-azure',
   'pulumi-automation-api',
   'pulumi-packages-crossguard',
   'pulumi-testing-cicd',

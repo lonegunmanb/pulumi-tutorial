@@ -16,3 +16,4 @@ Thumbs.db
 Pulumi.*.yaml
 !.github/**
 !.vscode/**
+pulumi.md

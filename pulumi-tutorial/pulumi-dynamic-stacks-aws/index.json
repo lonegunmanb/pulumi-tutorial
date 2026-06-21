@@ -1,0 +1,18 @@
+{
+  "title": "动态 Stack 配置（AWS / MiniStack）",
+  "description": "用 @pulumi/aws 对接 MiniStack，让 dev/prod 配置矩阵驱动 S3 Bucket 数量、访问日志开关、标签与 Secret 输出，并练习 preview、refresh、状态备份和配置恢复",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "读取环境配置矩阵", "text": "step1/text.md" },
+      { "title": "部署 dev 的轻量形态", "text": "step2/text.md" },
+      { "title": "部署 prod 的扩展形态", "text": "step3/text.md" },
+      { "title": "用 refresh 发现漂移", "text": "step4/text.md" },
+      { "title": "备份与配置恢复", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

@@ -1,7 +1,7 @@
 ---
 order: 80
 title: 测试驱动开发与 CI/CD 实践
-group: 第 3 篇：Automation API, Packages & Guides
+group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
 # 测试驱动开发与 CI/CD 实践
@@ -17,14 +17,15 @@ group: 第 3 篇：Automation API, Packages & Guides
 
 ## 完成版目录
 
-8.1 基础设施测试金字塔：单元测试、集成测试、预览审查、策略测试  
-8.2 Mock API：在毫秒级测试中替代真实云端交互  
-8.3 Mocha/Jest/PyTest 实战：资源属性断言、依赖断言与输出断言  
-8.4 Preview 驱动的 Pull Request 审查：把计划变更前置到代码评审  
-8.5 GitHub Actions 集成：登录、缓存、预览、审批、部署与回滚  
-8.6 GitLab CI 集成：多环境矩阵、受保护变量与手动门禁  
-8.7 企业级流水线设计：状态锁、并发控制、审计、漂移检测与灾备  
-8.8 本章实验：构建从 PR Preview 到 main 自动交付的完整流水线
+- 11.1 基础设施测试金字塔：单元测试、集成测试、预览审查、策略测试
+- 11.2 Mock API：在毫秒级测试中替代真实云端交互
+- 11.3 Mocha/Jest/PyTest 实战：资源属性断言、依赖断言与输出断言
+- 11.4 Preview 驱动的 Pull Request 审查：把计划变更前置到代码评审
+- 11.5 GitHub Actions 集成：登录、缓存、预览、手动门禁、部署与回滚
+- 11.6 GitLab CI 集成：多环境矩阵、受保护变量与手动门禁
+- 11.7 企业级流水线设计：状态锁、并发控制、CI 日志归档、漂移检测与灾备
+- 11.8 本地 Policy Pack 集成：在 CI 中执行策略检查
+- 11.9 本章实验：构建从 PR Preview 到 main 自动交付的完整流水线
 
 ## 动手实验
 
