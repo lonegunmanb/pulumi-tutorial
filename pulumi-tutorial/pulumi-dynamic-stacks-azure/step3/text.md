@@ -18,7 +18,7 @@ pulumi stack output
 查看 prod 的网络计划输出。它应该包含 app、services 和 data 三个子网：
 
 ```bash
-pulumi stack output networkPlan
+pulumi stack output networkPlan | jq
 ```{{exec}}
 
 对比两个 Stack 的子网输出。代码相同，差异来自配置文件：

@@ -20,7 +20,7 @@ pulumi stack output
 读取网络计划输出，确认 dev 只有一个子网：
 
 ```bash
-pulumi stack output networkPlan
+pulumi stack output networkPlan | jq
 ```{{exec}}
 
 再从 miniblue 查询真实 Resource Group 标签：
