@@ -33,7 +33,7 @@ cd /root/workspace
 cat > docker-compose.yml <<'YAML'
 services:
   miniblue:
-    image: ghcr.io/lonegunmanb/miniblue:sha-11ef0e8
+    image: ghcr.io/lonegunmanb/miniblue:sha-6d934ae
     container_name: pulumi-stacks-miniblue
     ports:
       - "4566:4566"
@@ -193,7 +193,7 @@ venv/bin/pip install --upgrade pip >/dev/null
 venv/bin/pip install -r requirements.txt >/dev/null
 
 pulumi login --local >/dev/null
-docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 >/dev/null 2>&1 || true
+docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae >/dev/null 2>&1 || true
 
 touch /tmp/.setup-done
 echo "Azure / miniblue projects-stacks-state lab is ready in /root/workspace"

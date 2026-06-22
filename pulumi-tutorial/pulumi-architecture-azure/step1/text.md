@@ -2,11 +2,11 @@
 
 这一步的目标，是先搭一个“本地练习场”，让你不用真实 Azure 账号也能跑完整个实验。`miniblue` 就是这个本地模拟器：它会在你的机器上提供 Azure 风格的 API，供 Pulumi 调用。
 
-先启动 `miniblue`。镜像已经固定为 `ghcr.io/lonegunmanb/miniblue:sha-11ef0e8`：
+先启动 `miniblue`。镜像已经固定为 `ghcr.io/lonegunmanb/miniblue:sha-6d934ae`：
 
 ```bash
 cd /root/workspace && \
-docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 && \
+docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae && \
 docker compose up -d && \
 curl -s http://localhost:4566/health | jq .
 ```{{exec}}

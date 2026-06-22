@@ -44,7 +44,7 @@ cd /root/workspace
 cat > docker-compose.yml <<'YAML'
 services:
   miniblue:
-    image: ghcr.io/lonegunmanb/miniblue:sha-11ef0e8
+    image: ghcr.io/lonegunmanb/miniblue:sha-6d934ae
     container_name: pulumi-dynamic-stacks-miniblue
     ports:
       - "4566:4566"
@@ -244,7 +244,7 @@ git config user.name "Pulumi Lab" >/dev/null 2>&1 || true
 git add Pulumi.yaml Pulumi.dev.yaml Pulumi.prod.yaml index.ts package.json tsconfig.json docker-compose.yml >/dev/null 2>&1 || true
 git commit -m "Initial dynamic Azure network config lab" >/dev/null 2>&1 || true
 
-docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 >/dev/null 2>&1 || true
+docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae >/dev/null 2>&1 || true
 docker compose up -d >/dev/null 2>&1 || true
 for _ in $(seq 1 60); do
   curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1 && break

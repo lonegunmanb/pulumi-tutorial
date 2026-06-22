@@ -16,7 +16,7 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
 - Prefer local or simulated resources in labs. Avoid requiring real cloud credentials unless a chapter explicitly explains credential setup.
 - When a lab needs a cloud provider example, use `pulumi/pulumi-aws` for AWS examples and `pulumi/pulumi-azure` for Azure examples. Keep this provider choice consistent across all new hands-on labs.
 - Put environment-preparation code in `init/background.sh`, not in `step*/`. This includes starting the simulated public-cloud environment (`ministack` for AWS, `miniblue` for Azure) via `docker compose up -d` and waiting for its health check to pass. By the time a learner reaches step 1, the simulator should already be up; steps should only contain the lab's teaching commands (e.g. `pulumi up`).
-- When a new hands-on lab needs `miniblue` (the Azure simulator), default to the image `ghcr.io/lonegunmanb/miniblue:sha-0e58f75` unless a newer pinned tag has been agreed on.
+- When a new hands-on lab needs `miniblue` (the Azure simulator), default to the image `ghcr.io/lonegunmanb/miniblue:sha-6d934ae` unless a newer pinned tag has been agreed on.
 - **Killercoda 行内代码渲染陷阱**：Killercoda 会给**每一个**行内 `` `code` `` 自动渲染一个复制按钮（`kc-markdown-code-copy`）。**同一段普通文字里出现多个行内代码会导致这些复制按钮互相挤占、渲染错乱**。因此在 `step*/text.md` 的正文叙述里，**每个段落（以及每个列表项）最多只保留一个行内代码**；其余需要提到的标识符、属性、方法名改用纯文本表述（例如把 `` `tags.team` `` 写成「形如 tags.team」，把 `` `require` `` 写成「像 Config 那样链式调用 require」）。真正要让学习者复制执行的命令，一律放进带 `{{exec}}` 的代码块，而不是行内代码。注意：这条限制只针对 Killercoda 的 `step*/text.md`，VitePress 的 `docs/*.md` 不受影响。
 - **Killercoda `{{exec}}` 多行命令必须串联**：点击一个 `{{exec}}` 代码块的复制按钮时，Killercoda **只会把代码块的第一行**发送到终端执行。因此一个 `{{exec}}` 代码块里若有多条需要顺序执行的命令，必须用 `&& \`（`&&` 接续、反斜杠续行）把它们连成**一条**逻辑命令，确保一次点击即可全部执行。例如：
 
@@ -66,3 +66,9 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
   ```
 - 绘图提示词的固定风格：淡水彩阴影漫画插画风格（light watercolor shaded comic illustration），青色（cyan）主色调，拟物质感，用真实实物打比方引导读者理解复杂概念；提示词中 professional / technical terms 用英语，其余用中文。
 - 绘图提示词里如果出现代表 Pulumi 的角色，必须用 Pulumi 的吉祥物——一只鸭嘴兽（the Pulumi mascot platypus）的形象来表现，不要用其他拟人形象代替。鸭嘴兽青色身体，嘴巴颜色是 #F361D6，圆圆的眼睛，短短的四肢，憨态可掬的样子。可以参考 Pulumi 官网和文档里吉祥物的各种形象来描绘。
+
+## 禁用词
+
+以下是一些*不允许**出现在本文正文中的词汇：
+
+心智模型,范式转移,立靶子,打靶,钉死,省事,兜底,一口气走一遍,搞定,上云,落地,落地页,上生产,落生产,打包发布,打包上线,搬迁,迁移,迁云

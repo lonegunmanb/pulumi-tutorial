@@ -258,7 +258,7 @@ Pulumi 官方架构中特别强调：Language Host、Engine、Provider 都运行
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-architecture-aws" title="实验环境（AWS / MiniStack 版）" desc="使用 MiniStack 在本地模拟 AWS S3，观察 Pulumi CLI、Engine、AWS Provider 与 State 如何协作。" />
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-architecture-azure" title="实验环境（Azure / miniblue 版）" desc="使用 ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 模拟 Azure，并通过 Pulumi Dynamic Provider 观察 Azure 风格资源的注册、创建和删除。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-architecture-azure" title="实验环境（Azure / miniblue 版）" desc="使用 ghcr.io/lonegunmanb/miniblue:sha-6d934ae 模拟 Azure，并通过 Pulumi Dynamic Provider 观察 Azure 风格资源的注册、创建和删除。" />
 
 ## 本章交付物
 

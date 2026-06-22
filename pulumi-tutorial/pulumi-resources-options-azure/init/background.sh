@@ -39,7 +39,7 @@ cd /root/workspace
 cat > docker-compose.yml <<'YAML'
 services:
   miniblue:
-    image: ghcr.io/lonegunmanb/miniblue:sha-11ef0e8
+    image: ghcr.io/lonegunmanb/miniblue:sha-6d934ae
     container_name: pulumi-resources-miniblue
     ports:
       - "4566:4566"
@@ -395,7 +395,7 @@ cp variants/base.ts index.ts
 npm install --no-audit --no-fund >/dev/null 2>&1 || true
 pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true
-docker pull ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 >/dev/null 2>&1 || true
+docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae >/dev/null 2>&1 || true
 
 # 启动 miniblue 并等待 metadata 端口就绪。
 docker compose up -d >/dev/null 2>&1 || true

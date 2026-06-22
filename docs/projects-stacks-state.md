@@ -389,7 +389,7 @@ Project、Stack、Config、Output、Secret、StackReference 和 State 是 Pulumi
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-projects-stacks-state" title="实验：Projects、Stacks 与 State（AWS / MiniStack）" desc="使用 MiniStack 模拟 AWS S3，创建 dev/prod 两个 Stack，设置 Config 与 Secret，导出 Stack Output，并用 StackReference 跨项目读取输出。" />
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-projects-stacks-state-azure" title="实验：Projects、Stacks 与 State（Azure / miniblue）" desc="使用 ghcr.io/lonegunmanb/miniblue:sha-11ef0e8 模拟 Azure 风格资源，练习 Stack、Config、Secret、Output、State export 与 StackReference。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-projects-stacks-state-azure" title="实验：Projects、Stacks 与 State（Azure / miniblue）" desc="使用 ghcr.io/lonegunmanb/miniblue:sha-6d934ae 模拟 Azure 风格资源，练习 Stack、Config、Secret、Output、State export 与 StackReference。" />
 
 ## 本章交付物
 
