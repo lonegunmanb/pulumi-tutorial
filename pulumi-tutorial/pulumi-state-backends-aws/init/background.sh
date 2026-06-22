@@ -25,17 +25,25 @@ if ! docker compose version >/dev/null 2>&1; then
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 fi
 
+# awslocal 是 AWS CLI 的包装器，不能脱离 aws 二进制工作。
+# 优先安装 AWS CLI v2；apt 包只作为非致命 fallback，避免 apt 源缺包导致初始化失败。
 if ! command -v aws >/dev/null 2>&1; then
-  apt-get install -y awscli >/dev/null
+  apt-get install -y unzip >/dev/null 2>&1 || true
+  if curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip 2>/dev/null; then
+    unzip -o -q /tmp/awscliv2.zip -d /tmp >/dev/null 2>&1 \
+      && /tmp/aws/install --update >/dev/null 2>&1
+    rm -rf /tmp/awscliv2.zip /tmp/aws
+  fi
+  command -v aws >/dev/null 2>&1 || apt-get install -y awscli >/dev/null 2>&1 || true
 fi
 
-cat > /usr/local/bin/awslocal <<'SH'
+cat > /usr/local/bin/awslocal <<'WRAPPER'
 #!/usr/bin/env bash
 export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-test}"
 export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-test}"
 export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-east-1}"
-exec aws --endpoint-url="${MINISTACK_ENDPOINT:-http://localhost:4566}" "$@"
-SH
+exec aws --endpoint-url=http://localhost:4566 --region "$AWS_DEFAULT_REGION" "$@"
+WRAPPER
 chmod +x /usr/local/bin/awslocal
 
 mkdir -p /root/workspace/state-backends-aws
