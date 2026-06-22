@@ -15,7 +15,7 @@ sed -n '1,120p'
 ```bash
 source /root/.pulumi-state-env.sh && \
 azlocal storage blob download --account pulumistate --container pulumi-state --name .pulumi/stacks/state-backends-azure/dev.json | \
-jq '{resourceCount: (.deployment.resources | length), outputs: (.deployment.resources[] | select(.type=="pulumi:pulumi:Stack").outputs)}'
+jq '(.deployment.resources // .checkpoint.latest.resources // []) as $resources | ($resources[] | select(.type=="pulumi:pulumi:Stack")) as $stack | {resourceCount: ($resources | length), outputs: $stack.outputs}'
 ```{{exec}}
 
 这就是 Pulumi CLI 平时通过 Backend 读写的 State 文件。真实项目中不要把这个文件当作普通配置文件手工编辑。

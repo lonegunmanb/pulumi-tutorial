@@ -20,4 +20,14 @@ pulumi up --yes && \
 pulumi stack output
 ```{{exec}}
 
-部署完成后，当前 Stack 的 checkpoint 已经写入 S3 Backend。机密配置会以密文形式进入 State，而不是以明文写入对象存储。
+部署完成后，当前 Stack 的 checkpoint 已经写入 S3 Backend。现在直接下载这个 checkpoint，确认它不包含明文 token，并查看 operatorTokenPreview 对应的密文。
+
+```bash
+source /root/.pulumi-state-env.sh && \
+cd /root/workspace/state-backends-aws && \
+awslocal s3 cp s3://pulumi-state-aws/.pulumi/stacks/state-backends-aws/dev.json dev-backend-state.json >/dev/null && \
+if grep -q 'dev-token-123' dev-backend-state.json; then echo 'ERROR: found plaintext secret in backend state' && false; else echo 'OK: backend state does not contain plaintext dev-token-123'; fi && \
+jq '(.deployment.resources // .checkpoint.latest.resources // []) as $resources | ($resources[] | select(.type=="pulumi:pulumi:Stack")) as $stack | {resourceCount: ($resources | length), operatorTokenPreviewState: $stack.outputs.operatorTokenPreview, operatorTokenPreviewCiphertext: ($stack.outputs.operatorTokenPreview.ciphertext // $stack.outputs.operatorTokenPreview.secure)}' dev-backend-state.json
+```{{exec}}
+
+如果输出中看到 OK，并且 operatorTokenPreviewCiphertext 有值，就说明 dev-token-123 已经以密文写入 State，而不是以明文写进对象存储。
