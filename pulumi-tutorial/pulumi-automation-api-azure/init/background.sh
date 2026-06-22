@@ -208,17 +208,17 @@ const profiles: Record<string, EnvironmentSettings> = {
       service: "network-service",
     },
   },
-  review: {
-    namePrefix: "autoaz-review",
+  svc1: {
+    namePrefix: "autoaz-svc1",
     location: "eastus",
-    owner: "platform-review",
+    owner: "platform-svc1",
     addressSpace: "10.40.0.0/16",
     subnets: [
       { name: "app", addressPrefix: "10.40.1.0/24" },
       { name: "data", addressPrefix: "10.40.2.0/24" },
     ],
     tags: {
-      costCenter: "lab-review",
+      costCenter: "lab-svc1",
       service: "network-service",
     },
   },
@@ -363,7 +363,7 @@ function send(res: ServerResponse, statusCode: number, body: unknown): void {
 }
 
 function route(method: string, pathname: string): { action: Action; stackName: string } | undefined {
-  const match = pathname.match(/^\/environments\/([A-Za-z0-9._-]+)(?:\/(preview|refresh|outputs))?$/);
+  const match = pathname.match(/^\/stacks\/([A-Za-z0-9._-]+)(?:\/(preview|refresh|outputs))?$/);
   if (!match) {
     return undefined;
   }

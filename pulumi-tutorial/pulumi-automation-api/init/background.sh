@@ -210,15 +210,15 @@ const profiles: Record<string, EnvironmentSettings> = {
 			service: "artifact-service",
 		},
 	},
-	review: {
-		namePrefix: "autoapi-review",
+	svc1: {
+		namePrefix: "autoapi-svc1",
 		region: "us-east-1",
-		owner: "platform-review",
+		owner: "platform-svc1",
 		dataClass: "temporary",
-		artifactName: "review/release.txt",
+		artifactName: "svc1/release.txt",
 		artifactBody: "created from the HTTP wrapper",
 		tags: {
-			costCenter: "lab-review",
+			costCenter: "lab-svc1",
 			service: "artifact-service",
 		},
 	},
@@ -361,7 +361,7 @@ function send(res: ServerResponse, statusCode: number, body: unknown): void {
 }
 
 function route(method: string, pathname: string): { action: Action; stackName: string } | undefined {
-	const match = pathname.match(/^\/environments\/([A-Za-z0-9._-]+)(?:\/(preview|refresh|outputs))?$/);
+	const match = pathname.match(/^\/stacks\/([A-Za-z0-9._-]+)(?:\/(preview|refresh|outputs))?$/);
 	if (!match) {
 		return undefined;
 	}

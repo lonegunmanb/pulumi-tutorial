@@ -8,4 +8,4 @@ sed -n '1,220p' automation.ts && \
 npx ts-node --transpile-only automation.ts preview dev
 ```{{exec}}
 
-注意输出末尾的 JSON。它来自 SDK 返回值，不是从终端日志里截取出来的文本。
+命令前半段会先打印 automation.ts 的源码，后半段会真正执行预览。预览过程中出现的表格和诊断信息是 Pulumi 的运行日志；最后一段 JSON 是 automation.ts 把 stack.preview 返回的结果对象打印出来，方便平台后端继续处理。
