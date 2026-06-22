@@ -21,11 +21,11 @@ pulumi stack output
 pulumi stack output networkPlan | jq
 ```{{exec}}
 
-对比两个 Stack 的子网输出。代码相同，差异来自配置文件：
+对比两个 Stack 的子网输出。这里对比的是程序导出的计划子网名，不依赖模拟器回填的 VNet 子网字段：
 
 ```bash
-echo '--- dev ---' && pulumi stack output --stack dev subnetNames && \
-echo '--- prod ---' && pulumi stack output --stack prod subnetNames
+echo '--- dev ---' && pulumi stack output --stack dev subnetNames | jq && \
+echo '--- prod ---' && pulumi stack output --stack prod subnetNames | jq
 ```{{exec}}
 
 再看 prod 的私有 NSG 名称：

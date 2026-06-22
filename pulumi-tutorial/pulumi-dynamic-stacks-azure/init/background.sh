@@ -190,7 +190,7 @@ export const environment = stack;
 export const location = settings.location;
 export const resourceGroupName = resourceGroup.name;
 export const virtualNetworkName = virtualNetwork.name;
-export const subnetNames = virtualNetwork.subnets.apply((subnets) => subnets.map((subnet) => subnet.name));
+export const subnetNames = activeSubnets.map((subnet) => subnet.name);
 export const privateSubnetEnabled = settings.enablePrivateSubnet;
 export const privateNetworkSecurityGroup = privateNsgName;
 export const networkPlan = pulumi.jsonStringify({
