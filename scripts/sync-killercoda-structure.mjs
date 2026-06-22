@@ -14,6 +14,8 @@ const preferredOrder = [
   'pulumi-projects-stacks-state',
   'pulumi-projects-stacks-state-azure',
   'pulumi-stacks-azure',
+  'pulumi-state-backends-aws',
+  'pulumi-state-backends-azure',
   'pulumi-resources-options',
   'pulumi-resources-options-azure',
   'pulumi-providers',

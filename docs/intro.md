@@ -57,10 +57,12 @@ group: 起步
 
 - [项目、堆栈与状态管理](projects-stacks-state.md)
 - [Stack 详解](stacks.md)
+- [State 与 Backend](state_backends.md)
 - [Provider 抽象](providers.md)
 - [资源](resources.md)
 - [Inputs, Outputs](inputs-outputs.md)
 - [Secrets 机密处理](secrets-handling.md)
+
 - [Stash 状态暂存](stash.md)
 - [Functions 函数](functions.md)
 - [Assets 与 Archives](assets_archives.md)

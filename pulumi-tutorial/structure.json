@@ -25,6 +25,12 @@
       "path": "pulumi-stacks-azure"
     },
     {
+      "path": "pulumi-state-backends-aws"
+    },
+    {
+      "path": "pulumi-state-backends-azure"
+    },
+    {
       "path": "pulumi-resources-options"
     },
     {

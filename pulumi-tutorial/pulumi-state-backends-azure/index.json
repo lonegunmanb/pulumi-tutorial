@@ -1,0 +1,18 @@
+{
+  "title": "State 与 Backend（Azure / miniblue）",
+  "description": "使用 miniblue 提供 Azure Blob 风格存储，练习 Pulumi azblob DIY Backend、AZURE_STORAGE 凭据、project backend.url、State 文件布局与导出导入",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "登录 Azure Blob DIY Backend", "text": "step1/text.md" },
+      { "title": "部署 dev Stack", "text": "step2/text.md" },
+      { "title": "固定 Backend URL 并创建 prod", "text": "step3/text.md" },
+      { "title": "观察远端 .pulumi 目录", "text": "step4/text.md" },
+      { "title": "导出与导入 State", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
