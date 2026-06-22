@@ -73,6 +73,9 @@
       "path": "pulumi-automation-api"
     },
     {
+      "path": "pulumi-automation-api-azure"
+    },
+    {
       "path": "pulumi-packages-crossguard"
     },
     {

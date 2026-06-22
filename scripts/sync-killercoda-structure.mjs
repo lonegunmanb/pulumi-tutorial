@@ -30,6 +30,7 @@ const preferredOrder = [
   'pulumi-dynamic-stacks-aws',
   'pulumi-dynamic-stacks-azure',
   'pulumi-automation-api',
+  'pulumi-automation-api-azure',
   'pulumi-packages-crossguard',
   'pulumi-testing-cicd',
 ]

@@ -1,6 +1,6 @@
 # 运行 CLI 基线
 
-先用 CLI 执行同一份 Pulumi 程序。这样可以确认 Pulumi 项目、Stack 配置和 MiniStack 都已经可用。
+先用 CLI 执行同一份 Pulumi 程序。这样可以确认 Pulumi 项目、Stack 配置和 miniblue 都已经可用。
 
 ```bash
 cd /root/workspace && \

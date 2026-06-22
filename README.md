@@ -36,6 +36,7 @@ pulumi-tutorial/               # Killercoda 场景定义
 	pulumi-inputs-outputs-secrets/
 	pulumi-components/
 	pulumi-automation-api/
+	pulumi-automation-api-azure/
 	pulumi-packages-crossguard/
 	pulumi-testing-cicd/
 scripts/
