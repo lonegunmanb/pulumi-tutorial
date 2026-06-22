@@ -111,9 +111,9 @@ JSON
 cat > Pulumi.yaml <<'YAML'
 name: pulumi-automation-api
 runtime:
-	name: nodejs
-	options:
-		nodeargs: "--max-old-space-size=512"
+  name: nodejs
+  options:
+    nodeargs: "--max-old-space-size=512"
 description: Automation API local program for an AWS artifact environment on MiniStack.
 YAML
 
