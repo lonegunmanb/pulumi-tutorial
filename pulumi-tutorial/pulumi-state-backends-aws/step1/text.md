@@ -5,7 +5,7 @@ MiniStack 已在后台启动，初始化脚本已经创建了状态 bucket。先
 ```bash
 source /root/.pulumi-state-env.sh && \
 printf '%s\n' "$PULUMI_BACKEND_URL" && \
-curl -s http://localhost:4566/_ministack/health | jq '{edition, s3: .services.s3}'
+curl -s http://localhost:4566/_ministack/health | jq '{edition, s3: (if (.services | type) == "array" then (.services | index("s3") != null) else .services.s3 end)}'
 ```{{exec}}
 
 这个 URL 使用 `s3://` 方案。query string 中的 endpoint 和 path-style 参数让 Pulumi CLI 把状态写入本地 MiniStack，而不是访问真实 AWS。
