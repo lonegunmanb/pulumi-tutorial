@@ -1,12 +1,9 @@
 # 运行 CLI 基线
 
-先确认 MiniStack 已经启动并通过健康检查，再用 CLI 执行同一份 Pulumi 程序。这样可以确认 Pulumi 项目、Stack 配置和本地 AWS 模拟器都已经可用。
+MiniStack 已由后台初始化脚本启动，并通过健康检查后才进入本步骤。现在用 CLI 执行同一份 Pulumi 程序，确认 Pulumi 项目、Stack 配置和本地 AWS 模拟器都已经可用。
 
 ```bash
 cd /root/workspace && \
-docker compose up -d && \
-for _ in $(seq 1 120); do curl -sf http://localhost:4566/_ministack/health >/dev/null 2>&1 && break; sleep 2; done && \
-curl -sf http://localhost:4566/_ministack/health | jq . && \
 pulumi stack select dev && \
 pulumi preview && \
 pulumi up --yes && \

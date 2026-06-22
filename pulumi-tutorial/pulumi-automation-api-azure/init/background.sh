@@ -416,10 +416,13 @@ git add Pulumi.yaml Pulumi.dev.yaml index.ts automation.ts server.ts package.jso
 git commit -m "Initial Automation API Azure lab" >/dev/null 2>&1 || true
 
 docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae >/dev/null 2>&1 || true
-docker compose up -d >/dev/null 2>&1 || true
+if ! docker compose up -d >/dev/null 2>&1; then
+  echo "docker compose up -d 执行失败，将继续输出容器状态用于排查。"
+  docker compose ps || true
+fi
 
 miniblue_ready=0
-for _ in $(seq 1 60); do
+for _ in $(seq 1 120); do
   if curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1; then
     miniblue_ready=1
     break
@@ -435,6 +438,7 @@ if [ "$miniblue_ready" = "1" ]; then
   echo "Azure / miniblue Automation API lab is ready in /root/workspace (miniblue healthy)"
 else
   echo "miniblue 健康检查未通过，未创建 /tmp/.setup-done。可执行 'docker compose ps' 与 'docker compose logs miniblue' 排查。"
+  curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" || true
   docker compose ps || true
   docker compose logs --tail=80 miniblue || true
 fi

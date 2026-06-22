@@ -414,11 +414,14 @@ git add Pulumi.yaml Pulumi.dev.yaml index.ts automation.ts server.ts package.jso
 git commit -m "Initial Automation API AWS lab" >/dev/null 2>&1 || true
 
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
-docker compose up -d >/dev/null 2>&1 || true
+if ! docker compose up -d >/dev/null 2>&1; then
+	echo "docker compose up -d 执行失败，将继续输出容器状态用于排查。"
+	docker compose ps || true
+fi
 
 ministack_ready=0
-for _ in $(seq 1 60); do
-	if curl -fs http://localhost:4566/_ministack/health >/dev/null 2>&1; then
+for _ in $(seq 1 120); do
+	if curl -fs http://localhost:4566/_ministack/health 2>/dev/null | grep -q '"s3"'; then
 		ministack_ready=1
 		break
 	fi
@@ -430,6 +433,7 @@ if [ "$ministack_ready" = "1" ]; then
 	echo "AWS / MiniStack Automation API lab is ready in /root/workspace (MiniStack healthy)"
 else
 	echo "MiniStack 健康检查未通过，未创建 /tmp/.setup-done。可执行 'docker compose ps' 与 'docker compose logs ministack' 排查。"
+	curl -fs http://localhost:4566/_ministack/health || true
 	docker compose ps || true
 	docker compose logs --tail=80 ministack || true
 fi
