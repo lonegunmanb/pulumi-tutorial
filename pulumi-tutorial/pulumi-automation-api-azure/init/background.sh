@@ -417,14 +417,24 @@ git commit -m "Initial Automation API Azure lab" >/dev/null 2>&1 || true
 
 docker pull ghcr.io/lonegunmanb/miniblue:sha-6d934ae >/dev/null 2>&1 || true
 docker compose up -d >/dev/null 2>&1 || true
+
+miniblue_ready=0
 for _ in $(seq 1 60); do
-  curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1 && break
+  if curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1; then
+    miniblue_ready=1
+    break
+  fi
   sleep 2
 done
 
-openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null \
-  | openssl x509 > /usr/local/share/ca-certificates/miniblue.crt 2>/dev/null || true
-update-ca-certificates >/dev/null 2>&1 || true
-
-touch /tmp/.setup-done
-echo "Azure / miniblue Automation API lab is ready in /root/workspace"
+if [ "$miniblue_ready" = "1" ]; then
+  openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null \
+    | openssl x509 > /usr/local/share/ca-certificates/miniblue.crt 2>/dev/null || true
+  update-ca-certificates >/dev/null 2>&1 || true
+  touch /tmp/.setup-done
+  echo "Azure / miniblue Automation API lab is ready in /root/workspace (miniblue healthy)"
+else
+  echo "miniblue 健康检查未通过，未创建 /tmp/.setup-done。可执行 'docker compose ps' 与 'docker compose logs miniblue' 排查。"
+  docker compose ps || true
+  docker compose logs --tail=80 miniblue || true
+fi

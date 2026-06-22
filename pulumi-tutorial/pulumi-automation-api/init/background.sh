@@ -415,10 +415,21 @@ git commit -m "Initial Automation API AWS lab" >/dev/null 2>&1 || true
 
 docker pull ministackorg/ministack:latest >/dev/null 2>&1 || true
 docker compose up -d >/dev/null 2>&1 || true
+
+ministack_ready=0
 for _ in $(seq 1 60); do
-	curl -fs http://localhost:4566/_ministack/health >/dev/null 2>&1 && break
+	if curl -fs http://localhost:4566/_ministack/health >/dev/null 2>&1; then
+		ministack_ready=1
+		break
+	fi
 	sleep 2
 done
 
-touch /tmp/.setup-done
-echo "AWS / MiniStack Automation API lab is ready in /root/workspace"
+if [ "$ministack_ready" = "1" ]; then
+	touch /tmp/.setup-done
+	echo "AWS / MiniStack Automation API lab is ready in /root/workspace (MiniStack healthy)"
+else
+	echo "MiniStack 健康检查未通过，未创建 /tmp/.setup-done。可执行 'docker compose ps' 与 'docker compose logs ministack' 排查。"
+	docker compose ps || true
+	docker compose logs --tail=80 ministack || true
+fi
