@@ -18,6 +18,7 @@ rm -f /tmp/.setup-done
 bash /root/setup-common.sh
 export PATH="$HOME/.pulumi/bin:$PATH"
 
+apt-get install -y curl openssl >/dev/null 2>&1 || true
 service docker start >/dev/null 2>&1 || true
 
 if ! docker compose version >/dev/null 2>&1; then
@@ -55,10 +56,23 @@ for attempt in $(seq 1 60); do
   sleep 2
 done
 
+curl -sk https://localhost:4567/health >/dev/null 2>&1 || true
+cid=$(docker compose ps -q miniblue 2>/dev/null || true)
+if [ -z "$cid" ]; then
+  cid=$(docker ps -q --filter "name=pulumi-policy-miniblue" | head -1)
+fi
+mkdir -p /root/.miniblue
+if [ -n "$cid" ]; then
+  for cert in /root/.miniblue/cert.pem /cert.pem /tmp/miniblue/cert.pem; do
+    docker cp "$cid:$cert" /root/.miniblue/cert.pem 2>/dev/null && break || true
+  done
+fi
+
 cat > /root/.pulumi-policy-env.sh <<'SH'
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
 export NODE_OPTIONS=--max-old-space-size=512
+export SSL_CERT_FILE=/root/.miniblue/cert.pem
 SH
 
 if ! grep -q '.pulumi-policy-env.sh' /root/.bashrc 2>/dev/null; then
