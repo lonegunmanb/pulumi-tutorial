@@ -1,0 +1,17 @@
+{
+  "title": "Policy as Code（Azure / miniblue）",
+  "description": "使用 miniblue 模拟 Azure Resource Group，编写本地 Policy Pack 检查 location、tags 与 Stack 资源数量",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "预览未加策略的资源", "text": "step1/text.md" },
+      { "title": "运行本地 Policy Pack", "text": "step2/text.md" },
+      { "title": "修复资源并重新预览", "text": "step3/text.md" },
+      { "title": "用策略执行更新", "text": "step4/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

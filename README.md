@@ -37,7 +37,8 @@ pulumi-tutorial/               # Killercoda 场景定义
 	pulumi-components/
 	pulumi-automation-api/
 	pulumi-automation-api-azure/
-	pulumi-packages-crossguard/
+	pulumi-policy-as-code-aws/
+	pulumi-policy-as-code-azure/
 	pulumi-testing-cicd/
 scripts/
 	setup-common.sh              # Killercoda 共享环境初始化脚本

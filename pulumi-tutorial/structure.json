@@ -82,7 +82,10 @@
       "path": "pulumi-automation-api-azure"
     },
     {
-      "path": "pulumi-packages-crossguard"
+      "path": "pulumi-policy-as-code-aws"
+    },
+    {
+      "path": "pulumi-policy-as-code-azure"
     },
     {
       "path": "pulumi-testing-cicd"
