@@ -56,17 +56,18 @@ for attempt in $(seq 1 60); do
   sleep 2
 done
 
-curl -sk https://localhost:4567/health >/dev/null 2>&1 || true
-cid=$(docker compose ps -q miniblue 2>/dev/null || true)
-if [ -z "$cid" ]; then
-  cid=$(docker ps -q --filter "name=pulumi-policy-miniblue" | head -1)
-fi
 mkdir -p /root/.miniblue
-if [ -n "$cid" ]; then
-  for cert in /root/.miniblue/cert.pem /cert.pem /tmp/miniblue/cert.pem; do
-    docker cp "$cid:$cert" /root/.miniblue/cert.pem 2>/dev/null && break || true
-  done
-fi
+for attempt in $(seq 1 60); do
+  if curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 2
+done
+
+openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null \
+  | openssl x509 > /root/.miniblue/cert.pem 2>/dev/null || true
+cp /root/.miniblue/cert.pem /usr/local/share/ca-certificates/miniblue.crt 2>/dev/null || true
+update-ca-certificates >/dev/null 2>&1 || true
 
 cat > /root/.pulumi-policy-env.sh <<'SH'
 export PULUMI_CONFIG_PASSPHRASE=""
