@@ -31,7 +31,7 @@ cd /root/workspace
 cat > docker-compose.yml <<'YAML'
 services:
   miniblue:
-    image: ghcr.io/lonegunmanb/miniblue:sha-a05f847
+    image: ghcr.io/lonegunmanb/miniblue:sha-39cc27a
     container_name: pulumi-state-backends-miniblue
     ports:
       - "4566:4566"
