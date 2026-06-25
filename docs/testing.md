@@ -421,6 +421,11 @@ import * as automation from "@pulumi/pulumi/automation";
 import { strict as assert } from "node:assert";
 import "mocha";
 
+type DeploymentResource = {
+	type?: string;
+	inputs?: Record<string, unknown>;
+};
+
 describe("integration", function () {
 	this.timeout(180_000);
 
@@ -453,7 +458,8 @@ describe("integration", function () {
 		assert.equal(result.outputs.bucketName.value, "it-artifact-bucket");
 
 		const state = await stack.exportStack();
-		assert.ok(state.deployment.resources.some((resource) => resource.type === "aws:s3/bucket:Bucket"));
+		const resources = state.deployment.resources as DeploymentResource[];
+		assert.ok(resources.some((resource) => resource.type === "aws:s3/bucket:Bucket"));
 	});
 });
 ```

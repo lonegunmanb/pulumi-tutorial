@@ -245,6 +245,14 @@ import * as automation from "@pulumi/pulumi/automation";
 import { strict as assert } from "node:assert";
 import "mocha";
 
+type DeploymentResource = {
+	type?: string;
+	inputs?: {
+		forceDestroy?: boolean;
+		tags?: Record<string, string>;
+	};
+};
+
 describe("automation api integration", function () {
 	this.timeout(180_000);
 
@@ -283,7 +291,8 @@ describe("automation api integration", function () {
 		assert.equal(result.outputs.bucketName.value, "it-artifact-bucket");
 
 		const exported = await stack.exportStack();
-		const bucket = exported.deployment.resources.find((resource) => resource.type === "aws:s3/bucket:Bucket");
+		const resources = exported.deployment.resources as DeploymentResource[];
+		const bucket = resources.find((resource) => resource.type === "aws:s3/bucket:Bucket");
 
 		assert.ok(bucket, "expected an S3 Bucket resource in the deployment state");
 		assert.equal(bucket?.inputs?.forceDestroy, true);

@@ -261,6 +261,14 @@ import * as automation from "@pulumi/pulumi/automation";
 import { strict as assert } from "node:assert";
 import "mocha";
 
+type DeploymentResource = {
+  type?: string;
+  inputs?: {
+    addressSpaces?: string[];
+    tags?: Record<string, string>;
+  };
+};
+
 describe("automation api integration", function () {
   this.timeout(240_000);
 
@@ -300,8 +308,9 @@ describe("automation api integration", function () {
     assert.equal(result.outputs.resourceGroupName.value, "it-app-rg");
 
     const exported = await stack.exportStack();
-    const resourceGroup = exported.deployment.resources.find((resource) => resource.type === "azure:core/resourceGroup:ResourceGroup");
-    const virtualNetwork = exported.deployment.resources.find((resource) => resource.type === "azure:network/virtualNetwork:VirtualNetwork");
+    const resources = exported.deployment.resources as DeploymentResource[];
+    const resourceGroup = resources.find((resource) => resource.type === "azure:core/resourceGroup:ResourceGroup");
+    const virtualNetwork = resources.find((resource) => resource.type === "azure:network/virtualNetwork:VirtualNetwork");
 
     assert.ok(resourceGroup, "expected a Resource Group resource in the deployment state");
     assert.ok(virtualNetwork, "expected a Virtual Network resource in the deployment state");
