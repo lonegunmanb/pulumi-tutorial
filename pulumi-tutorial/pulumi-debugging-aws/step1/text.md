@@ -9,13 +9,14 @@ sed -n '1,180p' index.ts && \
 pulumi stack select dev
 ```{{exec}}
 
-这个程序用 `Config.require` 读取 owner 和 environment。当前 Stack 暂时没有配置；在进入 preview 之前，先用 CLI 做一次配置预检，把缺失项明确打印出来。
+这个程序用 `Config.require` 读取 owner 和 environment。Pulumi 会在程序执行时检查它们；如果缺失，preview 或 up 会被阻止。本实验环境里这个运行时错误可能只显示为较笼统的进程退出码，所以这里先用 Pulumi CLI 读取同一组配置键，让 pulumi 命令自己报错。
 
 ```bash
 source /root/.pulumi-debugging-aws-env.sh && \
 cd /root/workspace/debugging-aws && \
 pulumi config && \
-bash -lc 'missing=0; for key in owner environment; do if pulumi config get "$key" >/dev/null 2>&1; then value=$(pulumi config get "$key"); echo "OK: $key=$value"; else echo "MISSING: debugging-aws:$key"; missing=1; fi; done; test "$missing" -eq 0' || true
+(pulumi config get owner || true) && \
+(pulumi config get environment || true)
 ```{{exec}}
 
-这里的重点不是 S3，也不是 MiniStack，而是先确认 Stack 配置是否满足程序的必填项。下一步会补齐配置，并切换到真实资源程序运行 preview。
+这里的重点不是 S3，也不是 MiniStack，而是先确认 Stack 配置是否满足程序的必填项。上面的失败来自 pulumi 命令本身；命令块里的 true 分支只是为了让 Killercoda 继续执行后续步骤。下一步补齐配置后，preview 仍会运行 Pulumi 程序并执行同样的必填校验。
