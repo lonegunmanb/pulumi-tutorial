@@ -362,44 +362,44 @@ cat > asserts/pulumi-preview-act.yml <<'YAML'
 name: Pulumi preview local
 
 on:
-	pull_request:
+  pull_request:
 
 permissions:
-	contents: read
+  contents: read
 
 jobs:
-	preview:
-		runs-on: ubuntu-latest
-		env:
-			PULUMI_CONFIG_PASSPHRASE: ""
-			AWS_ACCESS_KEY_ID: test
-			AWS_SECRET_ACCESS_KEY: test
-			AWS_REGION: us-east-1
-			AWS_DEFAULT_REGION: us-east-1
-			TS_NODE_TRANSPILE_ONLY: "1"
-			NODE_OPTIONS: --max-old-space-size=512
-		steps:
-			- uses: actions/setup-node@v4
-				with:
-					node-version: 20
-					cache: npm
-			- run: npm ci
-			- run: npm run test:unit
-			- run: |
-					for attempt in $(seq 1 60); do
-						curl -sf http://localhost:4566/_ministack/health && exit 0
-						sleep 2
-					done
-					exit 1
-			- uses: pulumi/setup-pulumi@v2
-			- run: pulumi login --local
-			- run: pulumi stack select dev || pulumi stack init dev
-			- run: pulumi config set prefix ci
-			- uses: pulumi/actions@v7
-				with:
-					command: preview
-					stack-name: dev
-					work-dir: .
+  preview:
+    runs-on: ubuntu-latest
+    env:
+      PULUMI_CONFIG_PASSPHRASE: ""
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+      TS_NODE_TRANSPILE_ONLY: "1"
+      NODE_OPTIONS: --max-old-space-size=512
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+      - run: |
+          for attempt in $(seq 1 60); do
+            curl -sf http://localhost:4566/_ministack/health && exit 0
+            sleep 2
+          done
+          exit 1
+      - uses: pulumi/setup-pulumi@v2
+      - run: pulumi login --local
+      - run: pulumi stack select dev || pulumi stack init dev
+      - run: pulumi config set prefix ci
+      - uses: pulumi/actions@v7
+        with:
+          command: preview
+          stack-name: dev
+          work-dir: .
 YAML
 
 npm install --no-audit --no-fund >/dev/null
