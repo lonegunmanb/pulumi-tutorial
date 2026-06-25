@@ -88,6 +88,12 @@
       "path": "pulumi-policy-as-code-azure"
     },
     {
+      "path": "pulumi-debugging-aws"
+    },
+    {
+      "path": "pulumi-debugging-azure"
+    },
+    {
       "path": "pulumi-testing-cicd"
     }
   ]

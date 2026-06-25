@@ -35,6 +35,8 @@ const preferredOrder = [
   'pulumi-automation-api-azure',
   'pulumi-policy-as-code-aws',
   'pulumi-policy-as-code-azure',
+  'pulumi-debugging-aws',
+  'pulumi-debugging-azure',
   'pulumi-testing-cicd',
 ]
 
