@@ -160,12 +160,16 @@ import * as pulumi from "@pulumi/pulumi";
 import { strict as assert } from "node:assert";
 import "mocha";
 
+// 单元测试不会访问 MiniStack 或 AWS。这里的 mock runtime 会接住 Pulumi 程序注册资源时传入的输入，
+// 并返回测试需要的假 provider 输出。
 pulumi.runtime.setMocks({
 	newResource(args: pulumi.runtime.MockResourceArgs) {
 		return {
 			id: `${args.name}_id`,
 			state: {
 				...args.inputs,
+				// arn 通常由 AWS provider 计算。这里手工合成一个值，
+				// 让测试无需创建真实 Bucket 也能读取它。
 				arn: `arn:aws:s3:::${args.inputs.bucket ?? args.name}`,
 			},
 		};
@@ -175,6 +179,7 @@ pulumi.runtime.setMocks({
 	},
 }, "pulumi-testing-cicd", "dev", false);
 
+// 即使在单元测试里，资源属性仍然是 Output，所以断言前要先等待它 resolve。
 function outputOf<T>(value: pulumi.Output<T>): Promise<T> {
 	return new Promise((resolve) => value.apply(resolve));
 }
@@ -183,14 +188,18 @@ describe("bucket contract", () => {
 	let infra: typeof import("../index");
 
 	before(async () => {
+		// 一定要先 setMocks，再导入 Pulumi 程序。导入 index.ts 会立即创建资源对象，
+		// 所以 mock runtime 必须提前准备好。
 		infra = await import("../index");
 	});
 
 	it("allows cleanup in test environments", async () => {
+		// forceDestroy 让短生命周期测试 Stack 更容易清理。
 		assert.equal(await outputOf(infra.bucket.forceDestroy), true);
 	});
 
 	it("declares ownership tags", async () => {
+		// 这是红灯测试：初始的 index.ts 还没有这两个标签。
 		const tags = await outputOf(infra.bucket.tags);
 		assert.equal(tags?.owner, "platform-team");
 		assert.equal(tags?.managedBy, "pulumi");
