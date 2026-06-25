@@ -1,6 +1,6 @@
 # 生成 PR Preview 工作流
 
-现在把本地验证步骤写成 GitHub Actions 工作流。这个示例使用本地 Backend，并把 miniblue 作为 service container 启动；真实团队应换成自管理 Backend，并由 CI 安全注入云凭据。
+现在把本地验证步骤写成 GitHub Actions 工作流。这个示例使用本地 Backend，并在 workflow step 中确认 miniblue 已经可用；真实团队应换成自管理 Backend，并由 CI 安全注入云凭据。
 
 先创建工作流目录：
 
@@ -14,8 +14,7 @@ mkdir -p .github/workflows
 ```bash
 cd /root/workspace && \
 cat asserts/pulumi-preview.yml && \
-cp asserts/pulumi-preview.yml .github/workflows/pulumi-preview.yml && \
-cp asserts/pulumi-preview-act.yml .github/workflows/pulumi-preview-act.yml
+cp asserts/pulumi-preview.yml .github/workflows/pulumi-preview.yml
 ```{{exec}}
 
 查看生成结果：
@@ -25,4 +24,4 @@ cd /root/workspace && \
 sed -n '1,280p' .github/workflows/pulumi-preview.yml
 ```{{exec}}
 
-注意 concurrency 的作用：同一个 Pull Request 只保留最新一次 preview，避免旧提交上的结果覆盖新提交。另一个名为 pulumi-preview-act 的工作流只给本地 act 模拟使用，它复用当前已经启动的 miniblue，不再声明 service container。
+注意 concurrency 的作用：同一个 Pull Request 只保留最新一次 preview，避免旧提交上的结果覆盖新提交。这个工作流不使用 service container，而是在步骤里确认 miniblue 可用；因此同一份 YAML 既能在 GitHub Actions 中运行，也能被 act 本地执行。

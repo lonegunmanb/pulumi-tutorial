@@ -317,14 +317,6 @@ concurrency:
 jobs:
   preview:
     runs-on: ubuntu-latest
-    services:
-      ministack:
-        image: ministackorg/ministack:latest
-        ports:
-          - 4566:4566
-        env:
-          MINISTACK_REGION: us-east-1
-          MINISTACK_ACCOUNT_ID: "000000000000"
     env:
       PULUMI_CONFIG_PASSPHRASE: ""
       AWS_ACCESS_KEY_ID: test
@@ -335,57 +327,19 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=512
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run test:unit
-      - run: |
-          for attempt in $(seq 1 60); do
-            curl -sf http://localhost:4566/_ministack/health && exit 0
-            sleep 2
-          done
-          exit 1
-      - uses: pulumi/setup-pulumi@v2
-      - run: pulumi login --local
-      - run: pulumi stack select dev || pulumi stack init dev
-      - run: pulumi config set prefix ci
-      - uses: pulumi/actions@v7
-        with:
-          command: preview
-          stack-name: dev
-          work-dir: .
-YAML
-
-cat > asserts/pulumi-preview-act.yml <<'YAML'
-name: Pulumi preview local
-
-on:
-  pull_request:
-
-permissions:
-  contents: read
-
-jobs:
-  preview:
-    runs-on: ubuntu-latest
-    env:
-      PULUMI_CONFIG_PASSPHRASE: ""
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
-      AWS_REGION: us-east-1
-      AWS_DEFAULT_REGION: us-east-1
-      TS_NODE_TRANSPILE_ONLY: "1"
-      NODE_OPTIONS: --max-old-space-size=512
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run test:unit
-      - run: |
+      - name: Ensure MiniStack is ready
+        run: |
+          if curl -sf http://localhost:4566/_ministack/health; then
+            exit 0
+          fi
+          docker compose up -d
           for attempt in $(seq 1 60); do
             curl -sf http://localhost:4566/_ministack/health && exit 0
             sleep 2

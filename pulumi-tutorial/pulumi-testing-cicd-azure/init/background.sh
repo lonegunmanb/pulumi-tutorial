@@ -336,14 +336,6 @@ concurrency:
 jobs:
   preview:
     runs-on: ubuntu-latest
-    services:
-      miniblue:
-        image: ghcr.io/lonegunmanb/miniblue:sha-39cc27a
-        ports:
-          - 4566:4566
-          - 4567:4567
-        env:
-          LOG_LEVEL: info
     env:
       PULUMI_CONFIG_PASSPHRASE: ""
       TS_NODE_TRANSPILE_ONLY: "1"
@@ -354,59 +346,24 @@ jobs:
       ARM_TENANT_ID: 00000000-0000-0000-0000-000000000001
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: false
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm run test:unit
-      - name: Trust miniblue metadata certificate
+      - name: Ensure miniblue is ready
         run: |
+          if curl -sf http://localhost:4566/health; then
+            exit 0
+          fi
+          docker compose up -d
           for attempt in $(seq 1 60); do
-            curl -sk https://localhost:4567/metadata/endpoints?api-version=2019-05-01 && break
+            curl -sf http://localhost:4566/health && exit 0
             sleep 2
           done
-          openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null | openssl x509 > miniblue.crt
-          sudo cp miniblue.crt /usr/local/share/ca-certificates/miniblue.crt
-          sudo update-ca-certificates
-      - uses: pulumi/setup-pulumi@v2
-      - run: pulumi login --local
-      - run: pulumi stack select dev || pulumi stack init dev
-      - run: pulumi config set prefix ci
-      - uses: pulumi/actions@v7
-        with:
-          command: preview
-          stack-name: dev
-          work-dir: .
-YAML
-
-cat > asserts/pulumi-preview-act.yml <<'YAML'
-name: Pulumi preview local
-
-on:
-  pull_request:
-
-permissions:
-  contents: read
-
-jobs:
-  preview:
-    runs-on: ubuntu-latest
-    env:
-      PULUMI_CONFIG_PASSPHRASE: ""
-      TS_NODE_TRANSPILE_ONLY: "1"
-      NODE_OPTIONS: --max-old-space-size=512
-      ARM_CLIENT_ID: miniblue
-      ARM_CLIENT_SECRET: miniblue
-      ARM_SUBSCRIPTION_ID: 00000000-0000-0000-0000-000000000000
-      ARM_TENANT_ID: 00000000-0000-0000-0000-000000000001
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run test:unit
+          exit 1
       - name: Trust miniblue metadata certificate
         run: |
           for attempt in $(seq 1 60); do
