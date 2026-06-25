@@ -17,10 +17,12 @@ cd /root/workspace && \
 act pull_request -W .github/workflows/pulumi-preview-act.yml -j preview -n -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
 ```{{exec}}
 
-最后再运行 Automation API 集成测试。它会创建自己的临时 Stack，并在结束时清理。
+最后再运行 Automation API 集成测试。这里会重新从 asserts 目录准备测试文件，所以即使你刷新过终端或跳过了前面的复制步骤，也能直接运行。测试会创建自己的临时 Stack，并在结束时清理。
 
 ```bash
 cd /root/workspace && \
+mkdir -p test && \
+cp asserts/integration.spec.ts test/integration.spec.ts && \
 npm run test:integration
 ```{{exec}}
 
