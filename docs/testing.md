@@ -466,6 +466,8 @@ describe("integration", function () {
 
 这类测试一定要认真处理清理逻辑。即使断言失败，也应尽量在 `after`、`finally` 或 CI 的清理阶段执行 `destroy`。真实云环境还要考虑费用、配额、并发、凭据最小权限和临时 Stack 命名冲突；本章实验使用 MiniStack 和 miniblue，因此不会产生真实云费用。
 
+即便使用的是模拟公有云，Automation API 集成测试也要启动 Pulumi CLI、运行语言宿主、加载 provider 插件、执行 preview / up / destroy，并与模拟 API 通信。它比 mock 单元测试慢很多。因此，代码中包含的条件分支、配置解析、命名规则、标签规则和组件输入契约，应主要依靠单元测试覆盖；集成测试更适合验证“这份程序能否完整走过一次部署生命周期”。
+
 ## 11.6 CI/CD：让测试成为合并条件
 
 Pulumi 项目的 CI 通常分成两条路径：Pull Request 负责验证，主干负责受控更新。GitHub Actions 的工作流文件放在 `.github/workflows/` 下，触发条件可以是 pull request、push、tag 或手工触发。
