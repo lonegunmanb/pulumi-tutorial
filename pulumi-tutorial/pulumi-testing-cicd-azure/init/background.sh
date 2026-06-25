@@ -161,6 +161,50 @@ export const resourceGroupName = resourceGroup.name;
 export const virtualNetworkName = virtualNetwork.name;
 TS
 
+mkdir -p asserts
+cat > asserts/unit.spec.ts <<'TS'
+import * as pulumi from "@pulumi/pulumi";
+import { strict as assert } from "node:assert";
+import "mocha";
+
+pulumi.runtime.setMocks({
+  newResource(args: pulumi.runtime.MockResourceArgs) {
+    return {
+      id: `${args.name}_id`,
+      state: {
+        ...args.inputs,
+        id: `/subscriptions/00000000/resourceGroups/${args.inputs.name ?? args.name}`,
+      },
+    };
+  },
+  call(args: pulumi.runtime.MockCallArgs) {
+    return args.inputs;
+  },
+}, "pulumi-testing-cicd-azure", "dev", false);
+
+function outputOf<T>(value: pulumi.Output<T>): Promise<T> {
+  return new Promise((resolve) => value.apply(resolve));
+}
+
+describe("azure resource contract", () => {
+  let infra: typeof import("../index");
+
+  before(async () => {
+    infra = await import("../index");
+  });
+
+  it("declares resource group ownership tags", async () => {
+    const tags = await outputOf(infra.resourceGroup.tags);
+    assert.equal(tags?.owner, "platform-team");
+    assert.equal(tags?.managedBy, "pulumi");
+  });
+
+  it("uses the approved network range", async () => {
+    assert.deepEqual(await outputOf(infra.virtualNetwork.addressSpaces), ["10.20.0.0/16"]);
+  });
+});
+TS
+
 npm install --no-audit --no-fund >/dev/null
 pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null

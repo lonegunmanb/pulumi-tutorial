@@ -154,6 +154,50 @@ export const bucketName = bucket.bucket;
 export const bucketArn = bucket.arn;
 TS
 
+mkdir -p asserts
+cat > asserts/unit.spec.ts <<'TS'
+import * as pulumi from "@pulumi/pulumi";
+import { strict as assert } from "node:assert";
+import "mocha";
+
+pulumi.runtime.setMocks({
+	newResource(args: pulumi.runtime.MockResourceArgs) {
+		return {
+			id: `${args.name}_id`,
+			state: {
+				...args.inputs,
+				arn: `arn:aws:s3:::${args.inputs.bucket ?? args.name}`,
+			},
+		};
+	},
+	call(args: pulumi.runtime.MockCallArgs) {
+		return args.inputs;
+	},
+}, "pulumi-testing-cicd", "dev", false);
+
+function outputOf<T>(value: pulumi.Output<T>): Promise<T> {
+	return new Promise((resolve) => value.apply(resolve));
+}
+
+describe("bucket contract", () => {
+	let infra: typeof import("../index");
+
+	before(async () => {
+		infra = await import("../index");
+	});
+
+	it("allows cleanup in test environments", async () => {
+		assert.equal(await outputOf(infra.bucket.forceDestroy), true);
+	});
+
+	it("declares ownership tags", async () => {
+		const tags = await outputOf(infra.bucket.tags);
+		assert.equal(tags?.owner, "platform-team");
+		assert.equal(tags?.managedBy, "pulumi");
+	});
+});
+TS
+
 npm install --no-audit --no-fund >/dev/null
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null
 pulumi config set prefix testing >/dev/null

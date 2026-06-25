@@ -9,53 +9,13 @@ cd /root/workspace && \
 sed -n '1,160p' index.ts
 ```{{exec}}
 
-现在写一个 Pulumi mock 单元测试。它在导入程序前设置 mocks，然后断言 Bucket 必须允许测试环境清理，并且必须包含 owner 与 managedBy 标签。
+现在写一个 Pulumi mock 单元测试。它在导入程序前设置 mocks，然后断言 Bucket 必须允许测试环境清理，并且必须包含 owner 与 managedBy 标签。测试代码已经由初始化脚本放在 asserts 目录中，这里先查看内容，再复制到测试目录。
 
 ```bash
 cd /root/workspace && \
 mkdir -p test && \
-cat > test/unit.spec.ts <<'TS'
-import * as pulumi from "@pulumi/pulumi";
-import { strict as assert } from "node:assert";
-import "mocha";
-
-pulumi.runtime.setMocks({
-	newResource(args: pulumi.runtime.MockResourceArgs) {
-		return {
-			id: `${args.name}_id`,
-			state: {
-				...args.inputs,
-				arn: `arn:aws:s3:::${args.inputs.bucket ?? args.name}`,
-			},
-		};
-	},
-	call(args: pulumi.runtime.MockCallArgs) {
-		return args.inputs;
-	},
-}, "pulumi-testing-cicd", "dev", false);
-
-function outputOf<T>(value: pulumi.Output<T>): Promise<T> {
-	return new Promise((resolve) => value.apply(resolve));
-}
-
-describe("bucket contract", () => {
-	let infra: typeof import("../index");
-
-	before(async () => {
-		infra = await import("../index");
-	});
-
-	it("allows cleanup in test environments", async () => {
-		assert.equal(await outputOf(infra.bucket.forceDestroy), true);
-	});
-
-	it("declares ownership tags", async () => {
-		const tags = await outputOf(infra.bucket.tags);
-		assert.equal(tags?.owner, "platform-team");
-		assert.equal(tags?.managedBy, "pulumi");
-	});
-});
-TS
+cat asserts/unit.spec.ts && \
+cp asserts/unit.spec.ts test/unit.spec.ts
 ```{{exec}}
 
 运行测试。这里预期会失败，因为程序还没有写入 owner 和 managedBy 标签。
