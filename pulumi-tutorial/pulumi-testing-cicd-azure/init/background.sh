@@ -214,6 +214,163 @@ describe("azure resource contract", () => {
 });
 TS
 
+cat > asserts/fixed-index.ts <<'TS'
+import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure";
+
+const config = new pulumi.Config();
+const prefix = config.get("prefix") ?? "testing";
+const location = "eastus";
+const commonTags = {
+  environment: "dev",
+  owner: "platform-team",
+  managedBy: "pulumi",
+};
+
+const miniblue = new azure.Provider("miniblue", {
+  features: {},
+  metadataHost: "localhost:4567",
+  resourceProviderRegistrations: "none",
+  subscriptionId: "00000000-0000-0000-0000-000000000000",
+  tenantId: "00000000-0000-0000-0000-000000000001",
+  clientId: "miniblue",
+  clientSecret: "miniblue",
+});
+
+export const resourceGroup = new azure.core.ResourceGroup("app-rg", {
+  name: `${prefix}-app-rg`,
+  location,
+  tags: commonTags,
+}, { provider: miniblue });
+
+export const virtualNetwork = new azure.network.VirtualNetwork("app-vnet", {
+  name: `${prefix}-app-vnet`,
+  resourceGroupName: resourceGroup.name,
+  location,
+  addressSpaces: ["10.20.0.0/16"],
+  subnets: [{ name: "app", addressPrefixes: ["10.20.1.0/24"] }],
+  tags: commonTags,
+}, { provider: miniblue });
+
+export const resourceGroupName = resourceGroup.name;
+export const virtualNetworkName = virtualNetwork.name;
+TS
+
+cat > asserts/integration.spec.ts <<'TS'
+import * as automation from "@pulumi/pulumi/automation";
+import { strict as assert } from "node:assert";
+import "mocha";
+
+describe("automation api integration", function () {
+  this.timeout(240_000);
+
+  const stackName = `it-${Date.now()}`;
+  let stack: automation.Stack | undefined;
+
+  after(async () => {
+    if (!stack) {
+      return;
+    }
+
+    await stack.destroy({ onOutput: console.info });
+    await stack.workspace.removeStack(stackName);
+  });
+
+  it("deploys a temporary stack and validates state", async () => {
+    stack = await automation.LocalWorkspace.createOrSelectStack({
+      stackName,
+      workDir: process.cwd(),
+    }, {
+      envVars: {
+        PULUMI_CONFIG_PASSPHRASE: "",
+        TS_NODE_TRANSPILE_ONLY: "1",
+        NODE_OPTIONS: "--max-old-space-size=512",
+        SSL_CERT_FILE: "/root/.miniblue/cert.pem",
+        ARM_CLIENT_ID: "miniblue",
+        ARM_CLIENT_SECRET: "miniblue",
+        ARM_SUBSCRIPTION_ID: "00000000-0000-0000-0000-000000000000",
+        ARM_TENANT_ID: "00000000-0000-0000-0000-000000000001",
+      },
+    });
+
+    await stack.setConfig("prefix", { value: "it" });
+    await stack.preview({ onOutput: console.info });
+
+    const result = await stack.up({ onOutput: console.info });
+    assert.equal(result.outputs.resourceGroupName.value, "it-app-rg");
+
+    const exported = await stack.exportStack();
+    const resourceGroup = exported.deployment.resources.find((resource) => resource.type === "azure:core/resourceGroup:ResourceGroup");
+    const virtualNetwork = exported.deployment.resources.find((resource) => resource.type === "azure:network/virtualNetwork:VirtualNetwork");
+
+    assert.ok(resourceGroup, "expected a Resource Group resource in the deployment state");
+    assert.ok(virtualNetwork, "expected a Virtual Network resource in the deployment state");
+    assert.equal(resourceGroup?.inputs?.tags?.owner, "platform-team");
+    assert.deepEqual(virtualNetwork?.inputs?.addressSpaces, ["10.20.0.0/16"]);
+  });
+});
+TS
+
+cat > asserts/pulumi-preview.yml <<'YAML'
+name: Pulumi preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pulumi-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    services:
+      miniblue:
+        image: ghcr.io/lonegunmanb/miniblue:sha-39cc27a
+        ports:
+          - 4566:4566
+          - 4567:4567
+        env:
+          LOG_LEVEL: info
+    env:
+      PULUMI_CONFIG_PASSPHRASE: ""
+      TS_NODE_TRANSPILE_ONLY: "1"
+      NODE_OPTIONS: --max-old-space-size=512
+      ARM_CLIENT_ID: miniblue
+      ARM_CLIENT_SECRET: miniblue
+      ARM_SUBSCRIPTION_ID: 00000000-0000-0000-0000-000000000000
+      ARM_TENANT_ID: 00000000-0000-0000-0000-000000000001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+      - name: Trust miniblue metadata certificate
+        run: |
+          for attempt in $(seq 1 60); do
+            curl -sk https://localhost:4567/metadata/endpoints?api-version=2019-05-01 && break
+            sleep 2
+          done
+          openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null | openssl x509 > miniblue.crt
+          sudo cp miniblue.crt /usr/local/share/ca-certificates/miniblue.crt
+          sudo update-ca-certificates
+      - uses: pulumi/setup-pulumi@v2
+      - run: pulumi login --local
+      - run: pulumi stack select dev || pulumi stack init dev
+      - run: pulumi config set prefix ci
+      - uses: pulumi/actions@v7
+        with:
+          command: preview
+          stack-name: dev
+          work-dir: .
+YAML
+
 npm install --no-audit --no-fund >/dev/null
 pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null

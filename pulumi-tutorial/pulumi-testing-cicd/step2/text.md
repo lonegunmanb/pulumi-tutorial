@@ -4,38 +4,8 @@
 
 ```bash
 cd /root/workspace && \
-cat > index.ts <<'TS'
-import * as pulumi from "@pulumi/pulumi";
-import * as s3 from "@pulumi/aws/s3";
-import { Provider } from "@pulumi/aws/provider";
-
-const config = new pulumi.Config();
-const prefix = config.get("prefix") ?? "testing";
-
-const localAws = new Provider("ministack", {
-  region: "us-east-1",
-  accessKey: "test",
-  secretKey: "test",
-  skipCredentialsValidation: true,
-  skipMetadataApiCheck: true,
-  skipRequestingAccountId: true,
-  s3UsePathStyle: true,
-  endpoints: [{ s3: "http://localhost:4566", sts: "http://localhost:4566" }],
-});
-
-export const bucket = new s3.Bucket("artifact-bucket", {
-  bucket: `${prefix}-artifact-bucket`,
-  forceDestroy: true,
-  tags: {
-    environment: "dev",
-    owner: "platform-team",
-    managedBy: "pulumi",
-  },
-}, { provider: localAws });
-
-export const bucketName = bucket.bucket;
-export const bucketArn = bucket.arn;
-TS
+cat asserts/fixed-index.ts && \
+cp asserts/fixed-index.ts index.ts
 ```{{exec}}
 
 重新运行单元测试。绿色结果说明资源输入已经满足测试写下的约束。
