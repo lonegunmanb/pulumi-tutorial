@@ -7,7 +7,7 @@ trap 'echo "[$(date +%Y-%m-%dT%H:%M:%S)] 命令失败：行 $LINENO，退出码 
 trap 'echo "===== [$(date +%Y-%m-%dT%H:%M:%S)] background.sh 结束，退出码 $? ====="' EXIT
 
 export SCENARIO_ID="pulumi-debugging-aws"
-export SCENARIO_TITLE="Pulumi 调试与故障排查（AWS / MiniStack）"
+export SCENARIO_TITLE="Pulumi 调试与故障排查（AWS / LocalStack）"
 export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
@@ -62,20 +62,26 @@ cd /root/workspace/debugging-aws
 
 cat > docker-compose.yml <<'YAML'
 services:
-  ministack:
-    image: ministackorg/ministack:latest
-    container_name: pulumi-debugging-ministack
+  localstack:
+    image: localstack/localstack:3
+    container_name: pulumi-debugging-localstack
     ports:
       - "4566:4566"
     environment:
-      MINISTACK_REGION: us-east-1
-      MINISTACK_ACCOUNT_ID: "000000000000"
+      SERVICES: s3,sts
+      DEFAULT_REGION: us-east-1
+      EAGER_SERVICE_LOADING: "1"
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
 YAML
 
 docker compose up -d
 
 for attempt in $(seq 1 60); do
-  if curl -sf http://localhost:4566/_ministack/health >/dev/null 2>&1; then
+  if curl -sf http://localhost:4566/_localstack/health \
+    | jq -e '.services.s3 == "available" or .services.s3 == "running"' >/dev/null 2>&1; then
     break
   fi
   if [ "$attempt" = "60" ]; then
@@ -105,7 +111,7 @@ cat > package.json <<'JSON'
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@pulumi/aws": "^7.0.0",
+    "@pulumi/aws": "^6.0.0",
     "@pulumi/pulumi": "^3.0.0"
   },
   "devDependencies": {
@@ -138,7 +144,7 @@ runtime:
   name: nodejs
   options:
     nodeargs: "--max-old-space-size=512"
-description: Debug Pulumi updates against an S3-compatible MiniStack endpoint.
+description: Debug Pulumi updates against an S3-compatible LocalStack endpoint.
 YAML
 
 cat > variants/config-check.ts <<'TS'
@@ -171,9 +177,9 @@ const breakProvider = config.getBoolean("breakProvider") ?? false;
 const s3Endpoint = breakProvider ? "http://localhost:5999" : "http://localhost:4566";
 
 pulumi.log.info(`Preparing ${environment} bucket for ${owner}.`);
-pulumi.log.debug(`MiniStack S3 endpoint selected by config: ${s3Endpoint}`);
+pulumi.log.debug(`LocalStack S3 endpoint selected by config: ${s3Endpoint}`);
 
-const localAws = new Provider("ministack", {
+const localAws = new Provider("localstack", {
   region: "us-east-1",
   accessKey: "test",
   secretKey: "test",

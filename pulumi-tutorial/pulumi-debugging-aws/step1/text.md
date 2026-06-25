@@ -19,4 +19,4 @@ pulumi config && \
 (pulumi config get environment || true)
 ```{{exec}}
 
-这里的重点不是 S3，也不是 MiniStack，而是先确认 Stack 配置是否满足程序的必填项。上面的失败来自 pulumi 命令本身；命令块里的 true 分支只是为了让 Killercoda 继续执行后续步骤。下一步补齐配置后，preview 仍会运行 Pulumi 程序并执行同样的必填校验。
+这里的重点不是 S3，也不是 LocalStack，而是先确认 Stack 配置是否满足程序的必填项。上面的失败来自 pulumi 命令本身；命令块里的 true 分支只是为了让 Killercoda 继续执行后续步骤。下一步补齐配置后，preview 仍会运行 Pulumi 程序并执行同样的必填校验。

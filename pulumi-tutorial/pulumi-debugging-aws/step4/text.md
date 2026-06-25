@@ -18,7 +18,7 @@ cd /root/workspace/debugging-aws && \
 pulumi preview --diff
 ```{{exec}}
 
-现在先预览 refresh。它会从 MiniStack 读取真实资源，并显示 State 将如何变化。
+现在先预览 refresh。它会从 LocalStack 读取真实资源，并显示 State 将如何变化。
 
 ```bash
 source /root/.pulumi-debugging-aws-env.sh && \

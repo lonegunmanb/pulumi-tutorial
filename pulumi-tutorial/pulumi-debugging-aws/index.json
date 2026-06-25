@@ -1,6 +1,6 @@
 {
-  "title": "Pulumi 调试与故障排查（AWS / MiniStack）",
-  "description": "使用 MiniStack 模拟 AWS S3，练习缺失配置、Provider 日志、refresh 漂移识别与 state export",
+  "title": "Pulumi 调试与故障排查（AWS / LocalStack）",
+  "description": "使用 LocalStack v3 模拟 AWS S3，练习缺失配置、Provider 日志、refresh 漂移识别与 state export",
   "details": {
     "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
     "steps": [

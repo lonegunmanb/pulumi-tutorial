@@ -22,4 +22,4 @@ BUCKET=$(pulumi stack output bucketName) && \
 awslocal s3api get-bucket-tagging --bucket "$BUCKET"
 ```{{exec}}
 
-到这里为止，程序目标状态、State 和 MiniStack 里的真实资源是一致的。
+到这里为止，程序目标状态、State 和 LocalStack 里的真实资源是一致的。

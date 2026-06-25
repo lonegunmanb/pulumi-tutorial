@@ -327,6 +327,6 @@ CI 中还要特别关注 Secrets Provider。使用 passphrase 时，`PULUMI_CONF
 
 下面两个实验都使用本地模拟器，不需要真实 AWS 或 Azure 账号。它们会故意制造缺失配置、Provider endpoint 错误和控制台外标签改动，让你练习 preview、debug logging、refresh、stack export 与 CI 制品归档。
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-debugging-aws" title="实验：Pulumi 调试与故障排查（AWS / MiniStack）" desc="使用 MiniStack 模拟 AWS S3，从缺失 Stack 配置开始，逐步打开程序日志和 Provider verbose 日志，再通过 awslocal 制造标签漂移，用 refresh 与 state export 定位差异。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-debugging-aws" title="实验：Pulumi 调试与故障排查（AWS / LocalStack）" desc="使用 LocalStack v3 模拟 AWS S3，从缺失 Stack 配置开始，逐步打开程序日志和 Provider verbose 日志，再通过 awslocal 制造标签漂移，用 refresh 与 state export 定位差异。" />
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-debugging-azure" title="实验：Pulumi 调试与故障排查（Azure / miniblue）" desc="使用 miniblue 模拟 Azure Resource Group，定位缺失配置、metadata endpoint 错误和控制台外标签漂移，练习 --debug、-v、refresh 与状态导出。" />
