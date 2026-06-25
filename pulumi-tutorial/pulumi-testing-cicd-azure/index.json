@@ -1,12 +1,12 @@
 {
-  "title": "测试驱动开发与 CI/CD（AWS / MiniStack）",
-  "description": "使用 @pulumi/aws 对接 MiniStack，围绕真实 S3 Bucket 完成 Pulumi mocks、Automation API 集成测试、pulumi/actions 和 act 本地模拟",
+  "title": "测试驱动开发与 CI/CD（Azure / miniblue）",
+  "description": "使用 @pulumi/azure 对接 miniblue，围绕真实 Resource Group 与 Virtual Network 完成 Pulumi mocks、Automation API 集成测试、pulumi/actions 和 act 本地模拟",
   "details": {
     "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
     "steps": [
       { "title": "先写失败的单元测试", "text": "step1/text.md" },
       { "title": "修复程序让测试通过", "text": "step2/text.md" },
-      { "title": "用 Automation API 部署到 MiniStack", "text": "step3/text.md" },
+      { "title": "用 Automation API 部署到 miniblue", "text": "step3/text.md" },
       { "title": "生成 PR Preview 工作流", "text": "step4/text.md" },
       { "title": "串起本地验证流水线", "text": "step5/text.md" }
     ],

@@ -95,6 +95,9 @@
     },
     {
       "path": "pulumi-testing-cicd"
+    },
+    {
+      "path": "pulumi-testing-cicd-azure"
     }
   ]
 }

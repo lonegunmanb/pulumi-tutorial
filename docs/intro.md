@@ -64,7 +64,6 @@ group: 起步
 - [资源](resources.md)
 - [Inputs, Outputs](inputs-outputs.md)
 - [Secrets 机密处理](secrets-handling.md)
-
 - [Stash 状态暂存](stash.md)
 - [Functions 函数](functions.md)
 - [Assets 与 Archives](assets_archives.md)
@@ -78,7 +77,7 @@ group: 起步
 - [Pulumi Packages](packages.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)
-- [测试驱动开发与 CI/CD 实践](testing-cicd.md)
+- [测试-cicd](testing.md)
 
 ### 附录
 

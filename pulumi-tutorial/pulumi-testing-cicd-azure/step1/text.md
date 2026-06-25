@@ -1,15 +1,15 @@
 # 先写失败的单元测试
 
-TDD 的第一步是先表达约束。当前程序会创建一个 S3 Bucket，但还没有完整的标签约束。
+TDD 的第一步是先表达约束。当前程序会创建 Resource Group 和 Virtual Network，但还没有完整的标签约束。
 
 先看入口程序：
 
 ```bash
 cd /root/workspace && \
-sed -n '1,160p' index.ts
+sed -n '1,220p' index.ts
 ```{{exec}}
 
-现在写一个 Pulumi mock 单元测试。它在导入程序前设置 mocks，然后断言 Bucket 必须允许测试环境清理，并且必须包含 owner 与 managedBy 标签。
+现在写一个 Pulumi mock 单元测试。它在导入程序前设置 mocks，然后断言 Resource Group 必须包含 owner 与 managedBy 标签，并且 Virtual Network 必须使用约定地址空间。
 
 ```bash
 cd /root/workspace && \
@@ -25,34 +25,34 @@ pulumi.runtime.setMocks({
 			id: `${args.name}_id`,
 			state: {
 				...args.inputs,
-				arn: `arn:aws:s3:::${args.inputs.bucket ?? args.name}`,
+				id: `/subscriptions/00000000/resourceGroups/${args.inputs.name ?? args.name}`,
 			},
 		};
 	},
 	call(args: pulumi.runtime.MockCallArgs) {
 		return args.inputs;
 	},
-}, "pulumi-testing-cicd", "dev", false);
+}, "pulumi-testing-cicd-azure", "dev", false);
 
 function outputOf<T>(value: pulumi.Output<T>): Promise<T> {
 	return new Promise((resolve) => value.apply(resolve));
 }
 
-describe("bucket contract", () => {
+describe("azure resource contract", () => {
 	let infra: typeof import("../index");
 
 	before(async () => {
 		infra = await import("../index");
 	});
 
-	it("allows cleanup in test environments", async () => {
-		assert.equal(await outputOf(infra.bucket.forceDestroy), true);
-	});
-
-	it("declares ownership tags", async () => {
-		const tags = await outputOf(infra.bucket.tags);
+	it("declares resource group ownership tags", async () => {
+		const tags = await outputOf(infra.resourceGroup.tags);
 		assert.equal(tags?.owner, "platform-team");
 		assert.equal(tags?.managedBy, "pulumi");
+	});
+
+	it("uses the approved network range", async () => {
+		assert.deepEqual(await outputOf(infra.virtualNetwork.addressSpaces), ["10.20.0.0/16"]);
 	});
 });
 TS

@@ -70,7 +70,7 @@ export default defineConfig({
                   { text: "Pulumi Packages", link: "/packages" },
                   { text: "Policy as Code", link: "/policy-as-code" },
                   { text: "Pulumi 调试与故障排查", link: "/debugging" },
-                  { text: "测试驱动开发与 CI/CD 实践", link: "/testing-cicd" }
+                  { text: "测试驱动开发与 CI/CD 实践", link: "/testing" }
                 ]
               },
               {

@@ -38,6 +38,7 @@ const preferredOrder = [
   'pulumi-debugging-aws',
   'pulumi-debugging-azure',
   'pulumi-testing-cicd',
+  'pulumi-testing-cicd-azure',
 ]
 
 const existing = fs
