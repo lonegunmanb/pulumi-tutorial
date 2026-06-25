@@ -380,10 +380,67 @@ jobs:
           work-dir: .
 YAML
 
+cat > asserts/pulumi-preview-act.yml <<'YAML'
+name: Pulumi preview local
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    env:
+      PULUMI_CONFIG_PASSPHRASE: ""
+      TS_NODE_TRANSPILE_ONLY: "1"
+      NODE_OPTIONS: --max-old-space-size=512
+      ARM_CLIENT_ID: miniblue
+      ARM_CLIENT_SECRET: miniblue
+      ARM_SUBSCRIPTION_ID: 00000000-0000-0000-0000-000000000000
+      ARM_TENANT_ID: 00000000-0000-0000-0000-000000000001
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+      - name: Trust miniblue metadata certificate
+        run: |
+          for attempt in $(seq 1 60); do
+            curl -sk https://localhost:4567/metadata/endpoints?api-version=2019-05-01 && break
+            sleep 2
+          done
+          openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev/null | openssl x509 > miniblue.crt
+          sudo cp miniblue.crt /usr/local/share/ca-certificates/miniblue.crt
+          sudo update-ca-certificates
+      - uses: pulumi/setup-pulumi@v2
+      - run: pulumi login --local
+      - run: pulumi stack select dev || pulumi stack init dev
+      - run: pulumi config set prefix ci
+      - uses: pulumi/actions@v7
+        with:
+          command: preview
+          stack-name: dev
+          work-dir: .
+YAML
+
 npm install --no-audit --no-fund >/dev/null
 pulumi login --local >/dev/null 2>&1 || true
 pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null
 pulumi config set prefix testing >/dev/null
+
+cat > .gitignore <<'GITIGNORE'
+node_modules/
+.github/
+GITIGNORE
+git init >/dev/null 2>&1 || true
+git config user.email "learner@example.com" >/dev/null 2>&1 || true
+git config user.name "Pulumi Tutorial" >/dev/null 2>&1 || true
+git add package.json package-lock.json tsconfig.json Pulumi.yaml index.ts docker-compose.yml asserts .gitignore >/dev/null 2>&1 || true
+git commit -m "Initial lab workspace" >/dev/null 2>&1 || true
 
 if ! command -v act >/dev/null 2>&1; then
 	curl -fsSL https://raw.githubusercontent.com/nektos/act/master/install.sh | bash -s -- -b /usr/local/bin >/dev/null

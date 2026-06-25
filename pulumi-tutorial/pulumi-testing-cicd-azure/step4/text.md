@@ -14,7 +14,8 @@ mkdir -p .github/workflows
 ```bash
 cd /root/workspace && \
 cat asserts/pulumi-preview.yml && \
-cp asserts/pulumi-preview.yml .github/workflows/pulumi-preview.yml
+cp asserts/pulumi-preview.yml .github/workflows/pulumi-preview.yml && \
+cp asserts/pulumi-preview-act.yml .github/workflows/pulumi-preview-act.yml
 ```{{exec}}
 
 查看生成结果：
@@ -24,4 +25,4 @@ cd /root/workspace && \
 sed -n '1,280p' .github/workflows/pulumi-preview.yml
 ```{{exec}}
 
-注意 concurrency 的作用：同一个 Pull Request 只保留最新一次 preview，避免旧提交上的结果覆盖新提交。
+注意 concurrency 的作用：同一个 Pull Request 只保留最新一次 preview，避免旧提交上的结果覆盖新提交。另一个名为 pulumi-preview-act 的工作流只给本地 act 模拟使用，它复用当前已经启动的 miniblue，不再声明 service container。

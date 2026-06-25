@@ -1,27 +1,26 @@
 # 串起本地验证流水线
 
-最后在本地模拟一次 CI 流程。先用 act 检查 GitHub Actions 工作流会执行哪些步骤：
+最后用 `act` 在本地真实执行一次 PR preview 工作流。GitHub Actions 正式工作流使用 service container；act 在本实验环境中对 service container 的处理不稳定，所以这里使用专门的本地模拟工作流，它复用后台已经启动的 miniblue，但仍然通过 act 执行 workflow 里的步骤。
 
 ```bash
 cd /root/workspace && \
-act pull_request -W .github/workflows/pulumi-preview.yml -j preview -n
+docker info >/dev/null && \
+act pull_request -W .github/workflows/pulumi-preview-act.yml -j preview -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest --container-architecture linux/amd64 --container-options '--network host'
 ```{{exec}}
 
-act 使用 Docker 模拟 GitHub Actions runner。如果当前环境可以访问 Docker，就实际运行一次 PR preview 工作流；如果 Docker 不可用，本步骤会跳过真实运行，只保留上面的 dry-run 结果。下面指定的 runner 镜像来自 act 社区，适合本地实验，不代表 GitHub 托管 runner 与它完全一致。
+act 使用 Docker 模拟 GitHub Actions runner。上面指定的 runner 镜像来自 act 社区，适合本地实验，不代表 GitHub 托管 runner 与它完全一致。`--network host` 让 act 容器可以访问宿主机上已经启动的 miniblue。
+
+如果你只想先查看 act 会执行哪些步骤，可以加上 dry-run 参数：
 
 ```bash
 cd /root/workspace && \
-if docker info >/dev/null 2>&1; then act pull_request -W .github/workflows/pulumi-preview.yml -j preview -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest --container-architecture linux/amd64; else echo "Docker 未就绪，已跳过 act 真实运行。"; fi
+act pull_request -W .github/workflows/pulumi-preview-act.yml -j preview -n -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
 ```{{exec}}
 
-再运行本地完整验证：单元测试、preview、集成测试。集成测试会创建自己的临时 Stack，并在结束时清理。
+最后再运行 Automation API 集成测试。它会创建自己的临时 Stack，并在结束时清理。
 
 ```bash
 cd /root/workspace && \
-npm run test:unit && \
-pulumi stack select dev && \
-pulumi config set prefix ci && \
-pulumi preview --non-interactive && \
 npm run test:integration
 ```{{exec}}
 
