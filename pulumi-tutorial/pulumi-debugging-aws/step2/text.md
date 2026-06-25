@@ -1,12 +1,14 @@
 # 补齐配置并查看程序日志
 
-现在补齐 Stack 配置，再打开程序调试日志。`--debug` 会显示 pulumi.log.debug 输出。
+现在补齐 Stack 配置，并切换到真实资源程序。`--debug` 会显示 pulumi.log.debug 输出。
 
 ```bash
 source /root/.pulumi-debugging-aws-env.sh && \
 cd /root/workspace/debugging-aws && \
 pulumi config set owner platform-team && \
 pulumi config set environment dev && \
+cp variants/resource.ts index.ts && \
+sed -n '1,180p' index.ts && \
 pulumi preview --debug --diff
 ```{{exec}}
 

@@ -39,7 +39,7 @@ if ! docker compose version >/dev/null 2>&1; then
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 fi
 
-mkdir -p /root/workspace/debugging-azure
+mkdir -p /root/workspace/debugging-azure/variants
 cd /root/workspace/debugging-azure
 
 cat > docker-compose.yml <<'YAML'
@@ -133,7 +133,21 @@ runtime:
 description: Debug Pulumi updates against a miniblue Azure endpoint.
 YAML
 
-cat > index.ts <<'TS'
+cat > variants/config-check.ts <<'TS'
+import * as pulumi from "@pulumi/pulumi";
+
+const config = new pulumi.Config();
+
+const owner = config.require("owner");
+const environment = config.require("environment");
+
+pulumi.log.info(`Configuration is ready for ${environment}, owner ${owner}.`);
+
+export const checkedOwner = owner;
+export const checkedEnvironment = environment;
+TS
+
+cat > variants/resource.ts <<'TS'
 import * as pulumi from "@pulumi/pulumi";
 import * as azure from "@pulumi/azure";
 
@@ -177,6 +191,8 @@ export const resourceGroupId = group.id;
 export const selectedMetadataHost = metadataHost;
 export const tagValue = diagnosticTag;
 TS
+
+cp variants/config-check.ts index.ts
 
 npm install --no-audit --no-fund >/dev/null
 

@@ -57,7 +57,7 @@ exec aws --endpoint-url=http://localhost:4566 --region "$AWS_DEFAULT_REGION" "$@
 WRAPPER
 chmod +x /usr/local/bin/awslocal
 
-mkdir -p /root/workspace/debugging-aws
+mkdir -p /root/workspace/debugging-aws/variants
 cd /root/workspace/debugging-aws
 
 cat > docker-compose.yml <<'YAML'
@@ -141,7 +141,21 @@ runtime:
 description: Debug Pulumi updates against an S3-compatible MiniStack endpoint.
 YAML
 
-cat > index.ts <<'TS'
+cat > variants/config-check.ts <<'TS'
+import * as pulumi from "@pulumi/pulumi";
+
+const config = new pulumi.Config();
+
+const owner = config.require("owner");
+const environment = config.require("environment");
+
+pulumi.log.info(`Configuration is ready for ${environment}, owner ${owner}.`);
+
+export const checkedOwner = owner;
+export const checkedEnvironment = environment;
+TS
+
+cat > variants/resource.ts <<'TS'
 import * as pulumi from "@pulumi/pulumi";
 import { Provider } from "@pulumi/aws/provider";
 import * as s3 from "@pulumi/aws/s3";
@@ -186,6 +200,8 @@ export const bucketUrn = bucket.urn;
 export const selectedEndpoint = s3Endpoint;
 export const tagValue = diagnosticTag;
 TS
+
+cp variants/config-check.ts index.ts
 
 npm install --no-audit --no-fund >/dev/null
 
