@@ -77,7 +77,8 @@ group: 起步
 - [Pulumi Packages](packages.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)
-- [测试-cicd](testing.md)
+- [测试驱动开发与 CI/CD 实践](testing.md)
+- [最佳实践](best-practices.md)
 
 ### 附录
 

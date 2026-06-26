@@ -98,6 +98,12 @@
     },
     {
       "path": "pulumi-testing-cicd-azure"
+    },
+    {
+      "path": "pulumi-best-practices-aws"
+    },
+    {
+      "path": "pulumi-best-practices-azure"
     }
   ]
 }

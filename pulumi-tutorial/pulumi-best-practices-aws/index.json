@@ -1,0 +1,26 @@
+{
+  "title": "最佳实践（AWS / MiniStack RDS）",
+  "description": "用 @pulumi/aws 对接 MiniStack RDS，练习共享基础设施、SecurePostgresDatabase 组件、Stack 配置、受限输入和本地 Policy Pack",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "平台 Stack：共享数据库基线", "text": "step1/text.md" },
+      { "title": "工作负载 Stack：组件化数据库", "text": "step2/text.md" },
+      { "title": "受限输入：控制 dev 成本", "text": "step3/text.md" },
+      { "title": "本地策略：检查最终资源", "text": "step4/text.md" },
+      { "title": "多个工作负载共享平台", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}
