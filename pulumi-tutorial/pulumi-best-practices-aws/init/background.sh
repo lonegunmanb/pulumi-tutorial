@@ -268,7 +268,6 @@ export class SecurePostgresDatabase extends pulumi.ComponentResource {
       engineVersion: "15",
       instanceClass: selected.instanceClass,
       allocatedStorage: selected.storage,
-      maxAllocatedStorage: 0,
       username: "tutorial",
       password: args.password,
       parameterGroupName: args.platformParameterGroupName,
@@ -289,7 +288,7 @@ export class SecurePostgresDatabase extends pulumi.ComponentResource {
         securityProfile: "baseline-postgres",
         costControlled: "true",
       },
-    }, { parent: this });
+    }, { parent: this, ignoreChanges: ["maxAllocatedStorage"] });
 
     this.endpoint = db.endpoint;
     this.identifier = db.identifier;
@@ -376,7 +375,6 @@ const direct = new rds.Instance("direct-db", {
   engineVersion: "15",
   instanceClass: "db.t3.small",
   allocatedStorage: 40,
-  maxAllocatedStorage: 0,
   username: "tutorial",
   password: "Plaintext-Password1",
   skipFinalSnapshot: true,
@@ -388,7 +386,7 @@ const direct = new rds.Instance("direct-db", {
     environment,
     size: "standard",
   },
-}, { provider: localAws });
+}, { provider: localAws, ignoreChanges: ["maxAllocatedStorage"] });
 
 export const directEndpoint = direct.endpoint;
 TS

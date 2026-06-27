@@ -96,7 +96,6 @@ const db = new rds.Instance(name, {
   engineVersion: "15",
   instanceClass: sizeConfig.instanceClass,
   allocatedStorage: sizeConfig.storage,
-  maxAllocatedStorage: 0,
   storageEncrypted: true,
   publiclyAccessible: false,
   backupRetentionPeriod: 1,
@@ -109,7 +108,7 @@ const db = new rds.Instance(name, {
     componentVersion: args.componentVersion,
     costControlled: "true",
   },
-}, { parent: this });
+}, { parent: this, ignoreChanges: ["maxAllocatedStorage"] });
 ```
 
 如果组件内部的子资源要继承显式 provider，调用组件时应传 `providers`。`provider` 是给 CustomResource 使用的单一 provider 选项，对 ComponentResource 本身不会像对子资源那样生效。
