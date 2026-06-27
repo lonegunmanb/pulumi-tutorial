@@ -1,6 +1,6 @@
 {
-  "title": "最佳实践（AWS / LocalStack RDS）",
-  "description": "用 @pulumi/aws 对接 LocalStack RDS，练习共享基础设施、SecurePostgresDatabase 组件、Stack 配置、受限输入和本地 Policy Pack",
+  "title": "最佳实践（AWS / MiniStack RDS）",
+  "description": "用 @pulumi/aws 对接 MiniStack RDS，练习共享基础设施、SecurePostgresDatabase 组件、Stack 配置、受限输入和本地 Policy Pack",
   "details": {
     "intro": {
       "text": "init/init.md",

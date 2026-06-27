@@ -24,19 +24,6 @@ pulumi stack output dbIdentifier && \
 pulumi stack output platformContract
 ```{{exec}}
 
-最后清理工作负载和平台资源：
-
-```bash
-cd /root/workspace/best-practices-aws/workload && \
-pulumi stack select orders-dev && \
-pulumi destroy --yes && \
-pulumi stack select billing-dev && \
-pulumi destroy --yes && \
-cd /root/workspace/best-practices-aws/platform && \
-pulumi stack select dev && \
-pulumi destroy --yes && \
-cd /root/workspace/best-practices-aws && \
-docker compose down
-```{{exec}}
-
 现在你已经完成一条完整路径：平台 Stack 管共享基线，工作负载 Stack 只读引用，组件封装默认值，策略校验最终资源。
+
+MiniStack RDS 在本实验环境里删除实例不够稳定，因此这里不安排清理命令。Killercoda 会在会话结束后回收临时环境。

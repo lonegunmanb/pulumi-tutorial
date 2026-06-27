@@ -24,19 +24,6 @@ pulumi stack output serverName && \
 pulumi stack output platformContract
 ```{{exec}}
 
-最后清理工作负载和平台资源：
-
-```bash
-cd /root/workspace/best-practices-azure/workload && \
-pulumi stack select orders-dev && \
-pulumi destroy --yes && \
-pulumi stack select billing-dev && \
-pulumi destroy --yes && \
-cd /root/workspace/best-practices-azure/platform && \
-pulumi stack select dev && \
-pulumi destroy --yes && \
-cd /root/workspace/best-practices-azure && \
-docker compose down
-```{{exec}}
-
 现在你已经完成一条完整路径：平台 Stack 管共享资源组，工作负载 Stack 只读引用，组件封装默认值，策略校验最终资源。
+
+本实验不安排手动清理命令。Killercoda 会在会话结束后回收临时环境。
