@@ -96,6 +96,7 @@ const db = new rds.Instance(name, {
   engineVersion: "15",
   instanceClass: sizeConfig.instanceClass,
   allocatedStorage: sizeConfig.storage,
+  maxAllocatedStorage: 0,
   storageEncrypted: true,
   publiclyAccessible: false,
   backupRetentionPeriod: 1,
