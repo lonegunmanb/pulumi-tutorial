@@ -7,7 +7,7 @@ trap 'echo "[$(date +%Y-%m-%dT%H:%M:%S)] 命令失败：行 $LINENO，退出码 
 trap 'echo "===== [$(date +%Y-%m-%dT%H:%M:%S)] background.sh 结束，退出码 $? ====="' EXIT
 
 export SCENARIO_ID="pulumi-best-practices-aws"
-export SCENARIO_TITLE="最佳实践：AWS / MiniStack RDS 版"
+export SCENARIO_TITLE="最佳实践：AWS / LocalStack RDS 版"
 export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
@@ -47,24 +47,22 @@ cd /root/workspace/best-practices-aws
 
 cat > docker-compose.yml <<'YAML'
 services:
-  ministack:
-    image: ministackorg/ministack:latest
-    container_name: pulumi-best-practices-ministack
+  localstack:
+    image: localstack/localstack:3
+    container_name: pulumi-best-practices-localstack
     ports:
       - "4566:4566"
-      - "15432-15450:15432-15450"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      MINISTACK_REGION: us-east-1
-      MINISTACK_ACCOUNT_ID: "000000000000"
-      RDS_BASE_PORT: "15432"
+      AWS_DEFAULT_REGION: us-east-1
+      SERVICES: rds,sts
 YAML
 
 docker compose up -d
 
 for attempt in $(seq 1 90); do
-  if curl -sf http://localhost:4566/_ministack/health >/dev/null 2>&1; then
+  if curl -sf http://localhost:4566/_localstack/health >/dev/null 2>&1; then
     break
   fi
   if [ "$attempt" = "90" ]; then
@@ -115,7 +113,7 @@ runtime:
   name: nodejs
   options:
     nodeargs: "--max-old-space-size=512"
-description: Shared PostgreSQL platform baseline against MiniStack RDS.
+description: Shared PostgreSQL platform baseline against LocalStack RDS.
 YAML
 
 cat > index.ts <<'TS'
@@ -123,7 +121,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as rds from "@pulumi/aws/rds";
 import { Provider } from "@pulumi/aws/provider";
 
-const localAws = new Provider("ministack", {
+const localAws = new Provider("localstack", {
   region: "us-east-1",
   accessKey: "test",
   secretKey: "test",
@@ -210,7 +208,7 @@ YAML
 cat > src/provider.ts <<'TS'
 import { Provider } from "@pulumi/aws/provider";
 
-export const localAws = new Provider("ministack", {
+export const localAws = new Provider("localstack", {
   region: "us-east-1",
   accessKey: "test",
   secretKey: "test",

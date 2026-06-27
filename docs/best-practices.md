@@ -217,13 +217,13 @@ service-infra/
 
 ## 12.9 本章实验
 
-本章实验分为 AWS 与 Azure 两个版本，二者都不需要真实云账号。AWS 版使用 MiniStack 的 RDS 支持创建 PostgreSQL 数据库；Azure 版使用 miniblue 的 DB for PostgreSQL 支持创建 PostgreSQL Flexible Server。
+本章实验分为 AWS 与 Azure 两个版本，二者都不需要真实云账号。AWS 版使用 LocalStack 的 RDS 控制面创建 PostgreSQL 风格的 RDS 实例；Azure 版使用 miniblue 的 DB for PostgreSQL 支持创建 PostgreSQL Flexible Server。
 
 Azure 实验会给 miniblue 配置本地 PostgreSQL 后端，让模拟器能够处理 DB for PostgreSQL 资源。实验中的 `publicNetworkAccessEnabled: false` 用来演示组件与策略如何表达安全约束；真实 Azure 私有访问通常还需要 delegated subnet、private DNS zone 等网络配置，本实验不展开网络拓扑。
 
 两个实验都覆盖同一条主线：platform Project 输出共享基础设施，workload Project 用 StackReference 读取；组件封装数据库默认值；Stack Config 组合不同工作负载；受限输入阻止 dev 环境使用较大规格；本地 Policy Pack 阻止绕开组件的数据库资源。
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-best-practices-aws" title="实验：最佳实践（AWS / MiniStack RDS）" desc="用 @pulumi/aws 对接 MiniStack RDS，创建共享 PostgreSQL 基线、SecurePostgresDatabase 组件、受限输入、本地 Policy Pack，并部署 orders 与 billing 两个工作负载 Stack。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-best-practices-aws" title="实验：最佳实践（AWS / LocalStack RDS）" desc="用 @pulumi/aws 对接 LocalStack RDS，创建共享 PostgreSQL 基线、SecurePostgresDatabase 组件、受限输入、本地 Policy Pack，并部署 orders 与 billing 两个工作负载 Stack。" />
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-best-practices-azure" title="实验：最佳实践（Azure / miniblue DB for PostgreSQL）" desc="用 @pulumi/azure 对接 miniblue，创建共享 Resource Group、SecurePostgresServer 组件、Stack 配置、本地策略检查，并部署多个 PostgreSQL Flexible Server 工作负载。" />
 

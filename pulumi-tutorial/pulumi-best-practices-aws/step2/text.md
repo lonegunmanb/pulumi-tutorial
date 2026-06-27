@@ -22,7 +22,7 @@ pulumi config set platformStack dev && \
 pulumi config set --secret dbPassword 'Correct-Horse-1'
 ```{{exec}}
 
-部署数据库。MiniStack RDS 会在本地模拟控制面，并为实例分配 PostgreSQL endpoint。
+部署数据库。LocalStack RDS 会在本地模拟控制面，并为实例分配 endpoint。
 
 ```bash
 pulumi up --yes && \

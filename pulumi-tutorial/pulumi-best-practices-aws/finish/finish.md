@@ -1,6 +1,6 @@
 # 完成
 
-你已经完成 AWS / MiniStack RDS 版最佳实践实验。
+你已经完成 AWS / LocalStack RDS 版最佳实践实验。
 
 这次你练习了：
 
