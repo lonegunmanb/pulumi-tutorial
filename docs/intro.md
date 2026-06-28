@@ -25,6 +25,7 @@ group: 起步
 - 使用 Asset 与 Archive 把文件、目录和代码包交给资源输入。
 - 使用多环境 Stack 配置组织 dev、staging、prod 等环境差异。
 - 使用 Automation API 构建自助式平台工程后端。
+- 使用 Pulumi Templates 为新项目提供标准起点。
 - 使用 Pulumi Packages 分发可复用基础设施能力。
 - 使用 Policy as Code 在本地和 CI 中运行策略检查。
 - 使用日志、诊断、状态导出与 refresh 排查 Pulumi 部署问题。
@@ -70,10 +71,12 @@ group: 起步
 - [企业级架构：Components](components.md)
 - [Configuration 配置](configs.md)
 
+
 ### 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 
 - [多环境 Stack 配置与动态基础设施](dynamic-stacks.md)
 - [Automation API](automation-api.md)
+- [Pulumi Templates](templates.md)
 - [Pulumi Packages](packages.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)

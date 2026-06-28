@@ -1,0 +1,26 @@
+{
+  "title": "Pulumi Templates",
+  "description": "创建本地 Pulumi Template，用 pulumi new 生成项目，验证 template config、secret、quickstart 与本地测试流程",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "查看 template 目录", "text": "step1/text.md" },
+      { "title": "用 pulumi new 生成项目", "text": "step2/text.md" },
+      { "title": "检查变量替换与配置", "text": "step3/text.md" },
+      { "title": "运行 preview 与 up", "text": "step4/text.md" },
+      { "title": "理解 Git 仓库分发", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

@@ -82,6 +82,9 @@
       "path": "pulumi-automation-api-azure"
     },
     {
+      "path": "pulumi-templates"
+    },
+    {
       "path": "pulumi-policy-as-code-aws"
     },
     {

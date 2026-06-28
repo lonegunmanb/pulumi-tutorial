@@ -67,6 +67,7 @@ export default defineConfig({
                 items: [
                   { text: "多环境 Stack 配置与动态基础设施", link: "/dynamic-stacks" },
                   { text: "Automation API", link: "/automation-api" },
+                  { text: "Pulumi Templates", link: "/templates" },
                   { text: "Pulumi Packages", link: "/packages" },
                   { text: "Policy as Code", link: "/policy-as-code" },
                   { text: "Pulumi 调试与故障排查", link: "/debugging" },

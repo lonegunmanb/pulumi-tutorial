@@ -33,6 +33,7 @@ const preferredOrder = [
   'pulumi-dynamic-stacks-azure',
   'pulumi-automation-api',
   'pulumi-automation-api-azure',
+  'pulumi-templates',
   'pulumi-policy-as-code-aws',
   'pulumi-policy-as-code-azure',
   'pulumi-debugging-aws',
