@@ -14,5 +14,7 @@ sed -n '1,120p' index.ts
 
 ```bash
 pulumi config && \
-pulumi config get apiToken --show-secrets
+pulumi config get apiToken -j | jq .
 ```{{exec}}
+
+如果 JSON 里的 secret 字段是 true，说明 apiToken 已经作为 Pulumi secret 写入 Stack 配置。

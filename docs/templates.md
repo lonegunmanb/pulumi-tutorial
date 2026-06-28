@@ -75,6 +75,20 @@ service-template/
 
 Template 目录可以包含更多文件，例如 `policy-pack/`、`src/components/`、`tests/`、`.github/workflows/` 或 `.env.example`。关键原则是：模板生成的项目应当可以被普通开发者理解和维护，而不是只为模板作者服务。
 
+再把“template 里的文件”和“最终生成项目里的文件”对应起来看，会更清楚：
+
+| Template 目录中的文件 | `pulumi new` 后生成项目中的结果 |
+|----------------------|----------------------------------|
+| `Pulumi.yaml` | 复制为新 Project 的 `Pulumi.yaml`，其中 `${PROJECT}` 和 `${DESCRIPTION}` 会被替换 |
+| `index.ts` | TypeScript 项目的程序入口，原样复制并执行变量替换 |
+| `__main__.py` 或 `main.py` | Python 项目的程序入口，取决于模板作者放哪个文件 |
+| `main.go` | Go 项目的程序入口 |
+| `package.json`、`requirements.txt`、`go.mod` | 复制为生成项目的语言依赖文件 |
+| `README.md` | 复制为生成项目说明文档，并可替换项目名和描述 |
+| `Pulumi.<stack>.yaml` | 通常不建议放进通用模板；Stack 配置应由 `template.config` 在创建时生成 |
+
+也就是说，`pulumi new` 生成的是一个新的 Pulumi Project 目录；Stack 是这个 Project 里的环境实例，不是单独的模板目录。生成目录里会包含程序入口文件和依赖文件，之后执行 `pulumi stack init` 或 `pulumi new --stack` 才会产生对应的 Stack 配置。
+
 ## 8.3 Pulumi.yaml：template 段是识别模板的关键
 
 官方文档指出，`Pulumi.yaml` 必须包含 `template` 段，才会被识别为有效模板。下面是一个简化示例：
