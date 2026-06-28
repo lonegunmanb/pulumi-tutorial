@@ -1,0 +1,27 @@
+{
+  "title": "Component 包分发与基于 Git 的版本化引用（AWS / MiniStack）",
+  "description": "编写 SecureBucket 组件，展示 native language package、source-based plugin package 与 executable-based plugin package 三种分发路径，并用 MiniStack 与本地可执行插件验证",
+  "details": {
+    "intro": {
+      "text": "init/init.md",
+      "background": "init/background.sh",
+      "foreground": "init/foreground.sh"
+    },
+    "steps": [
+      { "title": "编写组件并托管到 Git", "text": "step1/text.md" },
+      { "title": "消费 native package", "text": "step2/text.md" },
+      { "title": "查看 source-based package", "text": "step3/text.md" },
+      { "title": "用 pulumi package add 消费", "text": "step4/text.md" },
+      { "title": "检查版本与资源树", "text": "step5/text.md" },
+      { "title": "编译 executable-based plugin", "text": "step6/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+      ]
+    }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

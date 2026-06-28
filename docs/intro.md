@@ -78,10 +78,12 @@ group: 起步
 - [Automation API](automation-api.md)
 - [Pulumi Templates](templates.md)
 - [Pulumi Packages](packages.md)
+- [Component 包分发与基于 Git 的版本化引用](component-packaging-git.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)
 - [测试驱动开发与 CI/CD 实践](testing.md)
 - [最佳实践](best-practices.md)
+
 
 ### 附录
 

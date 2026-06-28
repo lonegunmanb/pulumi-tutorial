@@ -69,6 +69,7 @@ export default defineConfig({
                   { text: "Automation API", link: "/automation-api" },
                   { text: "Pulumi Templates", link: "/templates" },
                   { text: "Pulumi Packages", link: "/packages" },
+                  { text: "Component 包分发与基于 Git 的版本化引用", link: "/component-packaging-git" },
                   { text: "Policy as Code", link: "/policy-as-code" },
                   { text: "Pulumi 调试与故障排查", link: "/debugging" },
                   { text: "测试驱动开发与 CI/CD 实践", link: "/testing" },

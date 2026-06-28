@@ -85,6 +85,12 @@
       "path": "pulumi-templates"
     },
     {
+      "path": "pulumi-component-packaging-aws"
+    },
+    {
+      "path": "pulumi-component-packaging-azure"
+    },
+    {
       "path": "pulumi-policy-as-code-aws"
     },
     {
