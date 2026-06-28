@@ -62,7 +62,7 @@ workload Project
 - 依赖是只读的：StackReference 读取 Output，不会修改上游资源。
 - 审查边界清楚：平台变更和应用变更可以在不同 Pull Request 中审查。
 
-本章 AWS 实验会让 platform Project 创建 RDS Parameter Group，workload Project 创建多个 PostgreSQL 实例并引用同一个共享参数组。Azure 实验会让 platform Project 创建 Resource Group，workload Project 在该 Resource Group 中创建多个 PostgreSQL Flexible Server。
+本章实验会让 platform Project 创建 RDS Parameter Group，workload Project 创建多个 PostgreSQL 实例并引用同一个共享参数组。
 
 在本地 backend 中，StackReference 里的 `organization` 是本教程使用的本地后端组织名前缀；如果使用 Pulumi Cloud，这一段对应真实 Organization 名称。无论后端是哪一种，引用格式都要能唯一指向上游 Project 与 Stack。
 
@@ -213,19 +213,13 @@ service-infra/
 | 成本限制 | 组件内校验输入，策略包校验最终资源 |
 | 策略执行 | 在本地 preview 和 CI 中都传入 `--policy-pack` |
 | 共享契约 | 上游输出要命名稳定，并在 README 中说明用途 |
-| 清理路径 | 每个实验或临时 Stack 都有 destroy 步骤 |
+| 清理路径 | 每个实验或临时 Stack 都说明手动清理或平台回收方式 |
 
 ## 12.9 本章实验
 
-本章实验分为 AWS 与 Azure 两个版本，二者都不需要真实云账号。AWS 版使用 MiniStack 的 RDS 支持创建 PostgreSQL 数据库；Azure 版使用 miniblue 的 DB for PostgreSQL 支持创建 PostgreSQL Flexible Server。
-
-Azure 实验会给 miniblue 配置本地 PostgreSQL 后端，让模拟器能够处理 DB for PostgreSQL 资源。实验中的 `publicNetworkAccessEnabled: false` 用来演示组件与策略如何表达安全约束；真实 Azure 私有访问通常还需要 delegated subnet、private DNS zone 等网络配置，本实验不展开网络拓扑。
-
-两个实验都覆盖同一条主线：platform Project 输出共享基础设施，workload Project 用 StackReference 读取；组件封装数据库默认值；Stack Config 组合不同工作负载；受限输入阻止 dev 环境使用较大规格；本地 Policy Pack 阻止绕开组件的数据库资源。
+本章实验提供一个 AWS 版场景，不需要真实云账号。它使用 MiniStack 的 RDS 支持创建 PostgreSQL 数据库，并覆盖同一条主线：platform Project 输出共享基础设施，workload Project 用 StackReference 读取；组件封装数据库默认值；Stack Config 组合不同工作负载；受限输入阻止 dev 环境使用较大规格；本地 Policy Pack 阻止绕开组件的数据库资源。
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-best-practices-aws" title="实验：最佳实践（AWS / MiniStack RDS）" desc="用 @pulumi/aws 对接 MiniStack RDS，创建共享 PostgreSQL 基线、SecurePostgresDatabase 组件、受限输入、本地 Policy Pack，并部署 orders 与 billing 两个工作负载 Stack。" />
-
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-best-practices-azure" title="实验：最佳实践（Azure / miniblue DB for PostgreSQL）" desc="用 @pulumi/azure 对接 miniblue，创建共享 Resource Group、SecurePostgresServer 组件、Stack 配置、本地策略检查，并部署多个 PostgreSQL Flexible Server 工作负载。" />
 
 ## 12.10 小结
 

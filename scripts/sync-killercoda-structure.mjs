@@ -40,7 +40,6 @@ const preferredOrder = [
   'pulumi-testing-cicd',
   'pulumi-testing-cicd-azure',
   'pulumi-best-practices-aws',
-  'pulumi-best-practices-azure',
 ]
 
 const existing = fs
