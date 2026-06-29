@@ -2,12 +2,12 @@
 
 最后看第三条路径：executable-based plugin package。它不是普通 npm 包，也不是 source-based package，而是先把 provider 编译成 `pulumi-resource-*` 可执行文件，再让消费者从这个本地路径生成 SDK。
 
-本实验用 Go 和 `pulumi-go-provider` 写了一个很小的组件 provider。它只输出一个名称牌字符串，目的是把注意力放在插件边界、schema 和 SDK 生成流程上。
+本实验用 Go 和 `pulumi-go-provider` 写了一个 `SecureStorage` 组件 provider。它和前两条路径一样创建资源组、主存储账户与日志账户，只是组件通过本地可执行插件分发。
 
-先确认 Go 工具链可用。如果后台初始化失败，这条命令也会原地补装 Go：
+先确认 Go 工具链可用。`pulumi-go-provider v1.3.2` 需要较新的 Go 工具链，所以这条命令会原地补装 Go 1.25.x：
 
 ```bash
-if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.23.4'; then cd /tmp && curl -fsSLO https://go.dev/dl/go1.23.4.linux-amd64.tar.gz && rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz; fi && \
+if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.25.'; then cd /tmp && curl -fsSLO https://go.dev/dl/go1.25.11.linux-amd64.tar.gz && rm -rf /usr/local/go && tar -C /usr/local -xzf go1.25.11.linux-amd64.tar.gz; fi && \
 export PATH=/usr/local/go/bin:$PATH && \
 export GOFLAGS=-mod=mod && \
 go version
@@ -16,7 +16,7 @@ go version
 查看本地 component provider 的代码：
 
 ```bash
-sed -n '1,260p' /root/repos/azure-secure-exec-provider/main.go
+sed -n '1,320p' /root/repos/azure-secure-exec-provider/main.go
 ```{{exec}}
 
 编译本地 provider 插件，并把它安装进 Pulumi 本地插件缓存。注意输出文件名必须符合 `pulumi-resource-<package-name>` 约定：

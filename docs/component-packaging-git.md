@@ -271,7 +271,7 @@ Azure 版实验使用同样流程，只是包名换成 `azure-secure-exec`，二
 pulumi package get-schema ./bin/pulumi-resource-aws-secure-exec
 ```
 
-实验里的 executable-based 示例刻意保持轻量：它不是前面那个 S3 组件的 Go 重写版，而是一个只输出标签字符串的本地组件。这样学习重点集中在 Go component provider、插件命名、schema 提取和本地 SDK 生成，而不是云资源本身。
+实验里的 executable-based 示例与前两条路径保持同一个业务形态：AWS 版仍然创建主桶与日志桶，Azure 版仍然创建资源组、主存储账户与日志账户。差异只在分发形态：这里的组件实现被编译进本地 `pulumi-resource-*` 可执行插件，再由 `pulumi package add` 生成消费者语言的 SDK。
 
 ## 8.9.8 对照真实仓库
 

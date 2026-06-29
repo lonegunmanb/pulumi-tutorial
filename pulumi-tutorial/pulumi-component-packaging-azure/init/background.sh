@@ -273,6 +273,8 @@ module local/azure-secure-exec
 go 1.23
 
 require github.com/pulumi/pulumi-go-provider v1.3.2
+
+require github.com/pulumi/pulumi-azure/sdk/v6 v6.0.0
 EOF
 
 cat > "$EXEC_WORK/main.go" <<'GO'
@@ -285,30 +287,67 @@ import (
 
   p "github.com/pulumi/pulumi-go-provider"
   "github.com/pulumi/pulumi-go-provider/infer"
+  "github.com/pulumi/pulumi-azure/sdk/v6/go/azure/core"
+  "github.com/pulumi/pulumi-azure/sdk/v6/go/azure/storage"
   "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 const packageName = "azure-secure-exec"
 const version = "0.1.0"
 
-type ExecutableNameplateArgs struct {
+type SecureStorageArgs struct {
   Team     pulumi.StringInput `pulumi:"team"`
   Location pulumi.StringInput `pulumi:"location"`
 }
 
-type ExecutableNameplate struct {
+type SecureStorage struct {
   pulumi.ResourceState
-  Nameplate pulumi.StringOutput `pulumi:"nameplate"`
+  AccountName     pulumi.StringOutput `pulumi:"accountName"`
+  LogsAccountName pulumi.StringOutput `pulumi:"logsAccountName"`
 }
 
-func NewExecutableNameplate(ctx *pulumi.Context, name string, args ExecutableNameplateArgs, opts ...pulumi.ResourceOption) (*ExecutableNameplate, error) {
-  component := &ExecutableNameplate{}
+func NewSecureStorage(ctx *pulumi.Context, name string, args SecureStorageArgs, opts ...pulumi.ResourceOption) (*SecureStorage, error) {
+  component := &SecureStorage{}
   if err := ctx.RegisterComponentResource(p.GetTypeToken(ctx.Context()), name, component, opts...); err != nil {
     return nil, err
   }
 
-  location := args.Location
-  component.Nameplate = pulumi.Sprintf("%s-%s-%s", args.Team, name, location)
+  tags := pulumi.StringMap{
+    "team":      args.Team,
+    "managedBy": pulumi.String("platform"),
+  }
+
+  rg, err := core.NewResourceGroup(ctx, name+"-rg", &core.ResourceGroupArgs{
+    Location: args.Location,
+    Tags:     tags,
+  }, pulumi.Parent(component))
+  if err != nil {
+    return nil, err
+  }
+
+  logs, err := storage.NewAccount(ctx, name+"-logs", &storage.AccountArgs{
+    ResourceGroupName:      rg.Name,
+    Location:               args.Location,
+    AccountTier:            pulumi.String("Standard"),
+    AccountReplicationType: pulumi.String("LRS"),
+    Tags:                   tags,
+  }, pulumi.Parent(component))
+  if err != nil {
+    return nil, err
+  }
+  account, err := storage.NewAccount(ctx, name+"-data", &storage.AccountArgs{
+    ResourceGroupName:      rg.Name,
+    Location:               args.Location,
+    AccountTier:            pulumi.String("Standard"),
+    AccountReplicationType: pulumi.String("LRS"),
+    Tags:                   tags,
+  }, pulumi.Parent(component))
+  if err != nil {
+    return nil, err
+  }
+
+  component.AccountName = account.Name
+  component.LogsAccountName = logs.Name
   return component, nil
 }
 
@@ -337,7 +376,7 @@ func main() {
       },
     }).
     WithComponents(
-      infer.ComponentF(NewExecutableNameplate),
+      infer.ComponentF(NewSecureStorage),
     ).
     Build()
   if err != nil {
@@ -434,14 +473,23 @@ export const logsAccountName = storage.logsAccountName;
 TS
 
 cat > /root/workspace/exec-consumer/index.ts <<'TS'
-import { ExecutableNameplate } from "azure-secure-exec";
+import { Provider } from "@pulumi/azure/provider";
+import { SecureStorage } from "azure-secure-exec";
 
-const nameplate = new ExecutableNameplate("exec-storage", {
-  team: "platform",
-  location: "eastus",
+const miniblue = new Provider("miniblue", {
+  features: {},
+  metadataHost: "localhost:4567",
+  resourceProviderRegistrations: "none",
+  subscriptionId: "00000000-0000-0000-0000-000000000000",
+  tenantId: "00000000-0000-0000-0000-000000000001",
+  clientId: "miniblue",
+  clientSecret: "miniblue",
 });
 
-export const generatedNameplate = nameplate.nameplate;
+const storage = new SecureStorage("exec", { team: "platform", location: "eastus" }, { providers: [miniblue] });
+
+export const accountName = storage.accountName;
+export const logsAccountName = storage.logsAccountName;
 TS
 
 log_step "预安装 npm 依赖（尽力而为，有超时保护）"

@@ -232,6 +232,8 @@ module local/aws-secure-exec
 go 1.23
 
 require github.com/pulumi/pulumi-go-provider v1.3.2
+
+require github.com/pulumi/pulumi-aws/sdk/v7 v7.0.0
 EOF
 
 cat > "$EXEC_WORK/main.go" <<'GO'
@@ -244,28 +246,45 @@ import (
 
   p "github.com/pulumi/pulumi-go-provider"
   "github.com/pulumi/pulumi-go-provider/infer"
+  "github.com/pulumi/pulumi-aws/sdk/v7/go/aws/s3"
   "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 const packageName = "aws-secure-exec"
 const version = "0.1.0"
 
-type ExecutableLabelArgs struct {
+type SecureBucketArgs struct {
   Team pulumi.StringInput `pulumi:"team"`
 }
 
-type ExecutableLabel struct {
+type SecureBucket struct {
   pulumi.ResourceState
-  Label pulumi.StringOutput `pulumi:"label"`
+  BucketName     pulumi.StringOutput `pulumi:"bucketName"`
+  LogsBucketName pulumi.StringOutput `pulumi:"logsBucketName"`
 }
 
-func NewExecutableLabel(ctx *pulumi.Context, name string, args ExecutableLabelArgs, opts ...pulumi.ResourceOption) (*ExecutableLabel, error) {
-  component := &ExecutableLabel{}
+func NewSecureBucket(ctx *pulumi.Context, name string, args SecureBucketArgs, opts ...pulumi.ResourceOption) (*SecureBucket, error) {
+  component := &SecureBucket{}
   if err := ctx.RegisterComponentResource(p.GetTypeToken(ctx.Context()), name, component, opts...); err != nil {
     return nil, err
   }
 
-  component.Label = pulumi.Sprintf("%s-%s", args.Team, name)
+  tags := pulumi.StringMap{
+    "team":      args.Team,
+    "managedBy": pulumi.String("platform"),
+  }
+
+  logs, err := s3.NewBucket(ctx, name+"-logs", &s3.BucketArgs{Tags: tags}, pulumi.Parent(component))
+  if err != nil {
+    return nil, err
+  }
+  bucket, err := s3.NewBucket(ctx, name+"-bucket", &s3.BucketArgs{Tags: tags}, pulumi.Parent(component))
+  if err != nil {
+    return nil, err
+  }
+
+  component.BucketName = bucket.Bucket
+  component.LogsBucketName = logs.Bucket
   return component, nil
 }
 
@@ -294,7 +313,7 @@ func main() {
       },
     }).
     WithComponents(
-      infer.ComponentF(NewExecutableLabel),
+      infer.ComponentF(NewSecureBucket),
     ).
     Build()
   if err != nil {
@@ -393,11 +412,24 @@ export const logsBucketName = media.logsBucketName;
 TS
 
 cat > /root/workspace/exec-consumer/index.ts <<'TS'
-import { ExecutableLabel } from "aws-secure-exec";
+import { Provider } from "@pulumi/aws/provider";
+import { SecureBucket } from "aws-secure-exec";
 
-const label = new ExecutableLabel("exec-media", { team: "platform" });
+const localAws = new Provider("ministack", {
+  region: "us-east-1",
+  accessKey: "test",
+  secretKey: "test",
+  skipCredentialsValidation: true,
+  skipMetadataApiCheck: true,
+  skipRequestingAccountId: true,
+  s3UsePathStyle: true,
+  endpoints: [{ s3: "http://localhost:4566", sts: "http://localhost:4566" }],
+});
 
-export const generatedLabel = label.label;
+const media = new SecureBucket("exec-media", { team: "platform" }, { providers: [localAws] });
+
+export const bucketName = media.bucketName;
+export const logsBucketName = media.logsBucketName;
 TS
 
 log_step "预安装 npm 依赖（尽力而为，有超时保护）"
