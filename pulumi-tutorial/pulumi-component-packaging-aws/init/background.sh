@@ -373,7 +373,7 @@ TS
 
 cat > /root/workspace/source-consumer/index.ts <<'TS'
 import { Provider } from "@pulumi/aws/provider";
-import { SecureBucket } from "aws-secure-bucket";
+import { SecureBucket } from "@pulumi/aws-secure-bucket";
 
 const localAws = new Provider("ministack", {
   region: "us-east-1",

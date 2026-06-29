@@ -9,11 +9,11 @@ pulumi package add /root/repos/azure-secure-storage-source-work && \
 npm install --no-audit --no-fund
 ```{{exec}}
 
-真实远端仓库中可以直接写 Git URL 加 tag；本地路径方式则依赖当前工作树已经检出到目标版本。命令会生成本地 SDK，并把依赖写入消费者项目。看一下生成结果：
+真实远端仓库中可以直接写 Git URL 加 tag；本地路径方式则依赖当前工作树已经检出到目标版本。用本地路径生成 Node SDK 时，依赖名会带 `@pulumi/` scope。命令会生成本地 SDK，并把依赖写入消费者项目。看一下生成结果：
 
 ```bash
 cd /root/workspace/source-consumer && \
-node -p "require('./package.json').dependencies['azure-secure-storage']" && \
+node -p "require('./package.json').dependencies['@pulumi/azure-secure-storage']" && \
 find sdks -maxdepth 3 -type f | sort | head -30
 ```{{exec}}
 

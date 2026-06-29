@@ -415,7 +415,7 @@ TS
 
 cat > /root/workspace/source-consumer/index.ts <<'TS'
 import { Provider } from "@pulumi/azure/provider";
-import { SecureStorage } from "azure-secure-storage";
+import { SecureStorage } from "@pulumi/azure-secure-storage";
 
 const miniblue = new Provider("miniblue", {
   features: {},
