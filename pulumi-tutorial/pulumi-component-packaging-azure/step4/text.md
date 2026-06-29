@@ -1,14 +1,15 @@
 # 用 pulumi package add 消费
 
-进入另一个消费者项目，从 Git tag 添加 source-based package：
+进入另一个消费者项目。因为 Killercoda 实验使用的是本地 Git 仓库，我们先把组件仓库工作树切到 `v0.1.0`，再用本地目录路径添加 source-based package：
 
 ```bash
+git -C /root/repos/azure-secure-storage-source-work checkout --detach v0.1.0 && \
 cd /root/workspace/source-consumer && \
-pulumi package add file:///root/repos/azure-secure-storage-source.git@v0.1.0 && \
+pulumi package add /root/repos/azure-secure-storage-source-work && \
 npm install --no-audit --no-fund
 ```{{exec}}
 
-命令会生成本地 SDK，并把依赖写入消费者项目。看一下生成结果：
+真实远端仓库中可以直接写 Git URL 加 tag；本地路径方式则依赖当前工作树已经检出到目标版本。命令会生成本地 SDK，并把依赖写入消费者项目。看一下生成结果：
 
 ```bash
 cd /root/workspace/source-consumer && \
