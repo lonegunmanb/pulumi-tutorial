@@ -30,4 +30,4 @@ git ls-remote --tags https://github.com/pulumi/pulumi-aws-quickstart-vpc.git ref
 pulumi package add github.com/pulumi/pulumi-aws-quickstart-vpc@v0.0.5
 ```
 
-下一步会展示第三条路径：编译一个本地 executable-based plugin，并从这个可执行文件生成消费者 SDK。最后一步结束后，再统一清理三个消费者项目。
+下一步会展示第三条路径：安装一个预编译的本地 executable-based plugin，并从这个可执行文件生成消费者 SDK。最后一步结束后，再统一清理三个消费者项目。

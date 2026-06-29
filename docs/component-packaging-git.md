@@ -19,6 +19,7 @@ group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 - [Authoring a Source-Based Plugin Package](https://www.pulumi.com/docs/iac/guides/building-extending/packages/source-based-plugin/)：source-based package 的最小目录、组件发现、Git 分发和本地生成 SDK。
 - [Authoring an Executable Plugin Package](https://www.pulumi.com/docs/iac/guides/building-extending/packages/executable-plugin/)：二进制插件包的命名、跨平台归档、`pluginDownloadURL` 与发布流水线。
 - [Pulumi Go Provider SDK](https://www.pulumi.com/docs/iac/guides/building-extending/packages/pulumi-go-provider-sdk/)：用 Go 和 `pulumi-go-provider` 编写可推断 schema 的组件、资源与函数。
+- [Repository Strategy for Pulumi Packages](https://www.pulumi.com/docs/iac/guides/building-extending/packages/repository-strategy/)：Package 与 Git 仓库的对应关系、版本单位，以及把很多无关组件放进同一个 Package 的问题。
 - [pulumi package add](https://www.pulumi.com/docs/iac/cli/commands/pulumi_package_add/)：从插件、schema、本地路径或 Git 仓库添加 Pulumi Package。
 - [Component resources](https://www.pulumi.com/docs/iac/concepts/components/)：消费者如何使用本地组件、native package、`pulumi package add` 生成的 SDK 和预生成 SDK。
 
@@ -73,7 +74,7 @@ export class SecureBucket extends pulumi.ComponentResource {
 
 ## 8.9.2 三种分发方式的边界
 
-官方文档把组件分发分为三类。它们都能承载组件，但使用成本、跨语言能力和发布流程不同。
+组件分发可以分为三类。它们都能承载组件，但使用成本、跨语言能力和发布流程不同。
 
 ![三种 Component 分发方式的选择路径](./images/component-packaging-methods.png)
 
@@ -251,7 +252,35 @@ const media = new SecureBucket("media", {
 
 私有 GitHub 或 GitLab 仓库也可以被 `pulumi package add` 使用。官方 CLI 会读取标准环境变量，例如 `GITHUB_TOKEN` 或 `GITLAB_TOKEN`，用于访问私有仓库。实验中我们使用本地 Git 仓库模拟远端仓库，所以不需要任何 token。
 
-## 8.9.7 本地 executable-based plugin
+## 8.9.7 Repository 策略：版本单位是 Package
+
+设计组件包仓库时，先抓住一个基本规则：**Pulumi Package 是版本与分发单位，Package 里的 components 共享这个 Package 的版本**。因此，Git 仓库的组织方式最好围绕 Package 来设计，而不是围绕“代码放在哪里方便”来设计。
+
+推荐原则可以概括为三条：
+
+| 原则 | 含义 |
+|------|------|
+| 一个仓库只定义一个 Pulumi Package | Git tag、发布制品和版本历史都对应同一个 Package |
+| 一个 Package 可以包含多个彼此相关的 components | 这些 components 应当经常一起使用、一起变化 |
+| 无关组件拆成不同 Package | 每个 Package 可以按自己的节奏发布版本 |
+
+例如，一个 EKS 平台包里同时包含 `EksCluster` 和 `EksIam` 是合理的：后者只在 EKS 集群语境下有意义，两者通常一起演进，使用同一个版本号有清晰含义。相反，一个给前端团队用的 `StaticWebsite` 组件，就不应该和 EKS 组件共用同一个 Package 版本。
+
+### 不要把很多无关组件塞进一个 Package
+
+从技术上讲，可以做一个巨大的内部 Package，把公司所有组件都放进去。但这通常不是好的工程边界，因为它会让语义化版本失去原本的信号。
+
+假设一个 Package 里有两个互不相关的组件 `ComponentA` 和 `ComponentB`：
+
+1. Package 发布 `v1.0.0`，两个组件都随这个 Package 版本分发。
+2. 后来只给 `ComponentA` 增加了一个新功能，Package 发布 `v1.1.0`，但 `ComponentB` 实际没有变化。
+3. 再后来只对 `ComponentB` 做了破坏性变更，Package 发布 `v2.0.0`，但 `ComponentA` 实际没有破坏性变更。
+
+这时消费者看到 `v2.0.0`，无法判断自己使用的组件是否真的需要处理破坏性变更。版本号已经和单个组件的实际变化脱节，升级评估会变得含混。把无关组件拆成大小合适的 Package，才能保留语义化版本的含义：补丁版本表示修复，次版本表示兼容新增，主版本表示破坏性变更。
+
+本章实验里的 `aws-secure-bucket`、`azure-secure-storage` 和两个 executable 示例都故意保持为小而聚焦的 Package。真实平台中，可以把“通常一起使用、一起变化”的组件放在同一个 Package；其他组件应当拥有自己的仓库、版本和发布记录。
+
+## 8.9.8 本地 executable-based plugin
 
 Executable-based plugin package 的关键制品是 provider 可执行文件。按照官方约定，二进制文件名是 `pulumi-resource-<package-name>`；面向远端发布时，还要按 OS 与 CPU 架构压缩成 `pulumi-resource-<package-name>-v<version>-<os>-<arch>.tar.gz`，并在 schema 的 `pluginDownloadURL` 中说明下载位置。
 
@@ -273,7 +302,7 @@ pulumi package get-schema ./bin/pulumi-resource-aws-secure-exec
 
 实验里的 executable-based 示例与前两条路径保持同一个业务形态：AWS 版仍然创建主桶与日志桶，Azure 版仍然创建资源组、主存储账户与日志账户。差异只在分发形态：这里的组件实现被编译进本地 `pulumi-resource-*` 可执行插件，再由 `pulumi package add` 生成消费者语言的 SDK。
 
-## 8.9.8 对照真实仓库
+## 8.9.9 对照真实仓库
 
 Pulumi 官方维护过一些开源 component provider 示例，适合对照目录结构、schema、生成 SDK 与组件实现之间的关系。它们在本章中只作为学习参考，不作为本教程的生产项目模板。
 
@@ -293,11 +322,11 @@ pulumi package add github.com/pulumi/pulumi-azure-quickstart-compute@23beb79f451
 
 ## 动手实验
 
-下面两个实验使用本地 Git 仓库与 tag 模拟“托管在 Git 上”的组件包。AWS 版本创建带标签的 S3 Bucket 组件，Azure 版本创建 Resource Group 与 Storage Account 组件；两套实验都会额外编译一个本地 executable-based component provider。
+下面两个实验使用本地 Git 仓库与 tag 模拟“托管在 Git 上”的组件包。AWS 版本创建带标签的 S3 Bucket 组件，Azure 版本创建 Resource Group 与 Storage Account 组件；两套实验都会额外安装一个预编译的本地 executable-based component provider。
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-component-packaging-aws" title="实验：Component 包分发与基于 Git 的版本化引用（AWS / MiniStack）" desc="编写 SecureBucket 组件，分别做成 native language package 与 source-based plugin package，通过 Git tag 指定版本消费；再编译一个本地 executable-based plugin，并用本地路径生成 SDK。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-component-packaging-aws" title="实验：Component 包分发与基于 Git 的版本化引用（AWS / MiniStack）" desc="编写 SecureBucket 组件，分别做成 native language package 与 source-based plugin package，通过 Git tag 指定版本消费；再安装一个预编译 executable-based plugin，并用本地路径生成 SDK。" />
 
-<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-component-packaging-azure" title="实验：Component 包分发与基于 Git 的版本化引用（Azure / miniblue）" desc="编写 SecureStorage 组件，分别做成 native language package 与 source-based plugin package，通过 Git tag 指定版本消费；再编译一个本地 executable-based plugin，并用本地路径生成 SDK。" />
+<KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-component-packaging-azure" title="实验：Component 包分发与基于 Git 的版本化引用（Azure / miniblue）" desc="编写 SecureStorage 组件，分别做成 native language package 与 source-based plugin package，通过 Git tag 指定版本消费；再安装一个预编译 executable-based plugin，并用本地路径生成 SDK。" />
 
 ## 本章检查清单
 

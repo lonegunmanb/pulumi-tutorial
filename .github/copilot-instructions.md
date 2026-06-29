@@ -33,6 +33,7 @@ This repository is a Chinese interactive Pulumi tutorial built with VitePress an
 - Explain Pulumi concepts through architecture diagrams, short examples, production pitfalls, and checklists.
 - Keep code examples runnable in Killercoda whenever possible.
 - Map each chapter back to the relevant Pulumi official documentation path.
+- 参考官方文档是为了保证事实准确和补齐关键点，正文不要写成“官方文档导读”、官方条目的逐条转述或外部文档摘要；要以本教程自己的教学主线、工程判断、例子、类比、风险提示和操作路径来组织内容。
 - 文章要浅显易懂，读者默认是初学者：多用类比、循序渐进、把抽象概念讲清楚。但措辞要**书面化**，避免过于口语化的网络用语或俚语（例如「立靶子」「钉死」「省事」「兜底」「一口气走一遍」等），改用对应的书面表达。
 
 ## 基于官方文档撰写后的事实核查
