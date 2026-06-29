@@ -11,11 +11,17 @@ export SCENARIO_ID="pulumi-component-packaging-azure"
 export SCENARIO_TITLE="Component 包分发与基于 Git 的版本化引用：Azure / miniblue 版"
 export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
+log_step() {
+  echo "===== [$(date +%Y-%m-%dT%H:%M:%S)] $* ====="
+}
 
 rm -f /tmp/.setup-done
 mkdir -p /root/workspace /root/repos
 
-# 安装 Pulumi、Node.js 与共享工具（尽力而为，单步失败不影响后续）。
+log_step "安装 Pulumi、Node.js 与共享工具"
 bash /root/setup-common.sh || true
 export PATH="$HOME/.pulumi/bin:$PATH"
 
@@ -23,6 +29,7 @@ if ! grep -q 'PULUMI_CONFIG_PASSPHRASE' /root/.bashrc 2>/dev/null; then
   echo 'export PULUMI_CONFIG_PASSPHRASE=""' >> /root/.bashrc
 fi
 
+log_step "安装辅助工具并启动 Docker"
 apt-get install -y jq openssl >/dev/null 2>&1 || true
 service docker start >/dev/null 2>&1 || true
 
@@ -37,23 +44,9 @@ git config --global user.email "tutorial@example.com"
 git config --global user.name "Pulumi Tutorial"
 git config --global init.defaultBranch main
 
-GO_VERSION="1.23.4"
-if ! /usr/local/go/bin/go version 2>/dev/null | grep -q "go${GO_VERSION}"; then
-  curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -o /tmp/go.tgz
-  rm -rf /usr/local/go
-  tar -C /usr/local -xzf /tmp/go.tgz
-fi
-export PATH="/usr/local/go/bin:$PATH"
-export GOFLAGS="-mod=mod"
-if ! grep -q '/usr/local/go/bin' /root/.bashrc 2>/dev/null; then
-  echo 'export PATH="/usr/local/go/bin:$PATH"' >> /root/.bashrc
-fi
-if ! grep -q 'GOFLAGS=-mod=mod' /root/.bashrc 2>/dev/null; then
-  echo 'export GOFLAGS=-mod=mod' >> /root/.bashrc
-fi
-hash -r
-
 cd /root/workspace
+
+log_step "生成本地 Git 仓库和消费者项目"
 
 cat > docker-compose.yml <<'YAML'
 services:
@@ -359,9 +352,7 @@ func main() {
 }
 GO
 
-(cd "$EXEC_WORK" && /usr/local/go/bin/go mod tidy >/dev/null 2>&1) || true
 mkdir -p "$EXEC_WORK/bin"
-(cd "$EXEC_WORK" && /usr/local/go/bin/go build -o bin/pulumi-resource-azure-secure-exec . >/dev/null 2>&1) || true
 
 for project in native-consumer source-consumer exec-consumer; do
   mkdir -p "/root/workspace/$project"
@@ -453,17 +444,20 @@ const nameplate = new ExecutableNameplate("exec-storage", {
 export const generatedNameplate = nameplate.nameplate;
 TS
 
-npm install --prefix /root/workspace/native-consumer --no-audit --no-fund >/dev/null 2>&1 || true
-npm install --prefix /root/workspace/source-consumer --no-audit --no-fund >/dev/null 2>&1 || true
-npm install --prefix /root/workspace/exec-consumer --no-audit --no-fund >/dev/null 2>&1 || true
-npm install --prefix "$SOURCE_WORK" --no-audit --no-fund >/dev/null 2>&1 || true
+log_step "预安装 npm 依赖（尽力而为，有超时保护）"
+timeout 90s npm install --prefix /root/workspace/native-consumer --no-audit --no-fund >/dev/null 2>&1 || true
+timeout 90s npm install --prefix /root/workspace/source-consumer --no-audit --no-fund >/dev/null 2>&1 || true
+timeout 60s npm install --prefix /root/workspace/exec-consumer --no-audit --no-fund >/dev/null 2>&1 || true
+timeout 90s npm install --prefix "$SOURCE_WORK" --no-audit --no-fund >/dev/null 2>&1 || true
 
+log_step "初始化本地 Pulumi stacks"
 pulumi login --local >/dev/null 2>&1 || true
 for project in native-consumer source-consumer exec-consumer; do
   (cd "/root/workspace/$project" && pulumi stack select dev >/dev/null 2>&1 || pulumi stack init dev >/dev/null 2>&1 || true)
 done
 
-docker pull ghcr.io/lonegunmanb/miniblue:sha-39cc27a >/dev/null 2>&1 || true
+log_step "启动 miniblue 并等待 metadata 端口"
+timeout 300s docker pull ghcr.io/lonegunmanb/miniblue:sha-39cc27a >/dev/null 2>&1 || true
 docker compose up -d >/dev/null 2>&1 || true
 for _ in $(seq 1 60); do
   curl -sk "https://localhost:4567/metadata/endpoints?api-version=2019-05-01" >/dev/null 2>&1 && break
@@ -475,4 +469,5 @@ openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev
 update-ca-certificates >/dev/null 2>&1 || true
 
 touch /tmp/.setup-done
+log_step "初始化完成"
 echo "Azure component packaging lab is ready in /root/workspace"

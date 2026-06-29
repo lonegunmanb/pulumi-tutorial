@@ -8,7 +8,7 @@ group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 
 ## 本章定位
 
-在 [Components](components.md) 一章里，我们已经会把一组资源封装成 `ComponentResource`。在 [Pulumi Packages](packages.md) 一章里，我们从概念上认识了 Package、插件和 SDK。本章把两者连起来：从一个简单组件出发，说明怎样把组件放进 Git 仓库，怎样选择 source-based plugin package 或 native language package，以及消费者怎样指定某个 Git 版本来使用这个组件。
+在 [Components](components.md) 一章里，我们已经会把一组资源封装成 `ComponentResource`。本章继续往前走一步：把组件放进 Git 仓库，理解 Package、插件和 SDK 在分发中的职责，选择 source-based plugin package、native language package 或 executable-based plugin package，并让消费者指定某个 Git 版本来使用这个组件。
 
 本章聚焦 Pulumi OSS 能独立完成的能力：Git 仓库、Git tag 或 commit hash、`pulumi package add` 本地生成 SDK、语言生态包管理器，以及本地或自管理 Backend。Pulumi Cloud 的 IDP Private Registry 能提供更完整的组件目录与文档体验，但不作为本章实验前提。
 

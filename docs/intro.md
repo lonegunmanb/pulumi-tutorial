@@ -26,7 +26,7 @@ group: 起步
 - 使用多环境 Stack 配置组织 dev、staging、prod 等环境差异。
 - 使用 Automation API 构建自助式平台工程后端。
 - 使用 Pulumi Templates 为新项目提供标准起点。
-- 使用 Pulumi Packages 分发可复用基础设施能力。
+- 使用 Component 包分发与 Git 版本化引用分发可复用基础设施能力。
 - 使用 Policy as Code 在本地和 CI 中运行策略检查。
 - 使用日志、诊断、状态导出与 refresh 排查 Pulumi 部署问题。
 - 使用 Mock、Preview、CI/CD 与策略检查构建安全交付流水线。
@@ -77,7 +77,6 @@ group: 起步
 - [多环境 Stack 配置与动态基础设施](dynamic-stacks.md)
 - [Automation API](automation-api.md)
 - [Pulumi Templates](templates.md)
-- [Pulumi Packages](packages.md)
 - [Component 包分发与基于 Git 的版本化引用](component-packaging-git.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)

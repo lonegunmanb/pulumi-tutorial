@@ -4,7 +4,8 @@
 
 ```bash
 cd /root/workspace/source-consumer && \
-pulumi package add file:///root/repos/aws-secure-bucket-source.git@v0.1.0
+pulumi package add file:///root/repos/aws-secure-bucket-source.git@v0.1.0 && \
+npm install --no-audit --no-fund
 ```{{exec}}
 
 命令会生成本地 SDK，并把依赖写入消费者项目。看一下生成结果：

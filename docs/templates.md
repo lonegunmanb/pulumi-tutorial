@@ -36,7 +36,7 @@ Template 与 Component、Package 的边界也要分清：
 | Component | 一组资源如何复用 | 在程序里创建资源树 |
 | Package | 可复用能力如何跨项目/语言分发 | 提供可安装的 SDK 或插件 |
 
-一个成熟团队通常会把三者组合起来：Template 生成项目骨架，骨架里预置组件调用样例，依赖里固定内部 [Package](./packages.md) 版本。这样新服务不需要从空目录开始，也不需要直接面对底层云资源的全部参数。
+一个成熟团队通常会把三者组合起来：Template 生成项目骨架，骨架里预置组件调用样例，依赖里固定内部 [Component 包](./component-packaging-git.md) 版本。这样新服务不需要从空目录开始，也不需要直接面对底层云资源的全部参数。
 
 ## 8.2 Template 的基本目录结构
 

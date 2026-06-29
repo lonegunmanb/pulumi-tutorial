@@ -39,7 +39,8 @@ pulumi package get-schema /root/repos/aws-secure-exec-provider/bin/pulumi-resour
 
 ```bash
 cd /root/workspace/exec-consumer && \
-pulumi package add /root/repos/aws-secure-exec-provider/bin/pulumi-resource-aws-secure-exec
+pulumi package add /root/repos/aws-secure-exec-provider/bin/pulumi-resource-aws-secure-exec && \
+npm install --no-audit --no-fund
 ```{{exec}}
 
 确认本地 SDK 已经生成，并查看消费者程序：

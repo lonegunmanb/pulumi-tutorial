@@ -32,7 +32,7 @@ group: 第 2 篇：Concepts 深度剖析
 
 ![组件像一台整机：对外一个接口，内部封装一堆零件](./images/components-encapsulation-appliance.png)
 
-组件可以存在于代码能到达的任何地方：直接写在 Pulumi 程序里、通过语言生态的库（npm / PyPI / NuGet…）分享，或打包成 **Pulumi Package** 跨语言复用。本章聚焦最常见的「直接写在程序里」的本地组件，发布与打包在 [Pulumi Packages](packages.md) 一章展开。
+组件可以存在于代码能到达的任何地方：直接写在 Pulumi 程序里、通过语言生态的库（npm / PyPI / NuGet…）分享，或打包成 **Pulumi Package** 跨语言复用。本章聚焦最常见的「直接写在程序里」的本地组件，发布与打包在 [Component 包分发与基于 Git 的版本化引用](component-packaging-git.md) 一章展开。
 
 ### 组件能给团队带来什么
 
@@ -291,7 +291,7 @@ export const vpcId = vpc.vpcId;
 
 `pulumi up` 时，`awsx:ec2:Vpc` 同样会展开成一棵嵌套着子网、路由表、路由、关联关系的资源树——和你自己写的组件一模一样。
 
-> 怎么把自己的组件**发布**成上面的 Package（加 `PulumiPlugin.yaml`、语言清单、入口文件），是 [Pulumi Packages](packages.md) 一章的主题。
+> 怎么把自己的组件**发布**成上面的 Package（加 `PulumiPlugin.yaml`、语言清单、入口文件），是 [Component 包分发与基于 Git 的版本化引用](component-packaging-git.md) 一章的主题。
 
 ## 5.7 生产检查清单
 

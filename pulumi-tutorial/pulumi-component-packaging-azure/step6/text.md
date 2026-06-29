@@ -39,7 +39,8 @@ pulumi package get-schema /root/repos/azure-secure-exec-provider/bin/pulumi-reso
 
 ```bash
 cd /root/workspace/exec-consumer && \
-pulumi package add /root/repos/azure-secure-exec-provider/bin/pulumi-resource-azure-secure-exec
+pulumi package add /root/repos/azure-secure-exec-provider/bin/pulumi-resource-azure-secure-exec && \
+npm install --no-audit --no-fund
 ```{{exec}}
 
 确认本地 SDK 已经生成，并查看消费者程序：
