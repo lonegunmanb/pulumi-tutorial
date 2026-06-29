@@ -85,6 +85,12 @@
       "path": "pulumi-templates"
     },
     {
+      "path": "pulumi-terraform-modules-aws"
+    },
+    {
+      "path": "pulumi-terraform-modules-azure"
+    },
+    {
       "path": "pulumi-component-packaging-aws"
     },
     {

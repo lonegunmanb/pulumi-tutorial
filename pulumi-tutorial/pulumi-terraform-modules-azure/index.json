@@ -1,0 +1,18 @@
+{
+  "title": "使用 Terraform Module（Azure / MiniBlue）",
+  "description": "用 pulumi package add terraform-module 引入 Azure AVM Virtual Network 模块，并在 MiniBlue 上创建和修改 VNet 模块资源",
+  "details": {
+    "intro": { "text": "init/init.md", "background": "init/background.sh", "foreground": "init/foreground.sh" },
+    "steps": [
+      { "title": "查看 MiniBlue 与项目", "text": "step1/text.md" },
+      { "title": "生成 AVM 模块 SDK", "text": "step2/text.md" },
+      { "title": "部署 VNet 模块", "text": "step3/text.md" },
+      { "title": "扩展子网配置", "text": "step4/text.md" },
+      { "title": "查看状态并清理", "text": "step5/text.md" }
+    ],
+    "finish": { "text": "finish/finish.md" },
+    "assets": { "host01": [ { "file": "setup-common.sh", "target": "/root", "chmod": "+x" } ] }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "interface": { "layout": "editor-terminal" }
+}

@@ -77,6 +77,7 @@ group: 起步
 - [多环境 Stack 配置与动态基础设施](dynamic-stacks.md)
 - [Automation API](automation-api.md)
 - [Pulumi Templates](templates.md)
+- [使用 Terraform Module](terraform-modules.md)
 - [Component 包分发与基于 Git 的版本化引用](component-packaging-git.md)
 - [Policy as Code](policy-as-code.md)
 - [Pulumi 调试与故障排查](debugging.md)

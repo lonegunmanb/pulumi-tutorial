@@ -34,6 +34,8 @@ const preferredOrder = [
   'pulumi-automation-api',
   'pulumi-automation-api-azure',
   'pulumi-templates',
+  'pulumi-terraform-modules-aws',
+  'pulumi-terraform-modules-azure',
   'pulumi-component-packaging-aws',
   'pulumi-component-packaging-azure',
   'pulumi-policy-as-code-aws',
