@@ -329,6 +329,9 @@ func main() {
 GO
 
 mkdir -p "$EXEC_WORK/bin"
+if [ -f /root/pulumi-resource-aws-secure-exec-v0.1.0-linux-amd64.tar.gz ]; then
+  tar -xzf /root/pulumi-resource-aws-secure-exec-v0.1.0-linux-amd64.tar.gz -C "$EXEC_WORK/bin"
+fi
 
 for project in native-consumer source-consumer exec-consumer; do
   mkdir -p "/root/workspace/$project"

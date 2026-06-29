@@ -1,17 +1,10 @@
-# 编译 executable-based plugin
+# 安装 executable-based plugin
 
-最后看第三条路径：executable-based plugin package。它不是普通 npm 包，也不是 source-based package，而是先把 provider 编译成 `pulumi-resource-*` 可执行文件，再让消费者从这个本地路径生成 SDK。
+最后看第三条路径：executable-based plugin package。它不是普通 npm 包，也不是 source-based package，而是把组件实现放进 `pulumi-resource-*` 可执行文件，再让消费者从这个本地路径生成 SDK。
 
 本实验用 Go 和 `pulumi-go-provider` 写了一个 `SecureBucket` 组件 provider。它和前两条路径一样创建主桶与日志桶，只是组件通过本地可执行插件分发。
 
-先确认 Go 工具链可用。`pulumi-go-provider v1.3.2` 需要较新的 Go 工具链，所以这条命令会原地补装 Go 1.25.x：
-
-```bash
-if ! /usr/local/go/bin/go version 2>/dev/null | grep -q 'go1.25.'; then cd /tmp && curl -fsSLO https://go.dev/dl/go1.25.11.linux-amd64.tar.gz && rm -rf /usr/local/go && tar -C /usr/local -xzf go1.25.11.linux-amd64.tar.gz; fi && \
-export PATH=/usr/local/go/bin:$PATH && \
-export GOFLAGS=-mod=mod && \
-go version
-```{{exec}}
+Killercoda 环境的 CPU、内存和网络都比较受限，现场编译带 AWS Go SDK 的 provider 会非常慢。因此本实验把 Linux amd64 插件归档预先放在 assets 中，进入环境时解压到 provider 目录。归档保留了二进制的执行权限，所以不需要再执行 chmod。
 
 查看本地 component provider 的代码：
 
@@ -19,18 +12,15 @@ go version
 sed -n '1,280p' /root/repos/aws-secure-exec-provider/main.go
 ```{{exec}}
 
-编译本地 provider 插件，并把它安装进 Pulumi 本地插件缓存。注意输出文件名必须符合 `pulumi-resource-<package-name>` 约定：
+确认预编译 provider 插件已经就绪，并把它安装进 Pulumi 本地插件缓存。注意解压后的文件名必须符合 `pulumi-resource-<package-name>` 约定：
 
 ```bash
-cd /root/repos/aws-secure-exec-provider && \
-export PATH=/usr/local/go/bin:$PATH && \
-export GOFLAGS=-mod=mod && \
-go mod tidy && \
-go build -o bin/pulumi-resource-aws-secure-exec . && \
+tar -tzf /root/pulumi-resource-aws-secure-exec-v0.1.0-linux-amd64.tar.gz && \
+ls -l /root/repos/aws-secure-exec-provider/bin/pulumi-resource-aws-secure-exec && \
 pulumi plugin install resource aws-secure-exec 0.1.0 --file /root/repos/aws-secure-exec-provider/bin/pulumi-resource-aws-secure-exec --reinstall
 ```{{exec}}
 
-`pulumi package add` 会从本地二进制生成 SDK，但部署时仍需要 Pulumi 能在本地插件缓存中找到同名同版本的 resource plugin，所以这里显式执行一次 plugin install。
+`pulumi package add` 会从本地二进制生成 SDK，但部署时仍需要 Pulumi 能在本地插件缓存中找到同名同版本的 resource plugin，所以这里显式执行一次 plugin install。归档中的可执行位会在解压时保留。
 
 用 Pulumi 读取这个可执行插件暴露的 schema：
 

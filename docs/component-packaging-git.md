@@ -255,17 +255,17 @@ const media = new SecureBucket("media", {
 
 Executable-based plugin package 的关键制品是 provider 可执行文件。按照官方约定，二进制文件名是 `pulumi-resource-<package-name>`；面向远端发布时，还要按 OS 与 CPU 架构压缩成 `pulumi-resource-<package-name>-v<version>-<os>-<arch>.tar.gz`，并在 schema 的 `pluginDownloadURL` 中说明下载位置。
 
-本章实验不搭建发布流水线，而是演示最小闭环：在本地用 Go 编写一个 component provider，编译出可执行插件，再让消费者从本地路径添加 package：
+本章实验不搭建发布流水线，而是演示最小闭环：在本地用 Go 编写一个 component provider，把预编译好的 Linux amd64 插件归档放进 Killercoda assets，进入环境后解压，再让消费者从本地路径添加 package：
 
 ```bash
-# 本地路径指向已编译的 provider binary，而不是源码目录。
-go build -o bin/pulumi-resource-aws-secure-exec .
+# 本地路径指向解压后的 provider binary，而不是源码目录或 tar.gz 本身。
+tar -xzf pulumi-resource-aws-secure-exec-v0.1.0-linux-amd64.tar.gz -C ./bin
 pulumi package add ./bin/pulumi-resource-aws-secure-exec
 ```
 
 Azure 版实验使用同样流程，只是包名换成 `azure-secure-exec`，二进制文件名换成 `pulumi-resource-azure-secure-exec`。
 
-这和远端发布使用的是同一种插件模型，只是下载环节被本地路径替代。Pulumi 会执行这个 provider，读取它暴露的 schema，并在消费者项目里生成本地 SDK。调试时也可以先读取 schema：
+这和远端发布使用的是同一种插件模型，只是下载环节被本地路径替代。Pulumi 会执行这个 provider，读取它暴露的 schema，并在消费者项目里生成本地 SDK。Killercoda 环境性能有限，所以二进制在本机 Docker 中预先编译并打成 tar.gz，实验环境只负责解压、安装和使用。调试时也可以先读取 schema：
 
 ```bash
 pulumi package get-schema ./bin/pulumi-resource-aws-secure-exec

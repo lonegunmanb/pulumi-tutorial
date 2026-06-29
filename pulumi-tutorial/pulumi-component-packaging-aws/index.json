@@ -13,12 +13,13 @@
       { "title": "查看 source-based package", "text": "step3/text.md" },
       { "title": "用 pulumi package add 消费", "text": "step4/text.md" },
       { "title": "检查版本与资源树", "text": "step5/text.md" },
-      { "title": "编译 executable-based plugin", "text": "step6/text.md" }
+      { "title": "安装 executable-based plugin", "text": "step6/text.md" }
     ],
     "finish": { "text": "finish/finish.md" },
     "assets": {
       "host01": [
-        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" }
+        { "file": "setup-common.sh", "target": "/root", "chmod": "+x" },
+        { "file": "pulumi-resource-aws-secure-exec-v0.1.0-linux-amd64.tar.gz", "target": "/root" }
       ]
     }
   },
