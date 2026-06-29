@@ -19,15 +19,18 @@ go version
 sed -n '1,240p' /root/repos/aws-secure-exec-provider/main.go
 ```{{exec}}
 
-编译本地 provider 插件。注意输出文件名必须符合 `pulumi-resource-<package-name>` 约定：
+编译本地 provider 插件，并把它安装进 Pulumi 本地插件缓存。注意输出文件名必须符合 `pulumi-resource-<package-name>` 约定：
 
 ```bash
 cd /root/repos/aws-secure-exec-provider && \
 export PATH=/usr/local/go/bin:$PATH && \
 export GOFLAGS=-mod=mod && \
 go mod tidy && \
-go build -o bin/pulumi-resource-aws-secure-exec .
+go build -o bin/pulumi-resource-aws-secure-exec . && \
+pulumi plugin install resource aws-secure-exec 0.1.0 --file /root/repos/aws-secure-exec-provider/bin/pulumi-resource-aws-secure-exec --reinstall
 ```{{exec}}
+
+`pulumi package add` 会从本地二进制生成 SDK，但部署时仍需要 Pulumi 能在本地插件缓存中找到同名同版本的 resource plugin，所以这里显式执行一次 plugin install。
 
 用 Pulumi 读取这个可执行插件暴露的 schema：
 
