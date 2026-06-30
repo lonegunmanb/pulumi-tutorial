@@ -20,5 +20,5 @@ features:
     details: 每章都预留 Killercoda 场景入口，在云端终端中运行 Pulumi CLI 与示例代码。
   - icon: 🏗️
     title: 架构师视角
-    details: 从资源原语、状态调和、组件抽象一路推进到 Automation API 与平台工程。
+    details: 从资源原语、状态调和、组件抽象一路推进到 Automation API。
 ---
