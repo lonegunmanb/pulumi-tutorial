@@ -4,7 +4,9 @@ title: Secrets 机密处理
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Secrets 机密处理
+# Secrets 机密处理
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 
@@ -406,3 +408,4 @@ const updatedParameter = new aws.ssm.Parameter("test-param", {
 - 观察本地后端默认的 `passphrase` 加密 provider 与 `encryptionsalt`、配置里的 `secure:` 密文，并用 `pulumi config refresh` 重建配置文件。
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-secrets-handling" title="实验：Secrets 机密处理（AWS / LocalStack）" desc="用 @pulumi/aws 对接 LocalStack，演示 secret 配置与遮蔽、pulumi.secret 与机密传播、additionalSecretOutputs 与资源 ID 陷阱、Secrets Manager 只写字段，以及加密 provider 与 encryptionsalt。" />
+

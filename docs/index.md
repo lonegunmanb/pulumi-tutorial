@@ -10,7 +10,7 @@ hero:
       link: /intro
     - theme: alt
       text: GitHub
-      link: https://github.com/your-org/pulumi-tutorial
+      link: https://github.com/lonegunmanb/pulumi-tutorial
 features:
   - icon: 🧭
     title: 官方对标

@@ -4,7 +4,9 @@ title: IaC 范式转移与 Pulumi 架构解析
 group: 第 1 篇：Get Started & 架构基石
 ---
 
-# IaC 范式转移与 Pulumi 架构解析
+# IaC 范式转移与 Pulumi 架构解析
+
+<TutorialAcknowledgement />
 
 > 官方参照：Pulumi Docs / IaC / Guides / Basics / How Pulumi IaC Works / Architecture。本文用更适合初学者的方式重讲同一套机制。
 

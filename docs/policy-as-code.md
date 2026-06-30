@@ -4,7 +4,9 @@ title: Policy as Code
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# Policy as Code
+# Policy as Code
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

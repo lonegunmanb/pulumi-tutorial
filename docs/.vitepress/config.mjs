@@ -7,7 +7,7 @@ export default defineConfig({
   lang: 'zh-CN',
   cleanUrls: true,
   sitemap: {
-    hostname: 'https://your-org.github.io/pulumi-tutorial/'
+    hostname: 'https://lonegunmanb.github.io/pulumi-tutorial/'
   },
 
   head: [
@@ -19,7 +19,7 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       { text: '开始学习', link: '/intro' },
-      { text: 'GitHub', link: 'https://github.com/your-org/pulumi-tutorial' },
+      { text: 'GitHub', link: 'https://github.com/lonegunmanb/pulumi-tutorial' },
     ],
 
     // @auto-sidebar-start
@@ -96,7 +96,7 @@ export default defineConfig({
     // @auto-sidebar-end
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/your-org/pulumi-tutorial' },
+      { icon: 'github', link: 'https://github.com/lonegunmanb/pulumi-tutorial' },
     ],
 
     search: {

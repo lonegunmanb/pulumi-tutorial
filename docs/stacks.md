@@ -4,7 +4,9 @@ title: Stack 详解
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Stack 详解
+# Stack 详解
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

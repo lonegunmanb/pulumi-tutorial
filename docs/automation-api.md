@@ -4,7 +4,9 @@ title: Automation API
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# Automation API
+# Automation API
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

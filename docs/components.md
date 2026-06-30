@@ -4,7 +4,9 @@ title: 企业级架构：Components
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# 企业级架构：Components
+# 企业级架构：Components
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

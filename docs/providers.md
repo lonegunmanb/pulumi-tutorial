@@ -4,7 +4,9 @@ title: Provider 抽象
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Provider 抽象
+# Provider 抽象
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 
@@ -279,3 +281,4 @@ class Greeting extends pulumi.dynamic.Resource {
 - default 与 explicit provider 的对照表，以及「何时必须用 explicit」「如何禁用 default」。
 - 用 Any Terraform Provider 接入任意 TF provider 的完整流程与锁定版本的习惯。
 - 亲手实现一个 dynamic provider 的 CRUD，理解 provider 进程在做什么。
+

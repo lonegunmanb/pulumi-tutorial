@@ -4,7 +4,9 @@ title: Pulumi 是如何工作的
 group: 第 1 篇：Get Started & 架构基石
 ---
 
-# Pulumi 是如何工作的
+# Pulumi 是如何工作的
+
+<TutorialAcknowledgement />
 
 > 官方参照：[How Pulumi IaC Works](https://www.pulumi.com/docs/iac/guides/basics/how-pulumi-works/)。上一章已经介绍 CLI、Language Host、Deployment Engine、Resource Provider、State Backend 与 Pulumi Cloud 的职责；本章只沿着官方示例观察一次程序运行如何变成具体资源操作。
 

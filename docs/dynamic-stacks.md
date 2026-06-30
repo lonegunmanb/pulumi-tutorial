@@ -4,7 +4,9 @@ title: 多环境 Stack 配置与动态基础设施
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# 多环境 Stack 配置与动态基础设施
+# 多环境 Stack 配置与动态基础设施
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

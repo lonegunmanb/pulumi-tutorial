@@ -4,7 +4,9 @@ title: 如何安装 Pulumi
 group: 第 1 篇：Get Started & 架构基石
 ---
 
-# 如何安装 Pulumi
+# 如何安装 Pulumi
+
+<TutorialAcknowledgement />
 
 > 官方参照：[Get started with Pulumi and AWS / Install Pulumi](https://www.pulumi.com/docs/iac/get-started/aws/begin/) 与 [Download & Install Pulumi](https://www.pulumi.com/docs/install/)。本章沿用 AWS 起步教程的节奏：先安装 Pulumi CLI，再用 `pulumi version` 验证；动手实验只演示 Linux 版本，并固定使用本地后端。
 
@@ -177,3 +179,4 @@ npm --version
 - `PATH` 配置与 `pulumi version` 验证清单。
 - 本地后端选择与无需官方登录的验证清单。
 - 升级 / 指定版本 / 卸载与常见问题排查手册。
+

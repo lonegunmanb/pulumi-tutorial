@@ -4,7 +4,9 @@ title: 使用 Terraform Module
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# 使用 Terraform Module
+# 使用 Terraform Module
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

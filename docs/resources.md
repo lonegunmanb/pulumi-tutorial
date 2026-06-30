@@ -4,7 +4,9 @@ title: 资源与精细控制
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# 资源与精细控制
+# 资源与精细控制
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

@@ -4,7 +4,9 @@ title: Assets 与 Archives
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Assets 与 Archives
+# Assets 与 Archives
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

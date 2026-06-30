@@ -4,7 +4,9 @@ title: State 与 Backend
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# State 与 Backend
+# State 与 Backend
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

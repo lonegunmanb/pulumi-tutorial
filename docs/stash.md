@@ -4,7 +4,9 @@ title: Stash 状态暂存
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Stash 状态暂存
+# Stash 状态暂存
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

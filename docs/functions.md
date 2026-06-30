@@ -4,7 +4,9 @@ title: Functions 函数
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Functions 函数
+# Functions 函数
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 
@@ -308,3 +310,4 @@ bucket.onObjectCreated(
 - `get` 与 `pulumi import` 的本质差异：前者只读、永不改删，后者纳入管理。
 - resource method 为何**永远是 output 形态**、且**不接受 invoke options**。
 - 函数序列化如何把 JavaScript 闭包打包成 Lambda：捕获变量在序列化时求值、模块按 `require` 处理、原生函数不可捕获、`@pulumi/*` 被剔除——以及「不要捕获可变值」这条铁律。
+

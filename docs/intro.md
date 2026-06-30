@@ -48,7 +48,7 @@ group: 起步
 
 ## 致谢
 
-本教程的交互式实验离不开多个开源项目与在线服务的支持。感谢 [LocalStack](https://www.localstack.cloud/)、[MiniStack](https://ministack.org/)、[MiniBlue](https://miniblue.io/) 和 [Killercoda](https://killercoda.com/) 提供的工具、服务与持续投入。没有它们慷慨的工作和服务，本教程无法以现在的形式完成。
+<TutorialAcknowledgement :compact="false" />
 
 
 ## 全书目录

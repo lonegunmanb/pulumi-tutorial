@@ -4,7 +4,9 @@ title: Component 包分发与基于 Git 的版本化引用
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# Component 包分发与基于 Git 的版本化引用
+# Component 包分发与基于 Git 的版本化引用
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

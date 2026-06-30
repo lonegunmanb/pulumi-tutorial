@@ -4,7 +4,9 @@ title: 项目、堆栈与状态管理
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# 项目、堆栈与状态管理
+# 项目、堆栈与状态管理
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 

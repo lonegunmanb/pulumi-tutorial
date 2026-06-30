@@ -4,7 +4,9 @@ title: Inputs, Outputs
 group: 第 2 篇：Concepts 深度剖析
 ---
 
-# Inputs, Outputs
+# Inputs, Outputs
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 
@@ -526,3 +528,4 @@ const example = new aws.rds.Instance("example", {
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-inputs-outputs" title="实验：Inputs 与 Outputs（AWS / MiniStack）" desc="用 @pulumi/aws 对接 MiniStack，以 S3 Bucket 演示 Output 不是普通值、apply 变换、Output→Input 依赖、all 组合，以及 interpolate / concat / jsonStringify。" />
 
 <KillercodaEmbed src="https://killercoda.com/pulumi-tutorial/course/pulumi-tutorial/pulumi-inputs-outputs-azure" title="实验：Inputs 与 Outputs（Azure / miniblue）" desc="用 @pulumi/azure 对接 miniblue，以 Resource Group 演示 Output 不是普通值、apply 变换、Output→Input 依赖、all 组合，以及 interpolate / concat / jsonStringify。" />
+

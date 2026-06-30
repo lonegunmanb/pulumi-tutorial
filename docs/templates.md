@@ -4,7 +4,9 @@ title: Pulumi Templates
 group: 第 3 篇：Pulumi OSS 工程化扩展与交付实践
 ---
 
-# Pulumi Templates
+# Pulumi Templates
+
+<TutorialAcknowledgement />
 
 ## 本章定位
 
