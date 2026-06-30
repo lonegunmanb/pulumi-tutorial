@@ -22,4 +22,10 @@ VNET_ID=$(pulumi stack output virtualNetworkId) && \
 curl -s "http://localhost:4566${VNET_ID}?api-version=2024-07-01" | jq .
 ```{{exec}}
 
+再记录当前子网数量，下一步扩展后会用它对比：
+
+```bash
+pulumi stack output subnetMap | jq 'keys | length'
+```{{exec}}
+
 这说明 Pulumi state 里记录了模块输出，而真实 VNet 由 AVM 模块写入 MiniBlue。

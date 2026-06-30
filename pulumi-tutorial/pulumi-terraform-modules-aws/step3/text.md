@@ -21,7 +21,9 @@ pulumi stack output
 echo '--- vpcs ---' && \
 awslocal ec2 describe-vpcs | jq '.Vpcs[] | {VpcId, CidrBlock, Tags}' && \
 echo '--- subnets ---' && \
-awslocal ec2 describe-subnets | jq '.Subnets[] | {SubnetId, VpcId, CidrBlock, AvailabilityZone}'
+awslocal ec2 describe-subnets | jq '.Subnets[] | {SubnetId, VpcId, CidrBlock, AvailabilityZone}' && \
+echo '--- subnet count ---' && \
+awslocal ec2 describe-subnets | jq '.Subnets | length'
 ```{{exec}}
 
 这一步说明模块输出已经回到 Pulumi，真实资源则由 Terraform AWS provider 写入 MiniStack。

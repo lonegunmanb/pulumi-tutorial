@@ -16,6 +16,12 @@ pulumi up --yes && \
 pulumi stack output subnetMap | jq
 ```{{exec}}
 
+确认扩展后的子网数量：
+
+```bash
+pulumi stack output subnetMap | jq 'keys | length'
+```{{exec}}
+
 再次查询 MiniBlue，观察 VNet 资源内容：
 
 ```bash
