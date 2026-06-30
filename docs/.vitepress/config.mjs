@@ -77,6 +77,13 @@ export default defineConfig({
                 ]
               },
               {
+                text: "第 4 篇：后记",
+                collapsed: false,
+                items: [
+                  { text: "后记", link: "/afterword" }
+                ]
+              },
+              {
                 text: "附录",
                 collapsed: false,
                 items: [

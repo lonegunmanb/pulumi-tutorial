@@ -46,6 +46,9 @@ group: 起步
 
 后续需要真实云资源的章节，会单独说明凭据、权限和清理方式。
 
+## 致谢
+
+本教程的交互式实验离不开多个开源项目与在线服务的支持。感谢 [LocalStack](https://www.localstack.cloud/)、[MiniStack](https://ministack.org/)、[MiniBlue](https://miniblue.io/) 和 [Killercoda](https://killercoda.com/) 提供的工具、服务与持续投入。没有它们慷慨的工作和服务，本教程无法以现在的形式完成。
 
 
 ## 全书目录
@@ -83,6 +86,11 @@ group: 起步
 - [Pulumi 调试与故障排查](debugging.md)
 - [测试驱动开发与 CI/CD 实践](testing.md)
 - [最佳实践](best-practices.md)
+
+
+### 第 4 篇：后记
+
+- [后记](afterword.md)
 
 
 ### 附录
