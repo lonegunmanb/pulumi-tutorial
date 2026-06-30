@@ -1,6 +1,8 @@
 # 生成 AVM 模块 SDK
 
-现在第一次执行 package 生成。这个命令会下载 Azure Verified Module 并生成本地 SDK，首次运行可能需要等待几分钟。
+现在第一次执行 package 生成。这个命令会下载 Azure Verified Module、准备 OpenTofu 执行器并生成本地 SDK，首次运行可能需要等待几分钟。
+
+本实验通过环境变量让 Terraform Module provider 使用 OpenTofu 执行器；如果没有这个设置，它会默认寻找 terraform 命令。
 
 ```bash
 source /root/.pulumi-terraform-modules-azure-env.sh && \

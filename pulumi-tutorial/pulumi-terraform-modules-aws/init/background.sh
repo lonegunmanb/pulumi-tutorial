@@ -12,6 +12,7 @@ export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
 export NODE_OPTIONS=--max-old-space-size=512
+export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1
@@ -28,7 +29,7 @@ fi
 bash /root/setup-common.sh || true
 export PATH="$HOME/.pulumi/bin:$PATH"
 
-for line in 'export PULUMI_CONFIG_PASSPHRASE=""' 'export TS_NODE_TRANSPILE_ONLY=1' 'export NODE_OPTIONS=--max-old-space-size=512' 'export AWS_ACCESS_KEY_ID=test' 'export AWS_SECRET_ACCESS_KEY=test' 'export AWS_DEFAULT_REGION=us-east-1'; do
+for line in 'export PULUMI_CONFIG_PASSPHRASE=""' 'export TS_NODE_TRANSPILE_ONLY=1' 'export NODE_OPTIONS=--max-old-space-size=512' 'export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu' 'export AWS_ACCESS_KEY_ID=test' 'export AWS_SECRET_ACCESS_KEY=test' 'export AWS_DEFAULT_REGION=us-east-1'; do
   grep -q "$line" /root/.bashrc 2>/dev/null || echo "$line" >> /root/.bashrc
 done
 
@@ -36,6 +37,7 @@ cat > /root/.pulumi-terraform-modules-aws-env.sh <<'SH'
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
 export NODE_OPTIONS=--max-old-space-size=512
+export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1

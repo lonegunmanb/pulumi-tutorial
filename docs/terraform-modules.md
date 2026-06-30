@@ -30,17 +30,7 @@ Terraform Module provider 的价值在于：让 Terraform Module 先以模块为
 
 它不等同于把模块“变成原生 Pulumi Component”。更准确地说，它是在 Pulumi 程序里嵌入一个 Terraform/OpenTofu 模块执行边界。对调用者来说，模块像一个 `Module` 资源；对模块内部来说，仍然按照 Terraform Module 的变量、输出和 provider 约定运行。
 
-```mermaid
-flowchart LR
-    program[Pulumi program] --> sdk[Generated local SDK]
-    sdk --> module[Terraform Module provider]
-    module --> tofu[OpenTofu execution]
-    tofu --> tfmodule[Terraform Module]
-    tfmodule --> cloud[Cloud resources]
-    module --> outputs[Pulumi Outputs]
-    program --> state[Pulumi state backend]
-    module --> state
-```
+![Pulumi 调用 Terraform Module 的执行流程](./images/terraform-modules-execution-flow.png)
 
 这条链路里有两个边界尤其重要：
 
@@ -59,12 +49,32 @@ flowchart LR
 |------|------|
 | 自动安装和管理 OpenTofu | Pulumi 使用开源的 Terraform 兼容实现执行模块 |
 | 把 Pulumi 声明转成 Terraform 配置 | `new Module(...)` 的参数会映射成模块变量 |
-| 通过 Pulumi 后端管理状态 | 模块资源状态写入标准 Pulumi state storage |
+| 通过 Pulumi 后端管理状态 | Terraform state 由模块 provider 写回 Pulumi state storage |
 | 把模块输出暴露为 Pulumi Outputs | 其他 Pulumi 资源可以消费这些输出并形成依赖 |
 
 这意味着模块输出可以继续参与 Pulumi 的数据流。例如 AWS VPC 模块输出 `vpc_id` 后，后续的 Pulumi 原生资源可以把它作为输入；Pulumi 会理解这条依赖。反过来，Pulumi 原生资源的输出也可以传给 Terraform Module 的变量。
 
 但要记住，模块内部不是一组普通 Pulumi 子资源。Pulumi 可以知道模块这个资源，以及模块暴露的输入输出；模块内部每个 Terraform 资源的细节由 Terraform Module provider 和 OpenTofu 处理。这也是后面若干限制的来源。
+
+### State 映射：不是一个普通大资源，也不是一组普通子资源
+
+“状态写入 Pulumi 后端”这句话容易被误解。Terraform Module provider 的状态可以分成三层看：
+
+| 层次 | 在 Pulumi 里看到什么 | 保存什么 | 能不能像普通 Pulumi 资源一样控制 |
+|------|----------------------|----------|----------------------------------|
+| Module 组件资源 | 类似 `vpcmod:index:Module` 的组件 | 模块调用边界、输入输出和父子关系 | 可以对整个模块设置普通资源选项 |
+| 模块 state 资源 | provider 内部创建的 state custom resource | Terraform state JSON、lock file 和模块版本等元数据 | 不应直接依赖它的内部字段 |
+| Resource views | 类似 `vpcmod:tf:aws_vpc`、`vpcmod:tf:aws_subnet` 的视图资源 | 从 Terraform plan/state 抽取出的资源地址、类型和属性快照 | 不能逐个设置 Pulumi resource options |
+
+也就是说，Terraform Module 内部子资源的真实状态确实进入了 Pulumi state，但不是以“每个子资源都是一个完整 Pulumi CustomResource”的方式进入。provider 会把 OpenTofu/Terraform 生成的 state JSON 保存到模块的内部 state resource 中；内部 `__state` 字段会被标记为 secret，`__lock` 和 `__moduleVersion` 则作为普通元数据保存。Pulumi 后端因此成为这段 Terraform state 的存放位置，而不是另起一个独立 Terraform backend。
+
+为了让用户能看见模块内部发生了什么，provider 还会把 Terraform plan/state 里的 managed resources 发布为 resource views。它们会出现在 preview、up、destroy 的资源计数和资源树中，也可能出现在 `pulumi stack export` 的资源列表里。view 的类型通常采用 `<生成包名>:tf:<Terraform 资源类型>` 这样的形式，名称通常来自 Terraform resource address，例如形如 module.tutorial-vpc.aws_vpc.this。
+
+Resource views 的作用是“展示和跟踪”，不是把模块内部资源提升为完整 Pulumi 资源。更新、刷新、销毁时，真正执行操作的仍是 Terraform Module provider 调用 OpenTofu；Pulumi 不能跳进模块内部只对某一个 subnet、route table 或 security group 套用普通 resource options。
+
+![Terraform Module state 与 resource views 的关系](./images/terraform-modules-state-views.png)
+
+这也带来一个实践原则：**把 Terraform Module 当成一个有输出的封装边界来管理，不要把模块内部 state 字段当作业务接口来解析。** 业务代码应消费模块 outputs；排障时可以查看 state export 和 resource views，但不要把内部 `__state`、`__lock` 等字段写进脚本依赖。
 
 ## 8.11 把 Terraform Module 加入 Pulumi 项目
 
@@ -325,13 +335,22 @@ const module = new lambda.Module("function", {
 
 当前官方文档还列出这些限制：
 
-| 限制 | 影响 |
-|------|------|
-| 不支持 `transforms` resource option | 不能对模块内部资源逐个应用 Pulumi transform |
-| 不支持 `pulumi up --target ...` 定向更新 | 不能像普通资源一样只更新模块内部某个资源 |
-| 不能保护模块内部单个资源 | 不能对模块内部某个 Terraform 资源单独设置 `protect` |
+| 限制 | 为什么会这样 | 对工程实践的影响 |
+|------|--------------|------------------|
+| 不支持 `transforms` resource option | 模块内部资源由 OpenTofu 从 Terraform plan/state 中执行和展示，resource views 不是普通 Pulumi 资源注册流程 | 不能用 transform 给模块内部所有子网、路由表或安全组统一改输入 |
+| 不支持 `pulumi up --target ...` 定向更新模块内部资源 | Pulumi 的可控边界是 Module 调用，内部资源地址由 Terraform Module provider 管理 | 不能只 target 模块里的某个 subnet；应预览并更新整个模块边界 |
+| 不能保护模块内部单个资源 | `protect` 等资源选项只能作用在 Pulumi 可管理的资源边界上 | 可以把保护策略放在模块外层流程或云侧策略里，但不能只给模块内部某个资源加 `protect` |
 
 这些限制决定了使用边界：Terraform Module 更像一个封装好的黑盒组件，而不是可随意插手内部资源图的 Pulumi 组件。模块边界越清楚，使用体验越稳定；如果团队经常需要调整模块内部资源选项，就说明这部分能力可能更适合改写为 Pulumi Component。
+
+常见判断方式如下：
+
+| 需求 | 更适合的选择 |
+|------|--------------|
+| 直接复用成熟 Terraform Module，按模块变量控制行为 | Terraform Module provider |
+| 需要在 Pulumi 里逐个设置 parent、provider、protect、ignoreChanges 或 aliases | Pulumi Component |
+| 需要把内部资源作为稳定跨语言 API 暴露给多个团队 | Pulumi Package |
+| 只缺少某个 Terraform provider 的 Pulumi 包，不需要模块封装 | Any Terraform Provider |
 
 ## 8.18 使用清单
 

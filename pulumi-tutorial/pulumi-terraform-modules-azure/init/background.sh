@@ -12,6 +12,7 @@ export SKIP_SAMPLE_PROJECT=1
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
 export NODE_OPTIONS=--max-old-space-size=512
+export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
 export ARM_CLIENT_ID=miniblue
 export ARM_CLIENT_SECRET=miniblue
 export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
@@ -36,6 +37,7 @@ cat > /root/.pulumi-terraform-modules-azure-env.sh <<'SH'
 export PULUMI_CONFIG_PASSPHRASE=""
 export TS_NODE_TRANSPILE_ONLY=1
 export NODE_OPTIONS=--max-old-space-size=512
+export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
 export ARM_CLIENT_ID=miniblue
 export ARM_CLIENT_SECRET=miniblue
 export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
