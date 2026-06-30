@@ -20,8 +20,8 @@ export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
 export ARM_METADATA_HOSTNAME=localhost:4567
 export ARM_USE_CLI=false
 export ARM_ENVIRONMENT=custom
-export ARM_RESOURCE_MANAGER_ENDPOINT=http://localhost:4566/
-export ARM_RESOURCE_MANAGER_AUDIENCE=http://localhost:4566
+export ARM_RESOURCE_MANAGER_ENDPOINT=https://localhost:4567/
+export ARM_RESOURCE_MANAGER_AUDIENCE=https://localhost:4567
 export ARM_ACTIVE_DIRECTORY_AUTHORITY_HOST=https://localhost:4567/
 export ARM_DISABLE_INSTANCE_DISCOVERY=true
 export ARM_SKIP_PROVIDER_REGISTRATION=true
@@ -106,8 +106,8 @@ export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
 export ARM_METADATA_HOSTNAME=localhost:4567
 export ARM_USE_CLI=false
 export ARM_ENVIRONMENT=custom
-export ARM_RESOURCE_MANAGER_ENDPOINT=http://localhost:4566/
-export ARM_RESOURCE_MANAGER_AUDIENCE=http://localhost:4566
+export ARM_RESOURCE_MANAGER_ENDPOINT=https://localhost:4567/
+export ARM_RESOURCE_MANAGER_AUDIENCE=https://localhost:4567
 export ARM_ACTIVE_DIRECTORY_AUTHORITY_HOST=https://localhost:4567/
 export ARM_DISABLE_INSTANCE_DISCOVERY=true
 export ARM_SKIP_PROVIDER_REGISTRATION=true
@@ -119,7 +119,7 @@ SUBSCRIPTION_ID="00000000-0000-0000-0000-000000000000"
 RESOURCE_GROUP_NAME="rg-tfmod-vnet"
 RESOURCE_GROUP_ID="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP_NAME}"
 
-curl -s -X PUT "http://localhost:4566/subscriptions/${SUBSCRIPTION_ID}/resourcegroups/${RESOURCE_GROUP_NAME}" \
+curl -s -X PUT "https://localhost:4567/subscriptions/${SUBSCRIPTION_ID}/resourcegroups/${RESOURCE_GROUP_NAME}" \
   -H 'Content-Type: application/json' \
   -d '{"location":"eastus","tags":{"managedBy":"miniblue-init","purpose":"terraform-module-lab"}}' >/dev/null || true
 

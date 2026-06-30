@@ -19,7 +19,7 @@ pulumi stack output
 
 ```bash
 VNET_ID=$(pulumi stack output virtualNetworkId) && \
-curl -s "http://localhost:4566${VNET_ID}?api-version=2024-07-01" | jq .
+curl -s "https://localhost:4567${VNET_ID}?api-version=2024-07-01" | jq .
 ```{{exec}}
 
 再记录当前子网数量，下一步扩展后会用它对比：

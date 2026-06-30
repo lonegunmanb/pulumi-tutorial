@@ -26,7 +26,7 @@ pulumi stack output subnetMap | jq 'keys | length'
 
 ```bash
 VNET_ID=$(pulumi stack output virtualNetworkId) && \
-curl -s "http://localhost:4566${VNET_ID}?api-version=2024-07-01" | jq .
+curl -s "https://localhost:4567${VNET_ID}?api-version=2024-07-01" | jq .
 ```{{exec}}
 
 这一步修改的是模块输入里的 subnets map，而不是手写单个 Azure 子网资源。

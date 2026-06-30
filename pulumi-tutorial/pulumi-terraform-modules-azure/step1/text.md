@@ -7,7 +7,7 @@ source /root/.pulumi-terraform-modules-azure-env.sh && \
 cd /root/workspace/terraform-modules-azure && \
 curl -s http://localhost:4566/health | jq . && \
 echo '--- resource group ---' && \
-curl -s http://localhost:4566/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/rg-tfmod-vnet | jq . && \
+curl -s https://localhost:4567/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/rg-tfmod-vnet | jq . && \
 echo '--- index.ts ---' && \
 sed -n '1,180p' index.ts
 ```{{exec}}

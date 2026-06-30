@@ -2,7 +2,7 @@
 
 现在第一次执行 package 生成。这个命令会下载 Azure Verified Module、准备 OpenTofu 执行器并生成本地 SDK，首次运行可能需要等待几分钟。
 
-本实验通过环境变量让 Terraform Module provider 使用 OpenTofu 执行器，并让 AzAPI provider 连接 MiniBlue 的本地端点。
+本实验通过环境变量让 Terraform Module provider 使用 OpenTofu 执行器，并让 AzAPI provider 通过 MiniBlue 的 HTTPS 本地端点连接模拟 ARM API。
 
 ```bash
 source /root/.pulumi-terraform-modules-azure-env.sh && \
