@@ -19,6 +19,12 @@ export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
 export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
 export ARM_METADATA_HOSTNAME=localhost:4567
 export ARM_USE_CLI=false
+export ARM_ENVIRONMENT=custom
+export ARM_RESOURCE_MANAGER_ENDPOINT=http://localhost:4566/
+export ARM_RESOURCE_MANAGER_AUDIENCE=http://localhost:4566
+export ARM_ACTIVE_DIRECTORY_AUTHORITY_HOST=https://localhost:4567/
+export ARM_DISABLE_INSTANCE_DISCOVERY=true
+export ARM_SKIP_PROVIDER_REGISTRATION=true
 unset SSL_CERT_FILE
 
 rm -f /tmp/.setup-done
@@ -99,6 +105,12 @@ export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
 export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
 export ARM_METADATA_HOSTNAME=localhost:4567
 export ARM_USE_CLI=false
+export ARM_ENVIRONMENT=custom
+export ARM_RESOURCE_MANAGER_ENDPOINT=http://localhost:4566/
+export ARM_RESOURCE_MANAGER_AUDIENCE=http://localhost:4566
+export ARM_ACTIVE_DIRECTORY_AUTHORITY_HOST=https://localhost:4567/
+export ARM_DISABLE_INSTANCE_DISCOVERY=true
+export ARM_SKIP_PROVIDER_REGISTRATION=true
 export SSL_CERT_FILE=/root/.miniblue/cert.pem
 SH
 grep -q '.pulumi-terraform-modules-azure-env.sh' /root/.bashrc 2>/dev/null || echo 'source /root/.pulumi-terraform-modules-azure-env.sh' >> /root/.bashrc
