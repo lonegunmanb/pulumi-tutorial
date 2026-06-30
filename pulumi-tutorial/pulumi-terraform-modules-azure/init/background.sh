@@ -19,7 +19,7 @@ export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
 export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
 export ARM_METADATA_HOSTNAME=localhost:4567
 export ARM_USE_CLI=false
-export SSL_CERT_FILE=/root/.miniblue/cert.pem
+unset SSL_CERT_FILE
 
 rm -f /tmp/.setup-done
 
@@ -33,28 +33,18 @@ fi
 bash /root/setup-common.sh || true
 export PATH="$HOME/.pulumi/bin:$PATH"
 
-cat > /root/.pulumi-terraform-modules-azure-env.sh <<'SH'
-export PULUMI_CONFIG_PASSPHRASE=""
-export TS_NODE_TRANSPILE_ONLY=1
-export NODE_OPTIONS=--max-old-space-size=512
-export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
-export ARM_CLIENT_ID=miniblue
-export ARM_CLIENT_SECRET=miniblue
-export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
-export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
-export ARM_METADATA_HOSTNAME=localhost:4567
-export ARM_USE_CLI=false
-export SSL_CERT_FILE=/root/.miniblue/cert.pem
-SH
-grep -q '.pulumi-terraform-modules-azure-env.sh' /root/.bashrc 2>/dev/null || echo 'source /root/.pulumi-terraform-modules-azure-env.sh' >> /root/.bashrc
-
 apt-get install -y curl jq openssl ca-certificates >/dev/null 2>&1 || true
 service docker start >/dev/null 2>&1 || true
 if ! docker compose version >/dev/null 2>&1; then
   mkdir -p /usr/local/lib/docker/cli-plugins
-  curl -fsSL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
-    -o /usr/local/lib/docker/cli-plugins/docker-compose
-  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  if curl -fsSL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+    -o /usr/local/lib/docker/cli-plugins/docker-compose; then
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  fi
+fi
+
+if ! docker compose version >/dev/null 2>&1; then
+  apt-get install -y docker-compose-plugin >/dev/null 2>&1 || apt-get install -y docker-compose >/dev/null 2>&1 || true
 fi
 
 mkdir -p /root/workspace/terraform-modules-azure/variants /root/.miniblue
@@ -95,6 +85,23 @@ openssl s_client -connect localhost:4567 -servername localhost </dev/null 2>/dev
   | openssl x509 > /root/.miniblue/cert.pem 2>/dev/null || true
 cp /root/.miniblue/cert.pem /usr/local/share/ca-certificates/miniblue.crt 2>/dev/null || true
 update-ca-certificates >/dev/null 2>&1 || true
+
+export SSL_CERT_FILE=/root/.miniblue/cert.pem
+
+cat > /root/.pulumi-terraform-modules-azure-env.sh <<'SH'
+export PULUMI_CONFIG_PASSPHRASE=""
+export TS_NODE_TRANSPILE_ONLY=1
+export NODE_OPTIONS=--max-old-space-size=512
+export PULUMI_TERRAFORM_MODULE_EXECUTOR=tofu
+export ARM_CLIENT_ID=miniblue
+export ARM_CLIENT_SECRET=miniblue
+export ARM_TENANT_ID=00000000-0000-0000-0000-000000000001
+export ARM_SUBSCRIPTION_ID=00000000-0000-0000-0000-000000000000
+export ARM_METADATA_HOSTNAME=localhost:4567
+export ARM_USE_CLI=false
+export SSL_CERT_FILE=/root/.miniblue/cert.pem
+SH
+grep -q '.pulumi-terraform-modules-azure-env.sh' /root/.bashrc 2>/dev/null || echo 'source /root/.pulumi-terraform-modules-azure-env.sh' >> /root/.bashrc
 
 SUBSCRIPTION_ID="00000000-0000-0000-0000-000000000000"
 RESOURCE_GROUP_NAME="rg-tfmod-vnet"
